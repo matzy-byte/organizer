@@ -1,0 +1,8 @@
+import 'package:flutter/foundation.dart';
+import 'package:organizer/core/models/topic.dart';
+
+abstract class TopicRepository {
+  Future<List<Topic>> getAllTopicsByCategory(Category category);
+  Future<void> addTopic(Topic topic);
+  Future<void> removeTopic(String topicId);
+}

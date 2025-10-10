@@ -4,6 +4,7 @@ class ChartCard extends StatelessWidget {
   final String title;
   final String value;
   final String subtitle;
+  
   const ChartCard({
     super.key,
     required this.title,
