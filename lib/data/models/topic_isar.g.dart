@@ -34,7 +34,14 @@ const TopicIsarSchema = CollectionSchema(
   deserializeProp: _topicIsarDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {},
+  links: {
+    r'category': LinkSchema(
+      id: -4638260461276815187,
+      name: r'category',
+      target: r'CategoryIsar',
+      single: true,
+    )
+  },
   embeddedSchemas: {},
   getId: _topicIsarGetId,
   getLinks: _topicIsarGetLinks,
@@ -102,11 +109,13 @@ Id _topicIsarGetId(TopicIsar object) {
 }
 
 List<IsarLinkBase<dynamic>> _topicIsarGetLinks(TopicIsar object) {
-  return [];
+  return [object.category];
 }
 
 void _topicIsarAttach(IsarCollection<dynamic> col, Id id, TopicIsar object) {
   object.id = id;
+  object.category
+      .attach(col, col.isar.collection<CategoryIsar>(), r'category', id);
 }
 
 extension TopicIsarQueryWhereSort
@@ -528,7 +537,20 @@ extension TopicIsarQueryObject
     on QueryBuilder<TopicIsar, TopicIsar, QFilterCondition> {}
 
 extension TopicIsarQueryLinks
-    on QueryBuilder<TopicIsar, TopicIsar, QFilterCondition> {}
+    on QueryBuilder<TopicIsar, TopicIsar, QFilterCondition> {
+  QueryBuilder<TopicIsar, TopicIsar, QAfterFilterCondition> category(
+      FilterQuery<CategoryIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'category');
+    });
+  }
+
+  QueryBuilder<TopicIsar, TopicIsar, QAfterFilterCondition> categoryIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'category', 0, true, 0, true);
+    });
+  }
+}
 
 extension TopicIsarQuerySortBy on QueryBuilder<TopicIsar, TopicIsar, QSortBy> {
   QueryBuilder<TopicIsar, TopicIsar, QAfterSortBy> sortByDescription() {

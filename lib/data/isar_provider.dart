@@ -1,6 +1,8 @@
 import 'package:isar/isar.dart';
 import 'package:organizer/data/models/category_isar.dart';
+import 'package:organizer/data/models/fix_transaction_isar.dart';
 import 'package:organizer/data/models/topic_isar.dart';
+import 'package:organizer/data/models/var_transaction_isar.dart';
 import 'package:path_provider/path_provider.dart';
 
 class IsarProvider {
@@ -12,7 +14,9 @@ class IsarProvider {
     _isar = await Isar.open(
       [
         CategoryIsarSchema,
-        TopicIsarSchema
+        TopicIsarSchema,
+        FixTransactionIsarSchema,
+        VarTransactionIsarSchema
       ],
       directory: dir.path,
     );

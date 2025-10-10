@@ -34,14 +34,7 @@ const CategoryIsarSchema = CollectionSchema(
   deserializeProp: _categoryIsarDeserializeProp,
   idName: r'id',
   indexes: {},
-  links: {
-    r'topics': LinkSchema(
-      id: 1727427616729811978,
-      name: r'topics',
-      target: r'TopicIsar',
-      single: false,
-    )
-  },
+  links: {},
   embeddedSchemas: {},
   getId: _categoryIsarGetId,
   getLinks: _categoryIsarGetLinks,
@@ -109,13 +102,12 @@ Id _categoryIsarGetId(CategoryIsar object) {
 }
 
 List<IsarLinkBase<dynamic>> _categoryIsarGetLinks(CategoryIsar object) {
-  return [object.topics];
+  return [];
 }
 
 void _categoryIsarAttach(
     IsarCollection<dynamic> col, Id id, CategoryIsar object) {
   object.id = id;
-  object.topics.attach(col, col.isar.collection<TopicIsar>(), r'topics', id);
 }
 
 extension CategoryIsarQueryWhereSort
@@ -545,68 +537,7 @@ extension CategoryIsarQueryObject
     on QueryBuilder<CategoryIsar, CategoryIsar, QFilterCondition> {}
 
 extension CategoryIsarQueryLinks
-    on QueryBuilder<CategoryIsar, CategoryIsar, QFilterCondition> {
-  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition> topics(
-      FilterQuery<TopicIsar> q) {
-    return QueryBuilder.apply(this, (query) {
-      return query.link(q, r'topics');
-    });
-  }
-
-  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
-      topicsLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'topics', length, true, length, true);
-    });
-  }
-
-  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
-      topicsIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'topics', 0, true, 0, true);
-    });
-  }
-
-  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
-      topicsIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'topics', 0, false, 999999, true);
-    });
-  }
-
-  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
-      topicsLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'topics', 0, true, length, include);
-    });
-  }
-
-  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
-      topicsLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(r'topics', length, include, 999999, true);
-    });
-  }
-
-  QueryBuilder<CategoryIsar, CategoryIsar, QAfterFilterCondition>
-      topicsLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.linkLength(
-          r'topics', lower, includeLower, upper, includeUpper);
-    });
-  }
-}
+    on QueryBuilder<CategoryIsar, CategoryIsar, QFilterCondition> {}
 
 extension CategoryIsarQuerySortBy
     on QueryBuilder<CategoryIsar, CategoryIsar, QSortBy> {

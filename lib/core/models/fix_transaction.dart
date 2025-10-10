@@ -1,10 +1,12 @@
-import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation.dart';
 import 'package:organizer/core/models/polarity.dart';
+import 'package:organizer/core/models/status.dart';
+import 'package:organizer/core/models/topic.dart';
 
-class FixElement {
-  final String id;
-  final Category category;
+class FixTransaction {
+  final int id;
+  final Topic topic;
+  final Status status;
   final Polarity type;
   final DateTime start;
   final DateTime end;
@@ -13,9 +15,10 @@ class FixElement {
   final Compensation compensation;
   final String? description;
 
-  const FixElement({
+  const FixTransaction({
     required this.id,
-    required this.category,
+    required this.topic,
+    required this.status,
     required this.type,
     required this.start,
     required this.end,

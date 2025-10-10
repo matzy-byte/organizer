@@ -16,5 +16,5 @@ class CategoryService {
 
   Future<void> addCategory(Category category) =>
       repository.addCategory(category);
-  Future<void> removeCategory(String id) => repository.removeCategory(id);
+  Future<void> removeCategory(int id) => repository.removeCategory(id);
 }

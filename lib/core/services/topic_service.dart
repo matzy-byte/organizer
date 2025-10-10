@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart';
+import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/repositories/topic_repository.dart';
 
@@ -17,5 +17,5 @@ class TopicService {
 
   Future<void> addTopic(Topic topic) =>
       repository.addTopic(topic);
-  Future<void> removeTopic(String id) => repository.removeTopic(id);
+  Future<void> removeTopic(int id) => repository.removeTopic(id);
 }

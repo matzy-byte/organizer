@@ -1,20 +1,20 @@
-import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation.dart';
 import 'package:organizer/core/models/polarity.dart';
+import 'package:organizer/core/models/topic.dart';
 
-class VarElement {
-  final String id;
-  final Category category;
-  final Polarity polarity;
+class VarTransaction {
+  final int id;
+  final Topic topic;
+  final Polarity type;
   final DateTime date;
   final int value;
   final Compensation compensation;
   final String? description;
   
-  VarElement({
+  VarTransaction({
     required this.id,
-    required this.category,
-    required this.polarity,
+    required this.topic,
+    required this.type,
     required this.date,
     required this.value,
     required this.compensation,

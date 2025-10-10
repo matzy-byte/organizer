@@ -15,11 +15,11 @@ class CategoryProvider with ChangeNotifier {
   }
 
   Future<void> addCategory(String name) async {
-    await service.addCategory(Category(id: DateTime.now().millisecondsSinceEpoch.toString(), name: name));
+    await service.addCategory(Category(id: DateTime.now().millisecondsSinceEpoch, name: name));
     await loadCategories();
   }
 
-  Future<void> removeCategory(String id) async {
+  Future<void> removeCategory(int id) async {
     await service.removeCategory(id);
     await loadCategories();
   }

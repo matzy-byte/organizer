@@ -19,18 +19,17 @@ class CategoryRepositoryIsar implements CategoryRepository {
     final isar = await IsarProvider.instance;
     final cats = await isar.categoryIsars.where().findAll();
     return cats.map((c) => Category(
-      id: c.id.toString(),
+      id: c.id,
       name: c.name,
       description: c.description,
-      topics: [],
     )).toList();
   }
 
   @override
-  Future<void> removeCategory(String id) async {
+  Future<void> removeCategory(int id) async {
     final isar = await IsarProvider.instance;
     await isar.writeTxn(() async {
-      await isar.categoryIsars.delete(int.parse(id));
+      await isar.categoryIsars.delete(id);
     });
   }
 }
