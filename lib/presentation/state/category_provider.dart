@@ -10,7 +10,7 @@ class CategoryProvider with ChangeNotifier {
   CategoryProvider({required this.service});
 
   Future<void> loadCategories() async {
-    _categories = await service.loadCategories();
+    _categories = await service.getAllCategories();
     notifyListeners();
   }
 

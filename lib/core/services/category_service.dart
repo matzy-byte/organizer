@@ -6,7 +6,7 @@ class CategoryService {
 
   CategoryService(this.repository);
 
-  Future<List<Category>> loadCategories() async {
+  Future<List<Category>> getAllCategories() async {
     final cats = await repository.getAllCategories();
     if (cats.isEmpty) {
       return [];

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
-import 'package:organizer/presentation/widgets/add_category_dialog.dart';
+import 'package:organizer/presentation/widgets/dialogs/add_category_dialog.dart';
 import 'package:organizer/presentation/widgets/category_tile.dart';
 import 'package:provider/provider.dart';
 

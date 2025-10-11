@@ -7,7 +7,7 @@ class TopicService {
 
   TopicService(this.repository);
 
-  Future<List<Topic>> loadCategories(Category category) async {
+  Future<List<Topic>> getAllTopicsByCategory(Category category) async {
     final topics = await repository.getAllTopicsByCategory(category);
     if (topics.isEmpty) {
       return [];
@@ -15,7 +15,6 @@ class TopicService {
     return topics;
   }
 
-  Future<void> addTopic(Topic topic) =>
-      repository.addTopic(topic);
-  Future<void> removeTopic(int id) => repository.removeTopic(id);
+  Future<void> addTopic(Category category, String name, String? description) => repository.addTopic(category, name, description);
+  Future<void> removeTopic(Topic topic) => repository.removeTopic(topic);
 }

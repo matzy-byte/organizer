@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:organizer/core/models/topic.dart';
+import 'package:organizer/presentation/state/topic_provider.dart';
+import 'package:provider/provider.dart';
 
 class TopicCard extends StatelessWidget {
-  final String name;
-  final String? description;
+  final Topic topic;
+  final VoidCallback? onDeleted;
 
-  const TopicCard({super.key, required this.name, this.description});
+  const TopicCard({super.key, required this.topic, this.onDeleted});
 
   @override
   Widget build(BuildContext context) {
@@ -19,8 +22,12 @@ class TopicCard extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  Text(name),
-                  if (description != null) Text(description!),
+                  Text(topic.name),
+                  if (topic.description != null) Text(topic.description!),
+                  IconButton(
+                    onPressed: () => removeTopic(context),
+                    icon: Icon(Icons.delete),
+                  ),
                 ],
               ),
             ),
@@ -28,5 +35,11 @@ class TopicCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void removeTopic(BuildContext context) {
+    final topicProvider = context.read<TopicProvider>();
+    topicProvider.removeTopic(topic);
+    onDeleted?.call();
   }
 }

@@ -8,14 +8,14 @@ import 'package:organizer/data/models/topic_isar.dart';
 
 class TopicRepositoryIsar implements TopicRepository {
   @override
-  Future<void> addTopic(Topic topic) async {
+  Future<void> addTopic(Category category, String name, String? description) async {
     final isar = await IsarProvider.instance;
     final tpc = TopicIsar()
-      ..name = topic.name
-      ..description = topic.description;
+      ..name = name
+      ..description = description;
     final cat = await isar.categoryIsars
         .filter()
-        .idEqualTo(topic.category.id)
+        .idEqualTo(category.id)
         .findFirst();
     tpc.category.value = cat;
     await isar.writeTxn(() async {
@@ -33,16 +33,16 @@ class TopicRepositoryIsar implements TopicRepository {
         .findAll();
     return tpcs
         .map(
-          (t) => Topic(id: t.id, category: category, name: t.name),
+          (t) => Topic(id: t.id, category: category, name: t.name, description: t.description),
         )
         .toList();
   }
 
   @override
-  Future<void> removeTopic(int id) async {
+  Future<void> removeTopic(Topic topic) async {
     final isar = await IsarProvider.instance;
     await isar.writeTxn(() async {
-      await isar.topicIsars.delete(id);
+      await isar.topicIsars.delete(topic.id);
     });
   }
 }
