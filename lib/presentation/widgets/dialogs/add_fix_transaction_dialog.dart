@@ -1,26 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:organizer/core/models/category.dart';
+import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:provider/provider.dart';
 
-class AddTopicDialog extends StatefulWidget {
-  final Category category;
-  const AddTopicDialog({super.key, required this.category});
+class AddFixTransactionDialog extends StatefulWidget {
+  final Topic topic;
+  const AddFixTransactionDialog({super.key, required this.topic});
 
   @override
-  State<AddTopicDialog> createState() => _AddTopicDialogState();
+  State<AddFixTransactionDialog> createState() => _AddFixTransactionDialogState();
 }
 
-class _AddTopicDialogState extends State<AddTopicDialog> {
+class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   String? _selectedCategory;
+  String? _selectedTopic;
 
   @override
   void initState() {
     super.initState();
-    _selectedCategory = widget.category.name;
+    _selectedCategory = widget.topic.category.name;
+    _selectedTopic = widget.topic.name;
   }
 
   @override
@@ -36,7 +38,7 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownButton<String>(
-                  value: _selectedCategory,
+                  value: _selectedTopic,
                   hint: const Text('Select category'),
                   items: categoryProvider.categories
                       .map(
@@ -47,7 +49,7 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
                       )
                       .toList(),
                   onChanged: (value) {
-                    setState(() => _selectedCategory = value);
+                    setState(() => _selectedTopic = value);
                   },
                 ),
                 TextField(
@@ -73,10 +75,10 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
               : () async {
                   final name = _nameController.text.trim();
                   final description = _descriptionController.text.trim();
-                  if (name.isNotEmpty && _selectedCategory != null) {
+                  if (name.isNotEmpty && _selectedTopic != null) {
                     await topicProvider.addTopic(
                       categoryProvider.categories.firstWhere(
-                        (c) => c.name == _selectedCategory,
+                        (c) => c.name == _selectedTopic,
                       ),
                       name,
                       description.isEmpty ? null : description,

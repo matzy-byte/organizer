@@ -14,7 +14,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<CategoryProvider>();
+    final provider = context.read<CategoryProvider>();
 
     return AlertDialog(
       title: const Text('Add Category'),
