@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:organizer/presentation/widgets/chart_card.dart';
 import 'package:organizer/presentation/widgets/drawer_content.dart';
 import 'package:organizer/presentation/widgets/header.dart';
+import 'package:organizer/presentation/widgets/multi_function_floating_button.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -37,13 +38,7 @@ class DashboardScreen extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) => Dialog(),
-        ),
-      )
+      floatingActionButton: MultiFunctionFloatingButton()
     );
   }
 }

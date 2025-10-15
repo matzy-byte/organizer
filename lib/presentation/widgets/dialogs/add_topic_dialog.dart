@@ -5,8 +5,8 @@ import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddTopicDialog extends StatefulWidget {
-  final Category category;
-  const AddTopicDialog({super.key, required this.category});
+  final Category? category;
+  const AddTopicDialog({super.key, this.category});
 
   @override
   State<AddTopicDialog> createState() => _AddTopicDialogState();
@@ -20,14 +20,14 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
   @override
   void initState() {
     super.initState();
-    _selectedCategory = widget.category.name;
+    _selectedCategory = widget.category?.name;
   }
 
   @override
   Widget build(BuildContext context) {
-    final topicProvider = context.read<TopicProvider>();
     final categoryProvider = context.read<CategoryProvider>();
-
+    final topicProvider = context.read<TopicProvider>();
+    
     return AlertDialog(
       title: const Text('Add Topic'),
       content: categoryProvider.categories.isEmpty

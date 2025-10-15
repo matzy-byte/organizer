@@ -14,7 +14,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.read<CategoryProvider>();
+    final categoryProvider = context.read<CategoryProvider>();
 
     return AlertDialog(
       title: const Text('Add Category'),
@@ -31,7 +31,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
           onPressed: () async {
             final name = _controller.text.trim();
             if (name.isNotEmpty) {
-              await provider.addCategory(name);
+              categoryProvider.addCategory(name);
               Navigator.pop(context);
             }
           },

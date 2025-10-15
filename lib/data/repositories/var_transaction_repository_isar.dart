@@ -1,4 +1,6 @@
 import 'package:isar/isar.dart';
+import 'package:organizer/core/models/compensation.dart';
+import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/core/repositories/var_transactions_repository.dart';
@@ -8,16 +10,22 @@ import 'package:organizer/data/models/var_transaction_isar.dart';
 
 class VarTransactionRepositoryIsar implements VarTransactionRepository {
   @override
-  Future<void> addVarTransaction(VarTransaction varTransaction) async {
+  Future<void> addVarTransaction(Topic topic,
+    Polarity type,
+    DateTime date,
+    int value,
+    Compensation compensation,
+    String? description) async {
     final isar = await IsarProvider.instance;
     final ta = VarTransactionIsar()
-      ..type = varTransaction.type
-      ..value = varTransaction.value
-      ..compensation = varTransaction.compensation
-      ..description = varTransaction.description;
+      ..type = type
+      ..date = date
+      ..value = value
+      ..compensation = compensation
+      ..description = description;
     final tpc = await isar.topicIsars
         .filter()
-        .idEqualTo(varTransaction.topic.id)
+        .idEqualTo(topic.id)
         .findFirst();
     ta.topic.value = tpc;
     await isar.writeTxn(() async {
@@ -49,10 +57,10 @@ class VarTransactionRepositoryIsar implements VarTransactionRepository {
   }
 
   @override
-  Future<void> removeVarTransaction(int id) async {
+  Future<void> removeVarTransaction(VarTransaction varTransaction) async {
     final isar = await IsarProvider.instance;
     await isar.writeTxn(() async {
-      await isar.varTransactionIsars.delete(id);
+      await isar.varTransactionIsars.delete(varTransaction.id);
     });
   }
 }

@@ -2,37 +2,33 @@ import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation.dart';
 import 'package:organizer/core/models/polarity.dart';
-import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
-import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
+import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:provider/provider.dart';
 
-class AddFixTransactionDialog extends StatefulWidget {
+class AddVarTransactionDialog extends StatefulWidget {
   final Topic? topic;
-  const AddFixTransactionDialog({super.key, this.topic});
+  const AddVarTransactionDialog({super.key, this.topic});
 
   @override
-  State<AddFixTransactionDialog> createState() =>
-      _AddFixTransactionDialogState();
+  State<AddVarTransactionDialog> createState() =>
+      _AddVarTransactionDialogState();
 }
 
-class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
+class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
 
-  final _intervalController = TextEditingController();
   final _valueController = TextEditingController();
   final _descriptionController = TextEditingController();
 
   Category? _selectedCategory;
   Topic? _selectedTopic;
-  Status _status = Status.active;
   Polarity _type = Polarity.negative;
 
-  DateTime? _startDate;
-  DateTime? _endDate;
+  DateTime? _date;
 
   @override
   void initState() {
@@ -41,21 +37,19 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
       _selectedCategory = widget.topic!.category;
       _selectedTopic = widget.topic;
     }
-    _startDate = DateTime.now();
-    _endDate = DateTime.now();
+    _date = DateTime.now();
   }
 
   @override
   void dispose() {
-    _intervalController.dispose();
     _valueController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickDate(BuildContext context, bool isStart) async {
+  Future<void> _pickDate(BuildContext context) async {
     final now = DateTime.now();
-    final initialDate = isStart ? (_startDate ?? now) : (_endDate ?? now);
+    final initialDate = now;
     final firstDate = DateTime(now.year - 10);
     final lastDate = DateTime(now.year + 10);
 
@@ -67,19 +61,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
     );
 
     if (picked != null) {
-      setState(() {
-        if (isStart) {
-          _startDate = picked;
-          if (_endDate != null && _endDate!.isBefore(picked)) {
-            _endDate = picked;
-          }
-        } else {
-          _endDate = picked;
-          if (_startDate != null && _startDate!.isAfter(picked)) {
-            _startDate = picked;
-          }
-        }
-      });
+      setState(() => _date = picked);
       _validateForm();
     }
   }
@@ -95,9 +77,9 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryProvider = context.watch<CategoryProvider>();
-    final topicProvider = context.watch<TopicProvider>();
-    final fixTransactionProvider = context.read<FixTransactionProvider>();
+    final categoryProvider = context.read<CategoryProvider>();
+    final topicProvider = context.read<TopicProvider>();
+    final varTransactionProvider = context.read<VarTransactionProvider>();
 
     final categories = categoryProvider.categories;
     final topics = _selectedCategory == null
@@ -155,25 +137,6 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                             value == null ? 'Please select a topic' : null,
                       ),
                     const SizedBox(height: 12),
-                    SegmentedButton<Status>(
-                      segments: const [
-                        ButtonSegment(
-                          value: Status.active,
-                          label: Text('Active'),
-                        ),
-                        ButtonSegment(
-                          value: Status.inactive,
-                          label: Text('Inactive'),
-                        ),
-                      ],
-                      selected: <Status>{_status},
-                      onSelectionChanged: (newSelection) {
-                        setState(() {
-                          _status = newSelection.first;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
                     SegmentedButton<Polarity>(
                       segments: const [
                         ButtonSegment(
@@ -197,56 +160,18 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                     TextFormField(
                       readOnly: true,
                       decoration: InputDecoration(
-                        labelText: 'Start Date',
+                        labelText: 'Date',
                         suffixIcon: const Icon(Icons.calendar_today),
                       ),
                       controller: TextEditingController(
-                        text: _startDate == null
+                        text: _date == null
                             ? ''
-                            : "${_startDate!.toLocal()}".split(' ')[0],
+                            : "${_date!.toLocal()}".split(' ')[0],
                       ),
-                      onTap: () => _pickDate(context, true),
+                      onTap: () => _pickDate(context),
                       validator: (value) => (value == null || value.isEmpty)
                           ? 'Please select a start date'
                           : null,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    TextFormField(
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: 'End Date',
-                        suffixIcon: const Icon(Icons.calendar_today),
-                      ),
-                      controller: TextEditingController(
-                        text: _endDate == null
-                            ? ''
-                            : "${_endDate!.toLocal()}".split(' ')[0],
-                      ),
-                      onTap: () => _pickDate(context, false),
-                      validator: (value) => (value == null || value.isEmpty)
-                          ? 'Please select an end date'
-                          : null,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    TextFormField(
-                      controller: _intervalController,
-                      decoration: const InputDecoration(labelText: 'Interval'),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) => _validateForm(),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter interval';
-                        }
-                        final n = int.tryParse(value);
-                        if (n == null || n <= 0) {
-                          return 'Enter valid positive number';
-                        }
-                        return null;
-                      },
                     ),
 
                     const SizedBox(height: 12),
@@ -289,15 +214,11 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
         ElevatedButton(
           onPressed: _isFormValid
               ? () {
-                final interval = int.parse(_intervalController.text);
                 final value = int.parse(_valueController.text);
-                fixTransactionProvider.addFixTransaction(
+                varTransactionProvider.addVarTransaction(
                   _selectedTopic!,
-                  _status,
                   _type,
-                  _startDate!,
-                  _endDate!,
-                  interval,
+                  _date!,
                   value,
                   Compensation.none,
                   _descriptionController.value.text,

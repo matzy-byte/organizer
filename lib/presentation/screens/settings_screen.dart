@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
-import 'package:organizer/presentation/widgets/dialogs/add_category_dialog.dart';
 import 'package:organizer/presentation/widgets/category_tile.dart';
+import 'package:organizer/presentation/widgets/multi_function_floating_button.dart';
 import 'package:provider/provider.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -22,13 +22,7 @@ class SettingsScreen extends StatelessWidget {
                 return CategoryTile(category: cat);
               },
             ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () => showDialog(
-          context: context,
-          builder: (context) => AddCategoryDialog(),
-        ),
-      ),
+      floatingActionButton: MultiFunctionFloatingButton(),
     );
   }
 }

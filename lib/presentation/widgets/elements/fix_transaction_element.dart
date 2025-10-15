@@ -45,8 +45,7 @@ class _FixTransactionElementState extends State<FixTransactionElement> {
           ? const Center(child: CircularProgressIndicator())
           : _fixTransactions.isEmpty
           ? Text('There is no fix transactions')
-          : ListView(
-              padding: const EdgeInsets.all(16),
+          : Column(
               children: [
                 ..._fixTransactions.map(
                   (f) => FixTransactionSubElement(fixTransaction: f),
@@ -64,7 +63,7 @@ class FixTransactionSubElement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: ListView(children: [Text(fixTransaction.value.toString())]),
+      child: Text(fixTransaction.value.toString()),
     );
   }
 }

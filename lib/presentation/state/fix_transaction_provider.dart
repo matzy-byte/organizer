@@ -15,7 +15,7 @@ class FixTransactionProvider with ChangeNotifier {
     return await fixTransactionService.getAllFixTransactionsByTopic(topic);
   }
 
-  Future<void> addTopic(
+  Future<void> addFixTransaction(
     Topic topic,
     Status status,
     Polarity type,

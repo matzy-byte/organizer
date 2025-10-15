@@ -45,4 +45,25 @@ class TopicRepositoryIsar implements TopicRepository {
       await isar.topicIsars.delete(topic.id);
     });
   }
+  
+  @override
+  Future<List<Topic>> getAllTopics() async {
+    final isar = await IsarProvider.instance;
+    final cats = await isar.categoryIsars.where().findAll();
+    final categories = cats.map((c) => Category(id: c.id, name: c.name, description: c.description));
+    final tpcs = await isar.topicIsars.where().findAll();
+    final topics = <Topic>[];
+    for (final t in tpcs) {
+      await t.category.load();
+      final category = t.category.value;
+      if (category == null) return [];
+      topics.add(Topic(
+        id: t.id,
+        category: categories.firstWhere((c) => c.id == category.id),
+        name: t.name,
+        description: t.description,
+      ));
+    }
+    return topics;
+  }
 }
