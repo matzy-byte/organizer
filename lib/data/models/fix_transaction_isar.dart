@@ -1,5 +1,6 @@
 import 'package:isar/isar.dart';
 import 'package:organizer/core/models/compensation.dart';
+import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/data/models/topic_isar.dart';
@@ -16,7 +17,9 @@ class FixTransactionIsar {
   late Polarity type;
   late DateTime start;
   late DateTime end;
-  late int interval;
+  late int intervalCount;
+  @enumerated
+  late IntervalUnit intervalUnit;
   late int value;
   @enumerated
   late Compensation compensation;

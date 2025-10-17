@@ -42,14 +42,24 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
     _categories = categoryProvider.categories;
 
     if (widget.topic != null) {
-      _selectedCategory = _categories.firstWhere((c) => c.id == widget.topic!.category.id);
-      _topics = topicProvider.topics.where((t) => t.category.id == _selectedCategory!.id).toList();
+      _selectedCategory = _categories.firstWhere(
+        (c) => c.id == widget.topic!.category.id,
+      );
+      _topics = topicProvider.topics
+          .where((t) => t.category.id == _selectedCategory!.id)
+          .toList();
       _selectedTopic = _topics.firstWhere((t) => t.id == widget.topic!.id);
     } else if (widget.category != null) {
-      _selectedCategory = _categories.firstWhere((c) => c.id == widget.category!.id);
+      _selectedCategory = _categories.firstWhere(
+        (c) => c.id == widget.category!.id,
+      );
     }
 
     _date = DateTime.now();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _validateForm();
+    });
   }
 
   @override
@@ -89,6 +99,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final topicProvider = context.read<TopicProvider>();
     final varTransactionProvider = context.read<VarTransactionProvider>();
 
     return AlertDialog(
@@ -110,12 +121,18 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                 DropdownMenuItem(value: c, child: Text(c.name)),
                           )
                           .toList(),
-                      onChanged: (value) {
+                      onChanged: (value) async {
+                        final topics = await topicProvider.loadTopicsByCategory(
+                          value!,
+                        );
                         setState(() {
                           _selectedCategory = value;
+                          _topics = topics;
                           _selectedTopic = null;
                         });
-                        _validateForm();
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _validateForm();
+                        });
                       },
                       validator: (value) =>
                           value == null ? 'Please select a category' : null,
@@ -216,18 +233,18 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
         ),
         ElevatedButton(
           onPressed: _isFormValid
-              ? () {
-                final value = int.parse(_valueController.text);
-                varTransactionProvider.addVarTransaction(
-                  _selectedTopic!,
-                  _type,
-                  _date!,
-                  value,
-                  Compensation.none,
-                  _descriptionController.value.text,
-                );
-                Navigator.pop(context);
-              }
+              ? () async {
+                  final value = int.parse(_valueController.text);
+                  await varTransactionProvider.addVarTransaction(
+                    _selectedTopic!,
+                    _type,
+                    _date!,
+                    value,
+                    Compensation.none,
+                    _descriptionController.value.text,
+                  );
+                  Navigator.pop(context, true);
+                }
               : null,
           child: const Text('Add'),
         ),

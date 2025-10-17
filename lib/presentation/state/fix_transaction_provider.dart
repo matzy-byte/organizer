@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/compensation.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
+import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
@@ -21,7 +22,8 @@ class FixTransactionProvider with ChangeNotifier {
     Polarity type,
     DateTime start,
     DateTime end,
-    int interval,
+    int intervalCount,
+    IntervalUnit intervalUnit,
     int value,
     Compensation compensation,
     String? description,
@@ -32,7 +34,8 @@ class FixTransactionProvider with ChangeNotifier {
       type,
       start,
       end,
-      interval,
+      intervalCount,
+      intervalUnit,
       value,
       compensation,
       description,

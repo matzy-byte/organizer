@@ -8,10 +8,10 @@ class FixTransactionElement extends StatefulWidget {
   const FixTransactionElement({super.key});
 
   @override
-  State<FixTransactionElement> createState() => _FixTransactionElementState();
+  State<FixTransactionElement> createState() => FixTransactionElementState();
 }
 
-class _FixTransactionElementState extends State<FixTransactionElement> {
+class FixTransactionElementState extends State<FixTransactionElement> {
   Topic? _topic;
   List<FixTransaction> _fixTransactions = [];
   bool _isLoading = true;
@@ -22,11 +22,11 @@ class _FixTransactionElementState extends State<FixTransactionElement> {
     final topic = ModalRoute.of(context)!.settings.arguments as Topic;
     if (_topic != topic) {
       _topic = topic;
-      _loadFixTransactions();
+      loadFixTransactions();
     }
   }
 
-  Future<void> _loadFixTransactions() async {
+  Future<void> loadFixTransactions() async {
     if (_topic == null) return;
     setState(() => _isLoading = true);
     final fixTransactionProvider = context.read<FixTransactionProvider>();
@@ -63,7 +63,16 @@ class FixTransactionSubElement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      child: Text(fixTransaction.value.toString()),
+      child: Column(
+        children: [
+          Text(fixTransaction.value.toString(), style: TextStyle(color: Color.fromRGBO(255, 0, 0, 1.0)),),
+          if (fixTransaction.description != null)
+            Text(fixTransaction.description!),
+          Text(fixTransaction.start.toString()),
+          Text(fixTransaction.end.toString()),
+          Text("${fixTransaction.intervalCount.toString()} ${fixTransaction.intervalUnit}"),
+        ],
+      )
     );
   }
 }

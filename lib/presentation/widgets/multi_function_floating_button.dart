@@ -10,7 +10,15 @@ import 'package:organizer/presentation/widgets/dialogs/add_var_transaction_dialo
 class MultiFunctionFloatingButton extends StatelessWidget {
   final Category? category;
   final Topic? topic;
-  const MultiFunctionFloatingButton({super.key, this.category, this.topic});
+  final VoidCallback? addedFixTransaction;
+  final VoidCallback? addedVarTransaction;
+  const MultiFunctionFloatingButton({
+    super.key,
+    this.category,
+    this.topic,
+    this.addedFixTransaction,
+    this.addedVarTransaction,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,22 +32,53 @@ class MultiFunctionFloatingButton extends StatelessWidget {
         SpeedDialChild(
           child: Icon(Icons.description),
           label: 'Add Category',
-          onTap: () => showDialog(context: context, builder: (context) => AddCategoryDialog()),
+          onTap: () => showDialog(
+            context: context,
+            builder: (context) => AddCategoryDialog(),
+          ),
         ),
         SpeedDialChild(
           child: Icon(Icons.table_chart),
           label: 'Add Topic',
-          onTap: () => showDialog(context: context, builder: (context) => AddTopicDialog(category: category ?? topic?.category,)),
+          onTap: () => showDialog(
+            context: context,
+            builder: (context) =>
+                AddTopicDialog(category: category ?? topic?.category),
+          ),
         ),
         SpeedDialChild(
           child: Icon(Icons.slideshow),
           label: 'Add Fix Transaction',
-          onTap: () => showDialog(context: context, builder: (context) => AddFixTransactionDialog(category: category ?? topic?.category, topic: topic,)),
+          onTap: () async {
+            final updated = await showDialog(
+              context: context,
+              builder: (context) => AddFixTransactionDialog(
+                category: category ?? topic?.category,
+                topic: topic,
+              ),
+            );
+
+            if (updated == true) {
+              addedFixTransaction?.call();
+            }
+          },
         ),
         SpeedDialChild(
           child: Icon(Icons.slideshow),
           label: 'Add Var Transaction',
-          onTap: () => showDialog(context: context, builder: (context) => AddVarTransactionDialog(category: category ?? topic?.category, topic: topic,)),
+          onTap: () async {
+            final updated = await showDialog<bool>(
+              context: context,
+              builder: (context) => AddVarTransactionDialog(
+                category: category ?? topic?.category,
+                topic: topic,
+              ),
+            );
+
+            if (updated == true) {
+              addedVarTransaction?.call();
+            }
+          },
         ),
       ],
     );

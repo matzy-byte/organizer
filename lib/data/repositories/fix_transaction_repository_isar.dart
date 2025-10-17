@@ -1,6 +1,7 @@
 import 'package:isar/isar.dart';
 import 'package:organizer/core/models/compensation.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
+import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
@@ -17,7 +18,8 @@ class FixTransactionRepositoryIsar implements FixTransactionRepository {
     Polarity type,
     DateTime start,
     DateTime end,
-    int interval,
+    int intervalCount,
+    IntervalUnit intervalUnit,
     int value,
     Compensation compensation,
     String? description,
@@ -28,7 +30,8 @@ class FixTransactionRepositoryIsar implements FixTransactionRepository {
       ..type = type
       ..start = start
       ..end = end
-      ..interval = interval
+      ..intervalCount = intervalCount
+      ..intervalUnit = intervalUnit
       ..value = value
       ..compensation = compensation
       ..description = description;
@@ -56,7 +59,8 @@ class FixTransactionRepositoryIsar implements FixTransactionRepository {
             type: t.type,
             start: t.start,
             end: t.end,
-            interval: t.interval,
+            intervalCount: t.intervalCount,
+            intervalUnit: t.intervalUnit,
             value: t.value,
             compensation: t.compensation,
             description: t.description,

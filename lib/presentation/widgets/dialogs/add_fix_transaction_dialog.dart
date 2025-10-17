@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation.dart';
+import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
@@ -23,7 +24,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
 
-  final _intervalController = TextEditingController();
+  final _intervalCountController = TextEditingController();
   final _valueController = TextEditingController();
   final _descriptionController = TextEditingController();
 
@@ -37,6 +38,8 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
   DateTime? _startDate;
   DateTime? _endDate;
 
+  IntervalUnit? _selectedIntervalUnit = IntervalUnit.month;
+
   @override
   void initState() {
     super.initState();
@@ -46,20 +49,30 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
     _categories = categoryProvider.categories;
 
     if (widget.topic != null) {
-      _selectedCategory = _categories.firstWhere((c) => c.id == widget.topic!.category.id);
-      _topics = topicProvider.topics.where((t) => t.category.id == _selectedCategory!.id).toList();
+      _selectedCategory = _categories.firstWhere(
+        (c) => c.id == widget.topic!.category.id,
+      );
+      _topics = topicProvider.topics
+          .where((t) => t.category.id == _selectedCategory!.id)
+          .toList();
       _selectedTopic = _topics.firstWhere((t) => t.id == widget.topic!.id);
     } else if (widget.category != null) {
-      _selectedCategory = _categories.firstWhere((c) => c.id == widget.category!.id);
+      _selectedCategory = _categories.firstWhere(
+        (c) => c.id == widget.category!.id,
+      );
     }
 
     _startDate = DateTime.now();
     _endDate = DateTime.now();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _validateForm();
+    });
   }
 
   @override
   void dispose() {
-    _intervalController.dispose();
+    _intervalCountController.dispose();
     _valueController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -107,6 +120,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final topicProvider = context.read<TopicProvider>();
     final fixTransactionProvider = context.read<FixTransactionProvider>();
 
     return AlertDialog(
@@ -128,12 +142,18 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                                 DropdownMenuItem(value: c, child: Text(c.name)),
                           )
                           .toList(),
-                      onChanged: (value) {
+                      onChanged: (value) async {
+                        final topics = await topicProvider.loadTopicsByCategory(
+                          value!,
+                        );
                         setState(() {
                           _selectedCategory = value;
+                          _topics = topics;
                           _selectedTopic = null;
                         });
-                        _validateForm();
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          _validateForm();
+                        });
                       },
                       validator: (value) =>
                           value == null ? 'Please select a category' : null,
@@ -235,21 +255,40 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
                     const SizedBox(height: 12),
 
-                    TextFormField(
-                      controller: _intervalController,
-                      decoration: const InputDecoration(labelText: 'Interval'),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) => _validateForm(),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter interval';
-                        }
-                        final n = int.tryParse(value);
-                        if (n == null || n <= 0) {
-                          return 'Enter valid positive number';
-                        }
-                        return null;
-                      },
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          controller: _intervalCountController,
+                          decoration: const InputDecoration(
+                            labelText: 'Interval Count',
+                          ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) => _validateForm(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter interval';
+                            }
+                            final n = int.tryParse(value);
+                            if (n == null || n <= 0) {
+                              return 'Enter valid positive number';
+                            }
+                            return null;
+                          },
+                        ),
+                        DropdownButtonFormField<IntervalUnit>(
+                          initialValue: _selectedIntervalUnit,
+                          decoration: const InputDecoration(labelText: 'Interval Unit'),
+                          items: IntervalUnit.values.map(
+                            (i) =>
+                                DropdownMenuItem(value: i, child: Text(i.name)),
+                          ).toList(),
+                          onChanged: (value) {
+                            setState(() => _selectedIntervalUnit = value);
+                            _validateForm();
+                          },
+                        ),
+                      ],
                     ),
 
                     const SizedBox(height: 12),
@@ -291,22 +330,23 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
         ),
         ElevatedButton(
           onPressed: _isFormValid
-              ? () {
-                final interval = int.parse(_intervalController.text);
-                final value = int.parse(_valueController.text);
-                fixTransactionProvider.addFixTransaction(
-                  _selectedTopic!,
-                  _status,
-                  _type,
-                  _startDate!,
-                  _endDate!,
-                  interval,
-                  value,
-                  Compensation.none,
-                  _descriptionController.value.text,
-                );
-                Navigator.pop(context);
-              }
+              ? () async {
+                  final intervalCount = int.parse(_intervalCountController.text);
+                  final value = int.parse(_valueController.text);
+                  await fixTransactionProvider.addFixTransaction(
+                    _selectedTopic!,
+                    _status,
+                    _type,
+                    _startDate!,
+                    _endDate!,
+                    intervalCount,
+                    _selectedIntervalUnit!,
+                    value,
+                    Compensation.none,
+                    _descriptionController.value.text,
+                  );
+                  Navigator.pop(context, true);
+                }
               : null,
           child: const Text('Add'),
         ),

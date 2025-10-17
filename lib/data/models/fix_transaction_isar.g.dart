@@ -34,30 +34,36 @@ const FixTransactionIsarSchema = CollectionSchema(
       name: r'end',
       type: IsarType.dateTime,
     ),
-    r'interval': PropertySchema(
+    r'intervalCount': PropertySchema(
       id: 3,
-      name: r'interval',
+      name: r'intervalCount',
       type: IsarType.long,
     ),
-    r'start': PropertySchema(
+    r'intervalUnit': PropertySchema(
       id: 4,
+      name: r'intervalUnit',
+      type: IsarType.byte,
+      enumMap: _FixTransactionIsarintervalUnitEnumValueMap,
+    ),
+    r'start': PropertySchema(
+      id: 5,
       name: r'start',
       type: IsarType.dateTime,
     ),
     r'status': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'status',
       type: IsarType.byte,
       enumMap: _FixTransactionIsarstatusEnumValueMap,
     ),
     r'type': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'type',
       type: IsarType.byte,
       enumMap: _FixTransactionIsartypeEnumValueMap,
     ),
     r'value': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'value',
       type: IsarType.long,
     )
@@ -107,11 +113,12 @@ void _fixTransactionIsarSerialize(
   writer.writeByte(offsets[0], object.compensation.index);
   writer.writeString(offsets[1], object.description);
   writer.writeDateTime(offsets[2], object.end);
-  writer.writeLong(offsets[3], object.interval);
-  writer.writeDateTime(offsets[4], object.start);
-  writer.writeByte(offsets[5], object.status.index);
-  writer.writeByte(offsets[6], object.type.index);
-  writer.writeLong(offsets[7], object.value);
+  writer.writeLong(offsets[3], object.intervalCount);
+  writer.writeByte(offsets[4], object.intervalUnit.index);
+  writer.writeDateTime(offsets[5], object.start);
+  writer.writeByte(offsets[6], object.status.index);
+  writer.writeByte(offsets[7], object.type.index);
+  writer.writeLong(offsets[8], object.value);
 }
 
 FixTransactionIsar _fixTransactionIsarDeserialize(
@@ -127,15 +134,18 @@ FixTransactionIsar _fixTransactionIsarDeserialize(
   object.description = reader.readStringOrNull(offsets[1]);
   object.end = reader.readDateTime(offsets[2]);
   object.id = id;
-  object.interval = reader.readLong(offsets[3]);
-  object.start = reader.readDateTime(offsets[4]);
+  object.intervalCount = reader.readLong(offsets[3]);
+  object.intervalUnit = _FixTransactionIsarintervalUnitValueEnumMap[
+          reader.readByteOrNull(offsets[4])] ??
+      IntervalUnit.day;
+  object.start = reader.readDateTime(offsets[5]);
   object.status = _FixTransactionIsarstatusValueEnumMap[
-          reader.readByteOrNull(offsets[5])] ??
+          reader.readByteOrNull(offsets[6])] ??
       Status.active;
   object.type =
-      _FixTransactionIsartypeValueEnumMap[reader.readByteOrNull(offsets[6])] ??
+      _FixTransactionIsartypeValueEnumMap[reader.readByteOrNull(offsets[7])] ??
           Polarity.negative;
-  object.value = reader.readLong(offsets[7]);
+  object.value = reader.readLong(offsets[8]);
   return object;
 }
 
@@ -157,16 +167,20 @@ P _fixTransactionIsarDeserializeProp<P>(
     case 3:
       return (reader.readLong(offset)) as P;
     case 4:
-      return (reader.readDateTime(offset)) as P;
+      return (_FixTransactionIsarintervalUnitValueEnumMap[
+              reader.readByteOrNull(offset)] ??
+          IntervalUnit.day) as P;
     case 5:
+      return (reader.readDateTime(offset)) as P;
+    case 6:
       return (_FixTransactionIsarstatusValueEnumMap[
               reader.readByteOrNull(offset)] ??
           Status.active) as P;
-    case 6:
+    case 7:
       return (_FixTransactionIsartypeValueEnumMap[
               reader.readByteOrNull(offset)] ??
           Polarity.negative) as P;
-    case 7:
+    case 8:
       return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -184,6 +198,20 @@ const _FixTransactionIsarcompensationValueEnumMap = {
   1: Compensation.living,
   2: Compensation.groceries,
   3: Compensation.transportation,
+};
+const _FixTransactionIsarintervalUnitEnumValueMap = {
+  'day': 0,
+  'week': 1,
+  'month': 2,
+  'year': 3,
+  'decade': 4,
+};
+const _FixTransactionIsarintervalUnitValueEnumMap = {
+  0: IntervalUnit.day,
+  1: IntervalUnit.week,
+  2: IntervalUnit.month,
+  3: IntervalUnit.year,
+  4: IntervalUnit.decade,
 };
 const _FixTransactionIsarstatusEnumValueMap = {
   'active': 0,
@@ -622,45 +650,45 @@ extension FixTransactionIsarQueryFilter
   }
 
   QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterFilterCondition>
-      intervalEqualTo(int value) {
+      intervalCountEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'interval',
+        property: r'intervalCount',
         value: value,
       ));
     });
   }
 
   QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterFilterCondition>
-      intervalGreaterThan(
+      intervalCountGreaterThan(
     int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'interval',
+        property: r'intervalCount',
         value: value,
       ));
     });
   }
 
   QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterFilterCondition>
-      intervalLessThan(
+      intervalCountLessThan(
     int value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'interval',
+        property: r'intervalCount',
         value: value,
       ));
     });
   }
 
   QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterFilterCondition>
-      intervalBetween(
+      intervalCountBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -668,7 +696,63 @@ extension FixTransactionIsarQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'interval',
+        property: r'intervalCount',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterFilterCondition>
+      intervalUnitEqualTo(IntervalUnit value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'intervalUnit',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterFilterCondition>
+      intervalUnitGreaterThan(
+    IntervalUnit value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'intervalUnit',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterFilterCondition>
+      intervalUnitLessThan(
+    IntervalUnit value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'intervalUnit',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterFilterCondition>
+      intervalUnitBetween(
+    IntervalUnit lower,
+    IntervalUnit upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'intervalUnit',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -967,16 +1051,30 @@ extension FixTransactionIsarQuerySortBy
   }
 
   QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterSortBy>
-      sortByInterval() {
+      sortByIntervalCount() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'interval', Sort.asc);
+      return query.addSortBy(r'intervalCount', Sort.asc);
     });
   }
 
   QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterSortBy>
-      sortByIntervalDesc() {
+      sortByIntervalCountDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'interval', Sort.desc);
+      return query.addSortBy(r'intervalCount', Sort.desc);
+    });
+  }
+
+  QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterSortBy>
+      sortByIntervalUnit() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'intervalUnit', Sort.asc);
+    });
+  }
+
+  QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterSortBy>
+      sortByIntervalUnitDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'intervalUnit', Sort.desc);
     });
   }
 
@@ -1096,16 +1194,30 @@ extension FixTransactionIsarQuerySortThenBy
   }
 
   QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterSortBy>
-      thenByInterval() {
+      thenByIntervalCount() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'interval', Sort.asc);
+      return query.addSortBy(r'intervalCount', Sort.asc);
     });
   }
 
   QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterSortBy>
-      thenByIntervalDesc() {
+      thenByIntervalCountDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'interval', Sort.desc);
+      return query.addSortBy(r'intervalCount', Sort.desc);
+    });
+  }
+
+  QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterSortBy>
+      thenByIntervalUnit() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'intervalUnit', Sort.asc);
+    });
+  }
+
+  QueryBuilder<FixTransactionIsar, FixTransactionIsar, QAfterSortBy>
+      thenByIntervalUnitDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'intervalUnit', Sort.desc);
     });
   }
 
@@ -1190,9 +1302,16 @@ extension FixTransactionIsarQueryWhereDistinct
   }
 
   QueryBuilder<FixTransactionIsar, FixTransactionIsar, QDistinct>
-      distinctByInterval() {
+      distinctByIntervalCount() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'interval');
+      return query.addDistinctBy(r'intervalCount');
+    });
+  }
+
+  QueryBuilder<FixTransactionIsar, FixTransactionIsar, QDistinct>
+      distinctByIntervalUnit() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'intervalUnit');
     });
   }
 
@@ -1253,9 +1372,17 @@ extension FixTransactionIsarQueryProperty
     });
   }
 
-  QueryBuilder<FixTransactionIsar, int, QQueryOperations> intervalProperty() {
+  QueryBuilder<FixTransactionIsar, int, QQueryOperations>
+      intervalCountProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'interval');
+      return query.addPropertyName(r'intervalCount');
+    });
+  }
+
+  QueryBuilder<FixTransactionIsar, IntervalUnit, QQueryOperations>
+      intervalUnitProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'intervalUnit');
     });
   }
 

@@ -1,5 +1,6 @@
 import 'package:organizer/core/models/compensation.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
+import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
@@ -21,7 +22,8 @@ class FixTransactionService {
     Polarity type,
     DateTime start,
     DateTime end,
-    int interval,
+    int intervalCount,
+    IntervalUnit intervalUnit,
     int value,
     Compensation compensation,
     String? description,
@@ -31,7 +33,8 @@ class FixTransactionService {
     type,
     start,
     end,
-    interval,
+    intervalCount,
+    intervalUnit,
     value,
     compensation,
     description,

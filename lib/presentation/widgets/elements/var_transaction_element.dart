@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
@@ -8,10 +9,10 @@ class VarTransactionElement extends StatefulWidget {
   const VarTransactionElement({super.key});
 
   @override
-  State<VarTransactionElement> createState() => _VarTransactionElementState();
+  State<VarTransactionElement> createState() => VarTransactionElementState();
 }
 
-class _VarTransactionElementState extends State<VarTransactionElement> {
+class VarTransactionElementState extends State<VarTransactionElement> {
   Topic? _topic;
   List<VarTransaction> _varTransactions = [];
   bool _isLoading = true;
@@ -22,11 +23,11 @@ class _VarTransactionElementState extends State<VarTransactionElement> {
     final topic = ModalRoute.of(context)!.settings.arguments as Topic;
     if (_topic != topic) {
       _topic = topic;
-      _loadVarTransactions();
+      loadVarTransactions();
     }
   }
 
-  Future<void> _loadVarTransactions() async {
+  Future<void> loadVarTransactions() async {
     if (_topic == null) return;
     setState(() => _isLoading = true);
     final varTransactionProvider = context.read<VarTransactionProvider>();
@@ -45,25 +46,79 @@ class _VarTransactionElementState extends State<VarTransactionElement> {
           ? const Center(child: CircularProgressIndicator())
           : _varTransactions.isEmpty
           ? Text('There is no var transactions')
-          : Column(
-              children: [
-                ..._varTransactions.map(
-                  (f) => VarTransactionSubElement(varTransaction: f),
-                ),
-              ],
-            ),
+          : VarTransactionTable(varTransactions: _varTransactions),
     );
   }
 }
 
-class VarTransactionSubElement extends StatelessWidget {
-  final VarTransaction varTransaction;
-  const VarTransactionSubElement({super.key, required this.varTransaction});
+class VarTransactionTable extends StatelessWidget {
+  final List<VarTransaction> varTransactions;
+
+  const VarTransactionTable({super.key, required this.varTransactions});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Text(varTransaction.value.toString()),
-    );
+    context.watch<VarTransactionProvider>();
+
+    return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.vertical,
+          child: Table(
+            border: TableBorder.all(color: Colors.grey.shade300),
+            columnWidths: const {
+              0: FlexColumnWidth(1),
+              1: FlexColumnWidth(2),
+              2: FlexColumnWidth(1),
+            },
+            children: [
+              const TableRow(
+                decoration: BoxDecoration(color: Color(0xFFEFEFEF)),
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Value',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Description',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: Text(
+                      'Date',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+              ...varTransactions.map(
+                (t) => TableRow(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(t.value.toString()),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(t.description ?? '-'),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(DateFormat.yMd().format(t.date)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
   }
 }

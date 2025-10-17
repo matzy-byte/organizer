@@ -12,6 +12,10 @@ class TopicScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final topic = ModalRoute.of(context)!.settings.arguments as Topic;
+    final GlobalKey<FixTransactionElementState> fixTransactionElementKey =
+        GlobalKey();
+    final GlobalKey<VarTransactionElementState> varTransactionElementKey =
+        GlobalKey();
 
     return Scaffold(
       drawer: Drawer(child: DrawerContent()),
@@ -22,13 +26,19 @@ class TopicScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Header(title: topic.name),
-              FixTransactionElement(),
-              VarTransactionElement()
+              FixTransactionElement(key: fixTransactionElementKey),
+              VarTransactionElement(key: varTransactionElementKey),
             ],
           ),
         ),
       ),
-      floatingActionButton: MultiFunctionFloatingButton(topic: topic,),
+      floatingActionButton: MultiFunctionFloatingButton(
+        topic: topic,
+        addedFixTransaction: () =>
+            fixTransactionElementKey.currentState?.loadFixTransactions(),
+        addedVarTransaction: () =>
+            varTransactionElementKey.currentState?.loadVarTransactions(),
+      ),
     );
   }
 }
