@@ -9,8 +9,9 @@ import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddVarTransactionDialog extends StatefulWidget {
+  final Category? category;
   final Topic? topic;
-  const AddVarTransactionDialog({super.key, this.topic});
+  const AddVarTransactionDialog({super.key, this.category, this.topic});
 
   @override
   State<AddVarTransactionDialog> createState() =>
@@ -25,7 +26,9 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
   final _descriptionController = TextEditingController();
 
   Category? _selectedCategory;
+  List<Category> _categories = [];
   Topic? _selectedTopic;
+  List<Topic> _topics = [];
   Polarity _type = Polarity.negative;
 
   DateTime? _date;
@@ -33,10 +36,19 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
   @override
   void initState() {
     super.initState();
+
+    final categoryProvider = context.read<CategoryProvider>();
+    final topicProvider = context.read<TopicProvider>();
+    _categories = categoryProvider.categories;
+
     if (widget.topic != null) {
-      _selectedCategory = widget.topic!.category;
-      _selectedTopic = widget.topic;
+      _selectedCategory = _categories.firstWhere((c) => c.id == widget.topic!.category.id);
+      _topics = topicProvider.topics.where((t) => t.category.id == _selectedCategory!.id).toList();
+      _selectedTopic = _topics.firstWhere((t) => t.id == widget.topic!.id);
+    } else if (widget.category != null) {
+      _selectedCategory = _categories.firstWhere((c) => c.id == widget.category!.id);
     }
+
     _date = DateTime.now();
   }
 
@@ -77,20 +89,11 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryProvider = context.read<CategoryProvider>();
-    final topicProvider = context.read<TopicProvider>();
     final varTransactionProvider = context.read<VarTransactionProvider>();
 
-    final categories = categoryProvider.categories;
-    final topics = _selectedCategory == null
-        ? <Topic>[]
-        : topicProvider.topics
-              .where((t) => t.category.id == _selectedCategory!.id)
-              .toList();
-
     return AlertDialog(
-      title: const Text('Add Fix Transaction'),
-      content: categories.isEmpty
+      title: const Text('Add Var Transaction'),
+      content: _categories.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Form(
@@ -101,7 +104,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                     DropdownButtonFormField<Category>(
                       initialValue: _selectedCategory,
                       decoration: const InputDecoration(labelText: 'Category'),
-                      items: categories
+                      items: _categories
                           .map(
                             (c) =>
                                 DropdownMenuItem(value: c, child: Text(c.name)),
@@ -121,7 +124,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                       DropdownButtonFormField<Topic>(
                         initialValue: _selectedTopic,
                         decoration: const InputDecoration(labelText: 'Topic'),
-                        items: topics
+                        items: _topics
                             .map(
                               (t) => DropdownMenuItem(
                                 value: t,

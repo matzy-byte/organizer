@@ -28,7 +28,7 @@ class CategoryTile extends StatelessWidget {
               ],
             ),
           );
-          if (confirm == true) await provider.removeCategory(category.id);
+          if (confirm == true) await provider.removeCategory(category);
         },
       ),
     );

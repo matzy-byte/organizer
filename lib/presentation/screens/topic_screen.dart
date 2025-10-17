@@ -28,7 +28,7 @@ class TopicScreen extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: MultiFunctionFloatingButton(),
+      floatingActionButton: MultiFunctionFloatingButton(topic: topic,),
     );
   }
 }

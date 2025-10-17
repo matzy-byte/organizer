@@ -6,11 +6,11 @@ import 'package:organizer/core/repositories/category_repository.dart';
 
 class CategoryRepositoryIsar implements CategoryRepository {
   @override
-  Future<void> addCategory(Category category) async {
+  Future<void> addCategory(String name, String? description) async {
     final isar = await IsarProvider.instance;
     final cat = CategoryIsar()
-      ..name = category.name
-      ..description = category.description;
+      ..name = name
+      ..description = description;
     await isar.writeTxn(() async => await isar.categoryIsars.put(cat));
   }
 
@@ -26,10 +26,10 @@ class CategoryRepositoryIsar implements CategoryRepository {
   }
 
   @override
-  Future<void> removeCategory(int id) async {
+  Future<void> removeCategory(Category category) async {
     final isar = await IsarProvider.instance;
     await isar.writeTxn(() async {
-      await isar.categoryIsars.delete(id);
+      await isar.categoryIsars.delete(category.id);
     });
   }
 }

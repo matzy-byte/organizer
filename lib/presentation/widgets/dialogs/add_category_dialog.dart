@@ -10,7 +10,8 @@ class AddCategoryDialog extends StatefulWidget {
 }
 
 class _AddCategoryDialogState extends State<AddCategoryDialog> {
-  final _controller = TextEditingController();
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -18,9 +19,18 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
     return AlertDialog(
       title: const Text('Add Category'),
-      content: TextField(
-        controller: _controller,
-        decoration: const InputDecoration(hintText: 'Category name'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: _nameController,
+            decoration: const InputDecoration(hintText: 'Category name'),
+          ),
+          TextField(
+            controller: _descriptionController,
+            decoration: const InputDecoration(hintText: 'Category decription'),
+          ),
+        ],
       ),
       actions: [
         TextButton(
@@ -29,9 +39,10 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
         ),
         ElevatedButton(
           onPressed: () async {
-            final name = _controller.text.trim();
+            final name = _nameController.text.trim();
+            final description = _descriptionController.text.trim();
             if (name.isNotEmpty) {
-              categoryProvider.addCategory(name);
+              categoryProvider.addCategory(name, description);
               Navigator.pop(context);
             }
           },
@@ -43,7 +54,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _nameController.dispose();
     super.dispose();
   }
 }

@@ -41,7 +41,7 @@ class CategoryScreen extends StatelessWidget {
                 ],
               ),
       ),
-      floatingActionButton: MultiFunctionFloatingButton(),
+      floatingActionButton: MultiFunctionFloatingButton(category: category,),
     );
   }
 }

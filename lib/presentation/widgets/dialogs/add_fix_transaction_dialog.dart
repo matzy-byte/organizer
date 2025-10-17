@@ -10,8 +10,9 @@ import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:provider/provider.dart';
 
 class AddFixTransactionDialog extends StatefulWidget {
+  final Category? category;
   final Topic? topic;
-  const AddFixTransactionDialog({super.key, this.topic});
+  const AddFixTransactionDialog({super.key, this.category, this.topic});
 
   @override
   State<AddFixTransactionDialog> createState() =>
@@ -27,7 +28,9 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
   final _descriptionController = TextEditingController();
 
   Category? _selectedCategory;
+  List<Category> _categories = [];
   Topic? _selectedTopic;
+  List<Topic> _topics = [];
   Status _status = Status.active;
   Polarity _type = Polarity.negative;
 
@@ -37,10 +40,19 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
   @override
   void initState() {
     super.initState();
+
+    final categoryProvider = context.read<CategoryProvider>();
+    final topicProvider = context.read<TopicProvider>();
+    _categories = categoryProvider.categories;
+
     if (widget.topic != null) {
-      _selectedCategory = widget.topic!.category;
-      _selectedTopic = widget.topic;
+      _selectedCategory = _categories.firstWhere((c) => c.id == widget.topic!.category.id);
+      _topics = topicProvider.topics.where((t) => t.category.id == _selectedCategory!.id).toList();
+      _selectedTopic = _topics.firstWhere((t) => t.id == widget.topic!.id);
+    } else if (widget.category != null) {
+      _selectedCategory = _categories.firstWhere((c) => c.id == widget.category!.id);
     }
+
     _startDate = DateTime.now();
     _endDate = DateTime.now();
   }
@@ -95,20 +107,11 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final categoryProvider = context.watch<CategoryProvider>();
-    final topicProvider = context.watch<TopicProvider>();
     final fixTransactionProvider = context.read<FixTransactionProvider>();
-
-    final categories = categoryProvider.categories;
-    final topics = _selectedCategory == null
-        ? <Topic>[]
-        : topicProvider.topics
-              .where((t) => t.category.id == _selectedCategory!.id)
-              .toList();
 
     return AlertDialog(
       title: const Text('Add Fix Transaction'),
-      content: categories.isEmpty
+      content: _categories.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Form(
@@ -119,7 +122,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                     DropdownButtonFormField<Category>(
                       initialValue: _selectedCategory,
                       decoration: const InputDecoration(labelText: 'Category'),
-                      items: categories
+                      items: _categories
                           .map(
                             (c) =>
                                 DropdownMenuItem(value: c, child: Text(c.name)),
@@ -139,7 +142,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                       DropdownButtonFormField<Topic>(
                         initialValue: _selectedTopic,
                         decoration: const InputDecoration(labelText: 'Topic'),
-                        items: topics
+                        items: _topics
                             .map(
                               (t) => DropdownMenuItem(
                                 value: t,
