@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
 import 'package:organizer/app/routes.dart';
 import 'package:organizer/app/theme.dart';
 import 'package:organizer/core/services/category_service.dart';
 import 'package:organizer/core/services/fix_transaction_service.dart';
 import 'package:organizer/core/services/topic_service.dart';
 import 'package:organizer/core/services/var_transaction_service.dart';
+import 'package:organizer/data/isar_provider.dart';
 import 'package:organizer/data/repositories/category_repository_isar.dart';
 import 'package:organizer/data/repositories/fix_transaction_repository_isar.dart';
 import 'package:organizer/data/repositories/topic_repository_isar.dart';
@@ -15,7 +17,7 @@ import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:provider/provider.dart';
 
-void runMobile() {
+Future<void> runMobile() async {
   final categoryService = CategoryService(CategoryRepositoryIsar());
   final topicService = TopicService(TopicRepositoryIsar());
   final fixTransactionService = FixTransactionService(
@@ -23,9 +25,12 @@ void runMobile() {
   );
   final varTransactionService = VarTransactionService(VarTransactionRepositoryIsar());
 
+  final isar = await IsarProvider.instance; 
+
   runApp(
     MultiProvider(
       providers: [
+        Provider<Isar>.value(value: isar),
         ChangeNotifierProvider(
           create: (_) =>
               CategoryProvider(categoryService: categoryService)..loadCategories(),

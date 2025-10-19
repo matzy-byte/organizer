@@ -23,6 +23,10 @@ class IsarProvider {
     return _isar!;
   }
 
+  static Future<void> loadIsar() async {
+    await instance;
+  }
+
   static Future<void> close() async {
     await _isar?.close();
     _isar = null;

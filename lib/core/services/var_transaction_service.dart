@@ -1,4 +1,5 @@
-import 'package:organizer/core/models/compensation.dart';
+import 'package:organizer/core/models/compensation_info.dart';
+import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/var_transaction.dart';
@@ -14,20 +15,22 @@ class VarTransactionService {
     return transactions;
   }
 
-  Future<void> addVarTransaction(
+  Future<int> addVarTransaction(
     Topic topic,
     Polarity type,
     DateTime date,
     int value,
-    Compensation compensation,
+    Map<int, CompensationInfo>? compensations,
     String? description,
+    FixTransaction? fixReference,
   ) => repository.addVarTransaction(
     topic,
     type,
     date,
     value,
-    compensation,
+    compensations,
     description,
+    fixReference
   );
   Future<void> removeVarTransaction(VarTransaction varTransaction) =>
       repository.removeVarTransaction(varTransaction);

@@ -18,11 +18,10 @@ const VarTransactionIsarSchema = CollectionSchema(
   name: r'VarTransactionIsar',
   id: -5677839320296670666,
   properties: {
-    r'compensation': PropertySchema(
+    r'compensations': PropertySchema(
       id: 0,
-      name: r'compensation',
-      type: IsarType.byte,
-      enumMap: _VarTransactionIsarcompensationEnumValueMap,
+      name: r'compensations',
+      type: IsarType.string,
     ),
     r'date': PropertySchema(
       id: 1,
@@ -58,6 +57,12 @@ const VarTransactionIsarSchema = CollectionSchema(
       name: r'topic',
       target: r'TopicIsar',
       single: true,
+    ),
+    r'fixReference': LinkSchema(
+      id: 2276115580417625812,
+      name: r'fixReference',
+      target: r'FixTransactionIsar',
+      single: true,
     )
   },
   embeddedSchemas: {},
@@ -74,6 +79,12 @@ int _varTransactionIsarEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
+    final value = object.compensations;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
+  {
     final value = object.description;
     if (value != null) {
       bytesCount += 3 + value.length * 3;
@@ -88,7 +99,7 @@ void _varTransactionIsarSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeByte(offsets[0], object.compensation.index);
+  writer.writeString(offsets[0], object.compensations);
   writer.writeDateTime(offsets[1], object.date);
   writer.writeString(offsets[2], object.description);
   writer.writeByte(offsets[3], object.type.index);
@@ -102,9 +113,7 @@ VarTransactionIsar _varTransactionIsarDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = VarTransactionIsar();
-  object.compensation = _VarTransactionIsarcompensationValueEnumMap[
-          reader.readByteOrNull(offsets[0])] ??
-      Compensation.none;
+  object.compensations = reader.readStringOrNull(offsets[0]);
   object.date = reader.readDateTime(offsets[1]);
   object.description = reader.readStringOrNull(offsets[2]);
   object.id = id;
@@ -123,9 +132,7 @@ P _varTransactionIsarDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (_VarTransactionIsarcompensationValueEnumMap[
-              reader.readByteOrNull(offset)] ??
-          Compensation.none) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 1:
       return (reader.readDateTime(offset)) as P;
     case 2:
@@ -141,18 +148,6 @@ P _varTransactionIsarDeserializeProp<P>(
   }
 }
 
-const _VarTransactionIsarcompensationEnumValueMap = {
-  'none': 0,
-  'living': 1,
-  'groceries': 2,
-  'transportation': 3,
-};
-const _VarTransactionIsarcompensationValueEnumMap = {
-  0: Compensation.none,
-  1: Compensation.living,
-  2: Compensation.groceries,
-  3: Compensation.transportation,
-};
 const _VarTransactionIsartypeEnumValueMap = {
   'negative': 0,
   'positive': 1,
@@ -168,13 +163,15 @@ Id _varTransactionIsarGetId(VarTransactionIsar object) {
 
 List<IsarLinkBase<dynamic>> _varTransactionIsarGetLinks(
     VarTransactionIsar object) {
-  return [object.topic];
+  return [object.topic, object.fixReference];
 }
 
 void _varTransactionIsarAttach(
     IsarCollection<dynamic> col, Id id, VarTransactionIsar object) {
   object.id = id;
   object.topic.attach(col, col.isar.collection<TopicIsar>(), r'topic', id);
+  object.fixReference.attach(
+      col, col.isar.collection<FixTransactionIsar>(), r'fixReference', id);
 }
 
 extension VarTransactionIsarQueryWhereSort
@@ -260,57 +257,155 @@ extension VarTransactionIsarQueryWhere
 extension VarTransactionIsarQueryFilter
     on QueryBuilder<VarTransactionIsar, VarTransactionIsar, QFilterCondition> {
   QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
-      compensationEqualTo(Compensation value) {
+      compensationsIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'compensation',
-        value: value,
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'compensations',
       ));
     });
   }
 
   QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
-      compensationGreaterThan(
-    Compensation value, {
+      compensationsIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'compensations',
+      ));
+    });
+  }
+
+  QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
+      compensationsEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'compensations',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
+      compensationsGreaterThan(
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'compensation',
+        property: r'compensations',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
-      compensationLessThan(
-    Compensation value, {
+      compensationsLessThan(
+    String? value, {
     bool include = false,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'compensation',
+        property: r'compensations',
         value: value,
+        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
-      compensationBetween(
-    Compensation lower,
-    Compensation upper, {
+      compensationsBetween(
+    String? lower,
+    String? upper, {
     bool includeLower = true,
     bool includeUpper = true,
+    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'compensation',
+        property: r'compensations',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
+      compensationsStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'compensations',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
+      compensationsEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'compensations',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
+      compensationsContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'compensations',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
+      compensationsMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'compensations',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
+      compensationsIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'compensations',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
+      compensationsIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'compensations',
+        value: '',
       ));
     });
   }
@@ -712,21 +807,35 @@ extension VarTransactionIsarQueryLinks
       return query.linkLength(r'topic', 0, true, 0, true);
     });
   }
+
+  QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
+      fixReference(FilterQuery<FixTransactionIsar> q) {
+    return QueryBuilder.apply(this, (query) {
+      return query.link(q, r'fixReference');
+    });
+  }
+
+  QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterFilterCondition>
+      fixReferenceIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.linkLength(r'fixReference', 0, true, 0, true);
+    });
+  }
 }
 
 extension VarTransactionIsarQuerySortBy
     on QueryBuilder<VarTransactionIsar, VarTransactionIsar, QSortBy> {
   QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterSortBy>
-      sortByCompensation() {
+      sortByCompensations() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'compensation', Sort.asc);
+      return query.addSortBy(r'compensations', Sort.asc);
     });
   }
 
   QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterSortBy>
-      sortByCompensationDesc() {
+      sortByCompensationsDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'compensation', Sort.desc);
+      return query.addSortBy(r'compensations', Sort.desc);
     });
   }
 
@@ -790,16 +899,16 @@ extension VarTransactionIsarQuerySortBy
 extension VarTransactionIsarQuerySortThenBy
     on QueryBuilder<VarTransactionIsar, VarTransactionIsar, QSortThenBy> {
   QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterSortBy>
-      thenByCompensation() {
+      thenByCompensations() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'compensation', Sort.asc);
+      return query.addSortBy(r'compensations', Sort.asc);
     });
   }
 
   QueryBuilder<VarTransactionIsar, VarTransactionIsar, QAfterSortBy>
-      thenByCompensationDesc() {
+      thenByCompensationsDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'compensation', Sort.desc);
+      return query.addSortBy(r'compensations', Sort.desc);
     });
   }
 
@@ -877,9 +986,10 @@ extension VarTransactionIsarQuerySortThenBy
 extension VarTransactionIsarQueryWhereDistinct
     on QueryBuilder<VarTransactionIsar, VarTransactionIsar, QDistinct> {
   QueryBuilder<VarTransactionIsar, VarTransactionIsar, QDistinct>
-      distinctByCompensation() {
+      distinctByCompensations({bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'compensation');
+      return query.addDistinctBy(r'compensations',
+          caseSensitive: caseSensitive);
     });
   }
 
@@ -920,10 +1030,10 @@ extension VarTransactionIsarQueryProperty
     });
   }
 
-  QueryBuilder<VarTransactionIsar, Compensation, QQueryOperations>
-      compensationProperty() {
+  QueryBuilder<VarTransactionIsar, String?, QQueryOperations>
+      compensationsProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'compensation');
+      return query.addPropertyName(r'compensations');
     });
   }
 

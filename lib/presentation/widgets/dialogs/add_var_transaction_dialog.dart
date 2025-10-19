@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
-import 'package:organizer/core/models/compensation.dart';
+import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
@@ -32,6 +32,8 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
   Polarity _type = Polarity.negative;
 
   DateTime? _date;
+
+  List<_CompensationEntry> _compensations = [];
 
   @override
   void initState() {
@@ -195,6 +197,90 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                     ),
 
                     const SizedBox(height: 12),
+                    ExpansionTile(
+                      title: const Text('Compensations'),
+                      children: [
+                        ..._compensations.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final comp = entry.value;
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 4,
+                              horizontal: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: DropdownButtonFormField<Topic>(
+                                    initialValue: comp.topic,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Topic',
+                                    ),
+                                    items: _topics
+                                        .map(
+                                          (t) => DropdownMenuItem(
+                                            value: t,
+                                            child: Text(t.name),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (value) {
+                                      setState(() => comp.topic = value);
+                                    },
+                                    validator: (value) =>
+                                        value == null ? 'Select a topic' : null,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  flex: 2,
+                                  child: TextFormField(
+                                    controller: comp.valueController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Value',
+                                    ),
+                                    validator: (v) {
+                                      if (v == null || v.isEmpty) {
+                                        return 'Enter value';
+                                      }
+                                      if (num.tryParse(v) == null) {
+                                        return 'Invalid number';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () {
+                                    setState(() {
+                                      _compensations.removeAt(index);
+                                    });
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _compensations.add(_CompensationEntry());
+                              });
+                            },
+                            icon: const Icon(Icons.add),
+                            label: const Text('Add Compensation'),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
 
                     TextFormField(
                       controller: _valueController,
@@ -234,14 +320,34 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
         ElevatedButton(
           onPressed: _isFormValid
               ? () async {
-                  final value = int.parse(_valueController.text);
+                  final Map<int, CompensationInfo> compensationsMap = {};
+                  for (final c in _compensations) {
+                    final compId = await varTransactionProvider.addVarTransaction(
+                      c.topic!,
+                      _type,
+                      _date!,
+                      int.parse(c.valueController.text),
+                      null,
+                      "Compensation: ${_descriptionController.text}",
+                      null,
+                    );
+
+                    compensationsMap[compId] = CompensationInfo(
+                      topicName: c.topic!.name,
+                      value: int.parse(c.valueController.text),
+                    );
+                  }
+                  
+                  final compensationSum = compensationsMap.values.fold<int>(0, (sum, c) => sum + c.value);
+                  final value = int.parse(_valueController.text) - compensationSum;
                   await varTransactionProvider.addVarTransaction(
                     _selectedTopic!,
                     _type,
                     _date!,
                     value,
-                    Compensation.none,
+                    compensationsMap.isEmpty ? null : compensationsMap,
                     _descriptionController.value.text,
+                    null,
                   );
                   Navigator.pop(context, true);
                 }
@@ -251,4 +357,11 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
       ],
     );
   }
+}
+
+class _CompensationEntry {
+  Topic? topic;
+  TextEditingController valueController = TextEditingController();
+
+  _CompensationEntry();
 }
