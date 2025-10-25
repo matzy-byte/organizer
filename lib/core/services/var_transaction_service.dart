@@ -1,7 +1,4 @@
 import 'package:organizer/core/models/compensation_info.dart';
-import 'package:organizer/core/models/fix_transaction.dart';
-import 'package:organizer/core/models/polarity.dart';
-import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/core/repositories/var_transactions_repository.dart';
 
@@ -10,28 +7,38 @@ class VarTransactionService {
 
   VarTransactionService(this.repository);
 
-  Future<List<VarTransaction>> getAllVarTransactionsByTopic(Topic topic) async {
-    final transactions = await repository.getAllVarTransactionsByTopic(topic);
+  Future<List<VarTransaction>> getAllVarTransactionsByTopicId(
+    int topicId,
+  ) async {
+    final transactions = await repository.getAllVarTransactionsByTopicId(
+      topicId,
+    );
     return transactions;
   }
 
   Future<int> addVarTransaction(
-    Topic topic,
-    Polarity type,
+    int topicId,
     DateTime date,
     int value,
     Map<int, CompensationInfo>? compensations,
     String? description,
-    FixTransaction? fixReference,
+    int? fixRefId,
+    int? varRefId,
   ) => repository.addVarTransaction(
-    topic,
-    type,
+    topicId,
     date,
     value,
     compensations,
     description,
-    fixReference
+    fixRefId,
+    varRefId,
   );
-  Future<void> removeVarTransaction(VarTransaction varTransaction) =>
-      repository.removeVarTransaction(varTransaction);
+  Future<void> removeVarTransaction(int id) =>
+      repository.removeVarTransaction(id);
+
+  Future<void> updateVarTransaction(VarTransaction varTransaction) =>
+      repository.updateVarTransaction(varTransaction);
+
+  Future<void> setVarReference(int id, int refId) =>
+      repository.setVarReference(id, refId);
 }

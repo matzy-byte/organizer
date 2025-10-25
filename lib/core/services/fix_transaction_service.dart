@@ -1,9 +1,7 @@
-import 'package:organizer/core/models/compensation.dart';
+import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/core/models/interval_unit.dart';
-import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/status.dart';
-import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/repositories/fix_transactions_repository.dart';
 
 class FixTransactionService {
@@ -11,34 +9,36 @@ class FixTransactionService {
 
   FixTransactionService(this.repository);
 
-  Future<List<FixTransaction>> getAllFixTransactionsByTopic(Topic topic) async {
-    final transactions = await repository.getAllFixTransactionsByTopic(topic);
+  Future<List<FixTransaction>> getAllFixTransactionsByTopicId(
+    int topicId,
+  ) async {
+    final transactions = await repository.getAllFixTransactionsByTopicId(
+      topicId,
+    );
     return transactions;
   }
 
   Future<void> addFixTransaction(
-    Topic topic,
+    int topicId,
     Status status,
-    Polarity type,
     DateTime start,
     DateTime end,
     int intervalCount,
     IntervalUnit intervalUnit,
     int value,
-    Compensation compensation,
+    Map<int, CompensationInfo>? compensations,
     String? description,
   ) => repository.addFixTransaction(
-    topic,
+    topicId,
     status,
-    type,
     start,
     end,
     intervalCount,
     intervalUnit,
     value,
-    compensation,
+    compensations,
     description,
   );
-  Future<void> removeFixTransaction(FixTransaction fixTransaction) =>
-      repository.removeFixTransaction(fixTransaction);
+  Future<void> removeFixTransaction(int id) =>
+      repository.removeFixTransaction(id);
 }

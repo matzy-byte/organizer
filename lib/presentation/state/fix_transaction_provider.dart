@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:organizer/core/models/compensation.dart';
+import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/core/models/interval_unit.dart';
-import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/status.dart';
-import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/services/fix_transaction_service.dart';
 
 class FixTransactionProvider with ChangeNotifier {
@@ -12,37 +10,35 @@ class FixTransactionProvider with ChangeNotifier {
 
   FixTransactionProvider({required this.fixTransactionService});
 
-  Future<List<FixTransaction>> getAllFixTransactionsByTopic(Topic topic) async {
-    return await fixTransactionService.getAllFixTransactionsByTopic(topic);
+  Future<List<FixTransaction>> getAllFixTransactionsByTopicId(int topicId) async {
+    return await fixTransactionService.getAllFixTransactionsByTopicId(topicId);
   }
 
   Future<void> addFixTransaction(
-    Topic topic,
+    int topicId,
     Status status,
-    Polarity type,
     DateTime start,
     DateTime end,
     int intervalCount,
     IntervalUnit intervalUnit,
     int value,
-    Compensation compensation,
+    Map<int, CompensationInfo>? compensations,
     String? description,
   ) async {
     await fixTransactionService.addFixTransaction(
-      topic,
+      topicId,
       status,
-      type,
       start,
       end,
       intervalCount,
       intervalUnit,
       value,
-      compensation,
+      compensations,
       description,
     );
   }
 
-  Future<void> removeTopic(FixTransaction fixTransaction) async {
-    await fixTransactionService.removeFixTransaction(fixTransaction);
+  Future<void> removeFixTransaction(int id) async {
+    await fixTransactionService.removeFixTransaction(id);
   }
 }

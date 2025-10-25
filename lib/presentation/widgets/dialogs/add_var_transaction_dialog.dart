@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation_info.dart';
-import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
@@ -29,7 +28,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
   List<Category> _categories = [];
   Topic? _selectedTopic;
   List<Topic> _topics = [];
-  Polarity _type = Polarity.negative;
+  bool _isExpense = true;
 
   DateTime? _date;
 
@@ -45,10 +44,10 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
 
     if (widget.topic != null) {
       _selectedCategory = _categories.firstWhere(
-        (c) => c.id == widget.topic!.category.id,
+        (c) => c.id == widget.topic!.categoryId,
       );
       _topics = topicProvider.topics
-          .where((t) => t.category.id == _selectedCategory!.id)
+          .where((t) => t.categoryId == _selectedCategory!.id)
           .toList();
       _selectedTopic = _topics.firstWhere((t) => t.id == widget.topic!.id);
     } else if (widget.category != null) {
@@ -125,7 +124,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                           .toList(),
                       onChanged: (value) async {
                         final topics = await topicProvider.loadTopicsByCategory(
-                          value!,
+                          value!.id,
                         );
                         setState(() {
                           _selectedCategory = value;
@@ -159,21 +158,15 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                             value == null ? 'Please select a topic' : null,
                       ),
                     const SizedBox(height: 12),
-                    SegmentedButton<Polarity>(
+                    SegmentedButton<bool>(
                       segments: const [
-                        ButtonSegment(
-                          value: Polarity.negative,
-                          label: Text('Negative'),
-                        ),
-                        ButtonSegment(
-                          value: Polarity.positive,
-                          label: Text('Positive'),
-                        ),
+                        ButtonSegment(value: true, label: Text('Negative')),
+                        ButtonSegment(value: false, label: Text('Positive')),
                       ],
-                      selected: <Polarity>{_type},
+                      selected: <bool>{_isExpense},
                       onSelectionChanged: (newSelection) {
                         setState(() {
-                          _type = newSelection.first;
+                          _isExpense = newSelection.first;
                         });
                       },
                     ),
@@ -322,33 +315,42 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
               ? () async {
                   final Map<int, CompensationInfo> compensationsMap = {};
                   for (final c in _compensations) {
-                    final compId = await varTransactionProvider.addVarTransaction(
-                      c.topic!,
-                      _type,
-                      _date!,
-                      int.parse(c.valueController.text),
-                      null,
-                      "Compensation: ${_descriptionController.text}",
-                      null,
-                    );
+                    final value = int.parse(c.valueController.text);
+                    final compId = await varTransactionProvider
+                        .addVarTransaction(
+                          c.topic!.id,
+                          _date!,
+                          _isExpense ? -1 * value : value,
+                          null,
+                          "Compensation: ${_descriptionController.text}",
+                          null,
+                          null,
+                        );
 
                     compensationsMap[compId] = CompensationInfo(
                       topicName: c.topic!.name,
-                      value: int.parse(c.valueController.text),
+                      value: _isExpense ? -1 * value : value,
                     );
                   }
-                  
-                  final compensationSum = compensationsMap.values.fold<int>(0, (sum, c) => sum + c.value);
-                  final value = int.parse(_valueController.text) - compensationSum;
-                  await varTransactionProvider.addVarTransaction(
-                    _selectedTopic!,
-                    _type,
-                    _date!,
-                    value,
-                    compensationsMap.isEmpty ? null : compensationsMap,
-                    _descriptionController.value.text,
-                    null,
-                  );
+
+                  final value = int.parse(_valueController.text);
+                  final varTransactionId = await varTransactionProvider
+                      .addVarTransaction(
+                        _selectedTopic!.id,
+                        _date!,
+                        _isExpense ? -1 * value : value,
+                        compensationsMap.isEmpty ? null : compensationsMap,
+                        _descriptionController.value.text,
+                        null,
+                        null,
+                      );
+
+                  for (final id in compensationsMap.keys) {
+                    await varTransactionProvider.setVarReference(
+                      id,
+                      varTransactionId,
+                    );
+                  }
                   Navigator.pop(context, true);
                 }
               : null,

@@ -31,7 +31,7 @@ class FixTransactionElementState extends State<FixTransactionElement> {
     setState(() => _isLoading = true);
     final fixTransactionProvider = context.read<FixTransactionProvider>();
     final fixTransactions = await fixTransactionProvider
-        .getAllFixTransactionsByTopic(_topic!);
+        .getAllFixTransactionsByTopicId(_topic!.id);
     setState(() {
       _fixTransactions = fixTransactions;
       _isLoading = false;
@@ -65,14 +65,19 @@ class FixTransactionSubElement extends StatelessWidget {
     return Card(
       child: Column(
         children: [
-          Text(fixTransaction.value.toString(), style: TextStyle(color: Color.fromRGBO(255, 0, 0, 1.0)),),
+          Text(
+            fixTransaction.value.toString(),
+            style: TextStyle(color: Color.fromRGBO(255, 0, 0, 1.0)),
+          ),
           if (fixTransaction.description != null)
             Text(fixTransaction.description!),
           Text(fixTransaction.start.toString()),
           Text(fixTransaction.end.toString()),
-          Text("${fixTransaction.intervalCount.toString()} ${fixTransaction.intervalUnit}"),
+          Text(
+            "${fixTransaction.intervalCount.toString()} ${fixTransaction.intervalUnit}",
+          ),
         ],
-      )
+      ),
     );
   }
 }

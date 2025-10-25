@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/topic.dart';
+import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_category_dialog.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_fix_transaction_dialog.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_topic_dialog.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_var_transaction_dialog.dart';
+import 'package:provider/provider.dart';
 
 class MultiFunctionFloatingButton extends StatelessWidget {
   final Category? category;
@@ -40,21 +42,33 @@ class MultiFunctionFloatingButton extends StatelessWidget {
         SpeedDialChild(
           child: Icon(Icons.table_chart),
           label: 'Add Topic',
-          onTap: () => showDialog(
-            context: context,
-            builder: (context) =>
-                AddTopicDialog(category: category ?? topic?.category),
-          ),
+          onTap: () async {
+            final categoryProvider = context.read<CategoryProvider>();
+            showDialog(
+              context: context,
+              builder: (context) => AddTopicDialog(
+                category:
+                    category ??
+                    categoryProvider.categories.firstWhere(
+                      (c) => c.id == topic!.categoryId,
+                    ),
+              ),
+            );
+          },
         ),
         SpeedDialChild(
           child: Icon(Icons.slideshow),
           label: 'Add Fix Transaction',
           onTap: () async {
+            final categoryProvider = context.read<CategoryProvider>();
             final updated = await showDialog(
               context: context,
               builder: (context) => AddFixTransactionDialog(
-                category: category ?? topic?.category,
-                topic: topic,
+                category:
+                    category ??
+                    categoryProvider.categories.firstWhere(
+                      (c) => c.id == topic?.categoryId,
+                    ),
               ),
             );
 
@@ -67,10 +81,15 @@ class MultiFunctionFloatingButton extends StatelessWidget {
           child: Icon(Icons.slideshow),
           label: 'Add Var Transaction',
           onTap: () async {
+            final categoryProvider = context.read<CategoryProvider>();
             final updated = await showDialog<bool>(
               context: context,
               builder: (context) => AddVarTransactionDialog(
-                category: category ?? topic?.category,
+                category:
+                    category ??
+                    categoryProvider.categories.firstWhere(
+                      (c) => c.id == topic?.categoryId,
+                    ),
                 topic: topic,
               ),
             );

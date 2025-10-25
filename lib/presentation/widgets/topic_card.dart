@@ -44,7 +44,7 @@ class TopicCard extends StatelessWidget {
 
   void removeTopic(BuildContext context) {
     final topicProvider = context.read<TopicProvider>();
-    topicProvider.removeTopic(topic);
+    topicProvider.removeTopic(topic.id);
     onDeleted?.call();
   }
 }

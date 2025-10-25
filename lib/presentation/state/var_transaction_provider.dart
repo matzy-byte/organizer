@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/compensation_info.dart';
-import 'package:organizer/core/models/fix_transaction.dart';
-import 'package:organizer/core/models/polarity.dart';
-import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/core/services/var_transaction_service.dart';
 
@@ -11,31 +8,35 @@ class VarTransactionProvider with ChangeNotifier {
 
   VarTransactionProvider({required this.varTransactionService});
 
-  Future<List<VarTransaction>> getAllVarTransactionsByTopic(Topic topic) async {
-    return await varTransactionService.getAllVarTransactionsByTopic(topic);
+  Future<List<VarTransaction>> getAllVarTransactionsByTopicId(int topicId) async {
+    return await varTransactionService.getAllVarTransactionsByTopicId(topicId);
   }
 
   Future<int> addVarTransaction(
-    Topic topic,
-    Polarity type,
+    int topicId,
     DateTime date,
     int value,
-    Map<int, CompensationInfo>? compensation,
+    Map<int, CompensationInfo>? compensations,
     String? description,
-    FixTransaction? fixReference,
+    int? fixRefId,
+    int? varRefId,
   ) async {
     return await varTransactionService.addVarTransaction(
-      topic,
-      type,
+      topicId,
       date,
       value,
-      compensation,
+      compensations,
       description,
-      fixReference,
+      fixRefId,
+      varRefId,
     );
   }
 
-  Future<void> removeTopic(VarTransaction varTransaction) async {
-    await varTransactionService.removeVarTransaction(varTransaction);
+  Future<void> removeVarTransaction(int id) async {
+    await varTransactionService.removeVarTransaction(id);
+  }
+
+  Future<void> setVarReference(int id, int refId) async {
+    await varTransactionService.setVarReference(id, refId);
   }
 }

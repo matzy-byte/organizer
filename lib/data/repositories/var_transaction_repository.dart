@@ -1,0 +1,71 @@
+import 'package:drift/drift.dart';
+import 'package:organizer/core/models/compensation_info.dart';
+import 'package:organizer/core/models/var_transaction.dart';
+import 'package:organizer/core/repositories/var_transactions_repository.dart';
+import 'package:organizer/core/utils/json_util.dart';
+import 'package:organizer/data/database/database.dart' hide VarTransaction;
+
+class VarTransactionRepositoryDrift implements VarTransactionRepository {
+  AppDatabase db;
+  VarTransactionRepositoryDrift(this.db);
+
+  @override
+  Future<int> addVarTransaction(
+    int topicId,
+    DateTime date,
+    int value,
+    Map<int, CompensationInfo>? compensations,
+    String? description,
+    int? fixRefId,
+    int? varRefId,
+  ) async {
+    int id = await db
+        .into(db.varTransactions)
+        .insert(
+          VarTransactionsCompanion.insert(
+            topicId: topicId,
+            date: date,
+            value: value,
+            compensations: compensations == null ? Value(null) : Value(JsonUtil.compensation2String(compensations)),
+            decription: Value(description),
+            fixRefId: Value(fixRefId),
+            varRefId: Value(varRefId),
+          ),
+        );
+    return id;
+  }
+
+  @override
+  Future<List<VarTransaction>> getAllVarTransactionsByTopicId(
+    int topicId,
+  ) async {
+    final rows = await (db.select(
+      db.varTransactions,
+    )..where((v) => v.topicId.equals(topicId))).get();
+    return rows
+        .map(
+          (v) => VarTransaction(
+            id: v.id,
+            topicId: v.topicId,
+            date: v.date,
+            value: v.value,
+            compensations: JsonUtil.string2CompensationInfo(v.compensations),
+            description: v.decription,
+            fixRefId: v.fixRefId,
+            varRefId: v.varRefId,
+          ),
+        )
+        .toList();
+  }
+
+  @override
+  Future<void> removeVarTransaction(int id) async {
+    await (db.delete(db.varTransactions)..where((v) => v.id.equals(id))).go();
+  }
+
+  @override
+  Future<void> updateVarTransaction(VarTransaction varTransaction) async {}
+
+  @override
+  Future<void> setVarReference(int id, int refId) async {}
+}

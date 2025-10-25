@@ -27,7 +27,7 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
   Widget build(BuildContext context) {
     final categoryProvider = context.read<CategoryProvider>();
     final topicProvider = context.read<TopicProvider>();
-    
+
     return AlertDialog(
       title: const Text('Add Topic'),
       content: categoryProvider.categories.isEmpty
@@ -75,9 +75,9 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
                   final description = _descriptionController.text.trim();
                   if (name.isNotEmpty && _selectedCategory != null) {
                     await topicProvider.addTopic(
-                      categoryProvider.categories.firstWhere(
-                        (c) => c.name == _selectedCategory,
-                      ),
+                      categoryProvider.categories
+                          .firstWhere((c) => c.name == _selectedCategory)
+                          .id,
                       name,
                       description.isEmpty ? null : description,
                     );

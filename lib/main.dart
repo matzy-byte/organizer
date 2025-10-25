@@ -1,5 +1,5 @@
-import 'package:organizer/plattform_entrypoints/main_mobile.dart';
+import 'package:organizer/plattform_entrypoints/main_desktop.dart';
 
 void main() {
-  runMobile();
+  runDesktop();
 }

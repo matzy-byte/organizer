@@ -1,3 +1,1 @@
-enum IntervalUnit {
-  day, week, month, year, decade
-}
+enum IntervalUnit { day, week, month, year, decade }

@@ -1,4 +1,3 @@
-import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/repositories/topic_repository.dart';
 
@@ -8,7 +7,12 @@ class TopicService {
   TopicService(this.repository);
 
   Future<List<Topic>> getAllTopics() async => await repository.getAllTopics();
-  Future<List<Topic>> getAllTopicsByCategory(Category category) async => await repository.getAllTopicsByCategory(category);
-  Future<void> addTopic(Category category, String name, String? description) async => await repository.addTopic(category, name, description);
-  Future<void> removeTopic(Topic topic) async => await repository.removeTopic(topic);
+  Future<List<Topic>> getAllTopicsByCategoryId(int categoryId) async =>
+      await repository.getAllTopicsByCategoryId(categoryId);
+  Future<void> addTopic(
+    int categoryId,
+    String name,
+    String? description,
+  ) async => await repository.addTopic(categoryId, name, description);
+  Future<void> removeTopic(int id) async => await repository.removeTopic(id);
 }

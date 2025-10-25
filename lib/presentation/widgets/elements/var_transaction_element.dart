@@ -32,7 +32,7 @@ class VarTransactionElementState extends State<VarTransactionElement> {
     setState(() => _isLoading = true);
     final varTransactionProvider = context.read<VarTransactionProvider>();
     final varTransactions = await varTransactionProvider
-        .getAllVarTransactionsByTopic(_topic!);
+        .getAllVarTransactionsByTopicId(_topic!.id);
     setState(() {
       _varTransactions = varTransactions;
       _isLoading = false;
@@ -58,67 +58,95 @@ class VarTransactionTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    context.watch<VarTransactionProvider>();
+    final varTransactionProvider = context.watch<VarTransactionProvider>();
 
     return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          scrollDirection: Axis.vertical,
-          child: Table(
-            border: TableBorder.all(color: Colors.grey.shade300),
-            columnWidths: const {
-              0: FlexColumnWidth(1),
-              1: FlexColumnWidth(2),
-              2: FlexColumnWidth(1),
-            },
-            children: [
-              const TableRow(
-                decoration: BoxDecoration(color: Color(0xFFEFEFEF)),
+      padding: const EdgeInsets.all(16.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Table(
+          border: TableBorder.all(color: Colors.grey.shade300),
+          columnWidths: const {
+            0: FlexColumnWidth(1),
+            1: FlexColumnWidth(2),
+            2: FlexColumnWidth(1),
+          },
+          children: [
+            const TableRow(
+              decoration: BoxDecoration(color: Color(0xFFEFEFEF)),
+              children: [
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Value',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Description',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Date',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Delete',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            ...varTransactions.map(
+              (t) => TableRow(
                 children: [
                   Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Value',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(getFinalValue(t).toString()),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Description',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(t.description ?? '-'),
                   ),
                   Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text(
-                      'Date',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(DateFormat.yMd().format(t.date)),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: IconButton(
+                      onPressed: () {
+                        varTransactionProvider.removeVarTransaction(t.id);
+                      },
+                      icon: Icon(Icons.delete),
                     ),
                   ),
                 ],
               ),
-              ...varTransactions.map(
-                (t) => TableRow(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(t.value.toString()),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(t.description ?? '-'),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(DateFormat.yMd().format(t.date)),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
+      ),
+    );
+  }
+
+  int getFinalValue(VarTransaction varTransaction) {
+    final compensations = varTransaction.compensations;
+    if (compensations == null) {
+      return varTransaction.value;
+    }
+    final compensationSum = compensations.values.fold<int>(
+      0,
+      (sum, c) => sum + c.value,
+    );
+    return varTransaction.value - compensationSum;
   }
 }

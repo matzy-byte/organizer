@@ -20,7 +20,7 @@ class CategoryProvider with ChangeNotifier {
   }
 
   Future<void> removeCategory(Category category) async {
-    await categoryService.removeCategory(category);
+    await categoryService.removeCategory(category.id);
     await loadCategories();
   }
 }

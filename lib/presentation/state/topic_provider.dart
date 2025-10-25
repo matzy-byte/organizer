@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/services/topic_service.dart';
 
@@ -15,17 +14,17 @@ class TopicProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Topic>> loadTopicsByCategory(Category category) async {
-    return await topicService.getAllTopicsByCategory(category);
+  Future<List<Topic>> loadTopicsByCategory(int categoryId) async {
+    return await topicService.getAllTopicsByCategoryId(categoryId);
   }
 
-  Future<void> addTopic(Category category, String name, String? description) async {
-    await topicService.addTopic(category, name, description);
+  Future<void> addTopic(int categoryId, String name, String? description) async {
+    await topicService.addTopic(categoryId, name, description);
     loadAllTopics();
   }
 
-  Future<void> removeTopic(Topic topic) async {
-    await topicService.removeTopic(topic);
+  Future<void> removeTopic(int id) async {
+    await topicService.removeTopic(id);
     loadAllTopics();
   }
 }

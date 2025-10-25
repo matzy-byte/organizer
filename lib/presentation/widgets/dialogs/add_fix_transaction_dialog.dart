@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
-import 'package:organizer/core/models/compensation.dart';
 import 'package:organizer/core/models/interval_unit.dart';
-import 'package:organizer/core/models/polarity.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
@@ -33,7 +31,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
   Topic? _selectedTopic;
   List<Topic> _topics = [];
   Status _status = Status.active;
-  Polarity _type = Polarity.negative;
+  bool _isExpense = true;
 
   DateTime? _startDate;
   DateTime? _endDate;
@@ -50,10 +48,10 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
     if (widget.topic != null) {
       _selectedCategory = _categories.firstWhere(
-        (c) => c.id == widget.topic!.category.id,
+        (c) => c.id == widget.topic!.categoryId,
       );
       _topics = topicProvider.topics
-          .where((t) => t.category.id == _selectedCategory!.id)
+          .where((t) => t.categoryId == _selectedCategory!.id)
           .toList();
       _selectedTopic = _topics.firstWhere((t) => t.id == widget.topic!.id);
     } else if (widget.category != null) {
@@ -144,7 +142,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                           .toList(),
                       onChanged: (value) async {
                         final topics = await topicProvider.loadTopicsByCategory(
-                          value!,
+                          value!.id,
                         );
                         setState(() {
                           _selectedCategory = value;
@@ -197,21 +195,15 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                       },
                     ),
                     const SizedBox(height: 12),
-                    SegmentedButton<Polarity>(
+                    SegmentedButton<bool>(
                       segments: const [
-                        ButtonSegment(
-                          value: Polarity.negative,
-                          label: Text('Negative'),
-                        ),
-                        ButtonSegment(
-                          value: Polarity.positive,
-                          label: Text('Positive'),
-                        ),
+                        ButtonSegment(value: true, label: Text('Negative')),
+                        ButtonSegment(value: false, label: Text('Positive')),
                       ],
-                      selected: <Polarity>{_type},
+                      selected: <bool>{_isExpense},
                       onSelectionChanged: (newSelection) {
                         setState(() {
-                          _type = newSelection.first;
+                          _isExpense = newSelection.first;
                         });
                       },
                     ),
@@ -278,11 +270,17 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                         ),
                         DropdownButtonFormField<IntervalUnit>(
                           initialValue: _selectedIntervalUnit,
-                          decoration: const InputDecoration(labelText: 'Interval Unit'),
-                          items: IntervalUnit.values.map(
-                            (i) =>
-                                DropdownMenuItem(value: i, child: Text(i.name)),
-                          ).toList(),
+                          decoration: const InputDecoration(
+                            labelText: 'Interval Unit',
+                          ),
+                          items: IntervalUnit.values
+                              .map(
+                                (i) => DropdownMenuItem(
+                                  value: i,
+                                  child: Text(i.name),
+                                ),
+                              )
+                              .toList(),
                           onChanged: (value) {
                             setState(() => _selectedIntervalUnit = value);
                             _validateForm();
@@ -331,18 +329,19 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
         ElevatedButton(
           onPressed: _isFormValid
               ? () async {
-                  final intervalCount = int.parse(_intervalCountController.text);
+                  final intervalCount = int.parse(
+                    _intervalCountController.text,
+                  );
                   final value = int.parse(_valueController.text);
                   await fixTransactionProvider.addFixTransaction(
-                    _selectedTopic!,
+                    _selectedTopic!.id,
                     _status,
-                    _type,
                     _startDate!,
                     _endDate!,
                     intervalCount,
                     _selectedIntervalUnit!,
-                    value,
-                    Compensation.none,
+                    _isExpense ? -1 * value : value,
+                    null,
                     _descriptionController.value.text,
                   );
                   Navigator.pop(context, true);

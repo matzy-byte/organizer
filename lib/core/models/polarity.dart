@@ -1,3 +1,0 @@
-enum Polarity {
-  negative, positive
-}

@@ -14,7 +14,7 @@ class CategoryScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final category = ModalRoute.of(context)!.settings.arguments as Category;
     final topicProvider = context.watch<TopicProvider>();
-    final topics = topicProvider.topics.where((t) => t.category.id == category.id);
+    final topics = topicProvider.topics.where((t) => t.categoryId == category.id);
 
     return Scaffold(
       drawer: Drawer(child: DrawerContent()),
@@ -34,7 +34,7 @@ class CategoryScreen extends StatelessWidget {
                     (t) => TopicCard(
                       topic: t,
                       onDeleted: () async {
-                        await topicProvider.removeTopic(t);
+                        await topicProvider.removeTopic(t.id);
                       },
                     ),
                   ),
