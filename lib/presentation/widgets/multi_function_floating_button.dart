@@ -24,6 +24,7 @@ class MultiFunctionFloatingButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider = context.read<CategoryProvider>();
     return SpeedDial(
       icon: Icons.add,
       activeIcon: Icons.close,
@@ -43,15 +44,15 @@ class MultiFunctionFloatingButton extends StatelessWidget {
           child: Icon(Icons.table_chart),
           label: 'Add Topic',
           onTap: () async {
-            final categoryProvider = context.read<CategoryProvider>();
             showDialog(
               context: context,
               builder: (context) => AddTopicDialog(
                 category:
                     category ??
-                    categoryProvider.categories.firstWhere(
-                      (c) => c.id == topic!.categoryId,
-                    ),
+                    categoryProvider.categories
+                        .where((c) => c.id == topic?.categoryId)
+                        .cast<Category?>()
+                        .firstOrNull,
               ),
             );
           },
@@ -60,15 +61,15 @@ class MultiFunctionFloatingButton extends StatelessWidget {
           child: Icon(Icons.slideshow),
           label: 'Add Fix Transaction',
           onTap: () async {
-            final categoryProvider = context.read<CategoryProvider>();
             final updated = await showDialog(
               context: context,
               builder: (context) => AddFixTransactionDialog(
                 category:
                     category ??
-                    categoryProvider.categories.firstWhere(
-                      (c) => c.id == topic?.categoryId,
-                    ),
+                    categoryProvider.categories
+                        .where((c) => c.id == topic?.categoryId)
+                        .cast<Category?>()
+                        .firstOrNull,
               ),
             );
 
@@ -81,15 +82,15 @@ class MultiFunctionFloatingButton extends StatelessWidget {
           child: Icon(Icons.slideshow),
           label: 'Add Var Transaction',
           onTap: () async {
-            final categoryProvider = context.read<CategoryProvider>();
             final updated = await showDialog<bool>(
               context: context,
               builder: (context) => AddVarTransactionDialog(
                 category:
                     category ??
-                    categoryProvider.categories.firstWhere(
-                      (c) => c.id == topic?.categoryId,
-                    ),
+                    categoryProvider.categories
+                        .where((c) => c.id == topic?.categoryId)
+                        .cast<Category?>()
+                        .firstOrNull,
                 topic: topic,
               ),
             );

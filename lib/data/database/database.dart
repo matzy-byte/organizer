@@ -33,7 +33,6 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final path = p.join(dir.path, 'organizer.db');
-    print(path);
     return NativeDatabase(File(path));
   });
 }
