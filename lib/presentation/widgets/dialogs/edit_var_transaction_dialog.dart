@@ -2,22 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/topic.dart';
+import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:provider/provider.dart';
 
-class AddVarTransactionDialog extends StatefulWidget {
-  final Category? category;
-  final Topic? topic;
-  const AddVarTransactionDialog({super.key, this.category, this.topic});
+class EditVarTransactionDialog extends StatefulWidget {
+  final VarTransaction varTransaction;
+  const EditVarTransactionDialog({super.key, required this.varTransaction});
 
   @override
-  State<AddVarTransactionDialog> createState() =>
-      _AddVarTransactionDialogState();
+  State<EditVarTransactionDialog> createState() =>
+      _EditVarTransactionDialogState();
 }
 
-class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
+class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
 
@@ -34,6 +34,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
   DateTime? _date;
 
   List<_CompensationEntry> _compensations = [];
+  List<_CompensationEntry> _compensationsToDelete = [];
 
   @override
   void initState() {
@@ -44,24 +45,28 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
     _categories = categoryProvider.categories;
     _allTopics = topicProvider.topics;
 
-    if (widget.topic != null) {
-      _selectedCategory = _categories.firstWhere(
-        (c) => c.id == widget.topic!.categoryId,
-      );
-      _topics = topicProvider.topics
-          .where((t) => t.categoryId == _selectedCategory!.id)
-          .toList();
-      _selectedTopic = _topics.firstWhere((t) => t.id == widget.topic!.id);
-    } else if (widget.category != null) {
-      _selectedCategory = _categories.firstWhere(
-        (c) => c.id == widget.category!.id,
-      );
-      _topics = topicProvider.topics
-          .where((t) => t.categoryId == _selectedCategory!.id)
-          .toList();
-    }
+    _selectedTopic = _allTopics.firstWhere(
+      (t) => t.id == widget.varTransaction.topicId,
+    );
+    _selectedCategory = _categories.firstWhere(
+      (c) => c.id == _selectedTopic!.categoryId,
+    );
+    _topics = _allTopics
+        .where((t) => t.categoryId == _selectedCategory!.id)
+        .toList();
 
-    _date = DateTime.now();
+    _date = widget.varTransaction.date;
+    _valueController.text = widget.varTransaction.value.abs().toString();
+    _descriptionController.text = widget.varTransaction.description ?? '';
+
+    if (widget.varTransaction.compensations != null) {
+      for (final e in widget.varTransaction.compensations!.entries) {
+        final topic = _allTopics.firstWhere((t) => t.id == e.value.topicId);
+        _compensations.add(
+          _CompensationEntry.withData(e.key, topic, e.value.value.abs().toString()),
+        );
+      }
+    }
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _validateForm();
@@ -259,6 +264,9 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                   icon: const Icon(Icons.delete),
                                   onPressed: () {
                                     setState(() {
+                                      _compensationsToDelete.add(
+                                        _compensations.elementAt(index),
+                                      );
                                       _compensations.removeAt(index);
                                     });
                                     _validateForm();
@@ -326,46 +334,72 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                   final Map<int, CompensationInfo> compensationsMap = {};
                   for (final c in _compensations) {
                     final value = int.parse(c.valueController.text);
-                    final compId = await varTransactionProvider
-                        .addVarTransaction(
-                          c.topic!.id,
-                          _date!,
-                          _isExpense ? -1 * value : value,
-                          null,
-                          "Compensation: ${_descriptionController.text}",
-                          null,
-                          null,
-                        );
-
-                    compensationsMap[compId] = CompensationInfo(
-                      topicId: c.topic!.id,
-                      topicName: c.topic!.name,
-                      value: _isExpense ? -1 * value : value,
-                    );
-                  }
-
-                  final value = int.parse(_valueController.text);
-                  final varTransactionId = await varTransactionProvider
-                      .addVarTransaction(
-                        _selectedTopic!.id,
-                        _date!,
+                    if (c.id != null) {
+                      await varTransactionProvider.updateVarTransaction(
+                        c.id!,
+                        c.topic!.id,
+                        null,
                         _isExpense ? -1 * value : value,
-                        compensationsMap.isEmpty ? null : compensationsMap,
-                        _descriptionController.value.text,
+                        null,
+                        "Compensation: ${_descriptionController.text}",
                         null,
                         null,
                       );
 
+                      compensationsMap[c.id!] = CompensationInfo(
+                        topicId: c.topic!.id,
+                        topicName: c.topic!.name,
+                        value: _isExpense ? -1 * value : value,
+                      );
+                    } else {
+                      final compId = await varTransactionProvider
+                          .addVarTransaction(
+                            c.topic!.id,
+                            _date!,
+                            _isExpense ? -1 * value : value,
+                            null,
+                            "Compensation: ${_descriptionController.text}",
+                            null,
+                            null,
+                          );
+
+                      compensationsMap[compId] = CompensationInfo(
+                        topicId: c.topic!.id,
+                        topicName: c.topic!.name,
+                        value: _isExpense ? -1 * value : value,
+                      );
+                    }
+                  }
+
+                  final value = int.parse(_valueController.text);
+                  await varTransactionProvider.updateVarTransaction(
+                    widget.varTransaction.id,
+                    _selectedTopic!.id,
+                    _date,
+                    _isExpense ? -1 * value : value,
+                    compensationsMap.isEmpty ? null : compensationsMap,
+                    _descriptionController.value.text,
+                    null,
+                    null,
+                  );
+
                   for (final id in compensationsMap.keys) {
                     await varTransactionProvider.setVarReference(
                       id,
-                      varTransactionId,
+                      widget.varTransaction.id,
                     );
                   }
+
+                  for (final c in _compensationsToDelete) {
+                    if (c.id != null) {
+                      await varTransactionProvider.removeVarTransaction(c.id!);
+                    }
+                  }
+
                   Navigator.pop(context, true);
                 }
               : null,
-          child: const Text('Add'),
+          child: const Text('Save'),
         ),
       ],
     );
@@ -373,8 +407,13 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
 }
 
 class _CompensationEntry {
+  int? id;
   Topic? topic;
   TextEditingController valueController = TextEditingController();
 
   _CompensationEntry();
+
+  _CompensationEntry.withData(this.id, this.topic, String value) {
+    valueController.text = value.toString();
+  }
 }

@@ -36,6 +36,10 @@ class VarTransactionProvider with ChangeNotifier {
     await varTransactionService.removeVarTransaction(id);
   }
 
+  Future<void> updateVarTransaction(int id, int? topicId, DateTime? date, int? value, Map<int, CompensationInfo>? compensations, String? description, int? fixRefId, int? varRefId) async {
+    await varTransactionService.updateVarTransaction(id, topicId, date, value, compensations, description, fixRefId, varRefId);
+  }
+
   Future<void> setVarReference(int id, int refId) async {
     await varTransactionService.setVarReference(id, refId);
   }

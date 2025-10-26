@@ -7,7 +7,7 @@ class VarTransactions extends Table {
   DateTimeColumn get date => dateTime()();
   IntColumn get value => integer()();
   TextColumn get compensations => text().nullable()();
-  TextColumn get decription => text().nullable()();
+  TextColumn get description => text().nullable()();
   IntColumn get fixRefId => integer().nullable()();
   IntColumn get varRefId => integer().nullable()();
 }

@@ -36,8 +36,25 @@ class VarTransactionService {
   Future<void> removeVarTransaction(int id) =>
       repository.removeVarTransaction(id);
 
-  Future<void> updateVarTransaction(VarTransaction varTransaction) =>
-      repository.updateVarTransaction(varTransaction);
+  Future<void> updateVarTransaction(
+    int id,
+    int? topicId,
+    DateTime? date,
+    int? value,
+    Map<int, CompensationInfo>? compensations,
+    String? description,
+    int? fixRefId,
+    int? varRefId,
+  ) => repository.updateVarTransaction(
+    id,
+    topicId,
+    date,
+    value,
+    compensations,
+    description,
+    fixRefId,
+    varRefId,
+  );
 
   Future<void> setVarReference(int id, int refId) =>
       repository.setVarReference(id, refId);

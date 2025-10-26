@@ -29,7 +29,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
             compensations: compensations == null
                 ? Value(null)
                 : Value(JsonUtil.compensation2String(compensations)),
-            decription: Value(description),
+            description: Value(description),
             fixRefId: Value(fixRefId),
             varRefId: Value(varRefId),
           ),
@@ -52,7 +52,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
             date: v.date,
             value: v.value,
             compensations: JsonUtil.string2CompensationInfo(v.compensations),
-            description: v.decription,
+            description: v.description,
             fixRefId: v.fixRefId,
             varRefId: v.varRefId,
           ),
@@ -96,7 +96,45 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
   }
 
   @override
-  Future<void> updateVarTransaction(VarTransaction varTransaction) async {}
+  Future<void> updateVarTransaction(
+    int id,
+    int? topicId,
+    DateTime? date,
+    int? value,
+    Map<int, CompensationInfo>? compensations,
+    String? description,
+    int? fixRefId,
+    int? varRefId,
+  ) async {
+    final row = await (db.select(db.varTransactions)..where((v) => v.id.equals(id))).getSingle();
+    await (db.update(db.varTransactions)..where((v) => v.id.equals(id))).write(VarTransactionsCompanion(
+      id: Value(id),
+      topicId: topicId == null ? Value(row.topicId) : Value(topicId),
+      date: date == null ? Value(row.date) : Value(date),
+      value: value == null ? Value(row.value) : Value(value),
+      compensations: compensations == null ? Value(row.compensations) : Value(JsonUtil.compensation2String(compensations)),
+      description: description == null ? Value(row.description) : Value(description),
+      fixRefId: fixRefId == null ? Value(row.fixRefId) : Value(fixRefId),
+      varRefId: varRefId == null ? Value(row.varRefId) : Value(varRefId),
+    ));
+    final updatedRow = await (db.select(db.varTransactions)..where((v) => v.id.equals(id))).getSingle();
+    if (updatedRow.varRefId != null) {
+      final ref = await (db.select(db.varTransactions)..where((v) => v.id.equals(row.varRefId!))).getSingle();
+      final compensations = JsonUtil.string2CompensationInfo(ref.compensations);
+      if (compensations != null) {
+        final topic = await (db.select(db.topics)..where((t) => t.id.equals(updatedRow.topicId))).getSingle();
+        compensations[id] = CompensationInfo(topicId: topic.id, topicName: topic.name, value: updatedRow.value);
+        final comps = compensations.isEmpty ? null : compensations;
+        await (db.update(
+          db.varTransactions,
+        )..where((v) => v.id.equals(ref.id))).write(
+          VarTransactionsCompanion(
+            compensations: Value(JsonUtil.compensation2String(comps)),
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Future<void> setVarReference(int id, int refId) async {

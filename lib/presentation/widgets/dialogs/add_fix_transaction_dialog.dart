@@ -432,6 +432,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                     final c = _compensations[i];
                     final value = int.parse(c.valueController.text);
                     compensationsMap[i] = CompensationInfo(
+                      topicId: c.topic!.id,
                       topicName: c.topic!.name,
                       value: _isExpense ? -1 * value : value,
                     );

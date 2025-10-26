@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
+import 'package:organizer/presentation/widgets/dialogs/edit_var_transaction_dialog.dart';
 import 'package:provider/provider.dart';
 
 class VarTransactionElement extends StatefulWidget {
@@ -29,10 +30,12 @@ class VarTransactionElementState extends State<VarTransactionElement> {
 
   Future<void> loadVarTransactions() async {
     if (_topic == null) return;
+    if (!mounted) return;
     setState(() => _isLoading = true);
     final varTransactionProvider = context.read<VarTransactionProvider>();
     final varTransactions = await varTransactionProvider
         .getAllVarTransactionsByTopicId(_topic!.id);
+    if (!mounted) return;
     setState(() {
       _varTransactions = varTransactions;
       _isLoading = false;
@@ -40,11 +43,26 @@ class VarTransactionElementState extends State<VarTransactionElement> {
   }
 
   Future<void> removeVarTransaction(int id) async {
+    if (!mounted) return;
     setState(() => _isLoading = true);
     final varTransactionProvider = context.read<VarTransactionProvider>();
     await varTransactionProvider.removeVarTransaction(id);
     _varTransactions.removeWhere((v) => v.id == id);
-    setState(() => _isLoading = false);
+    if (!mounted) return;
+    loadVarTransactions();
+  }
+
+  Future<void> updateVarTransaction(int id) async {
+    final updated = await showDialog<bool>(
+      context: context,
+      builder: (context) => EditVarTransactionDialog(
+        varTransaction: _varTransactions.firstWhere((v) => v.id == id),
+      ),
+    );
+    if (!mounted) return;
+    if (updated == true) {
+      loadVarTransactions();
+    }
   }
 
   @override
@@ -56,7 +74,8 @@ class VarTransactionElementState extends State<VarTransactionElement> {
           ? Text('There is no var transactions')
           : VarTransactionTable(
               varTransactions: _varTransactions,
-              interaction: (id) => removeVarTransaction(id),
+              delete: (id) => removeVarTransaction(id),
+              edit: (id) => updateVarTransaction(id),
             ),
     );
   }
@@ -66,12 +85,14 @@ typedef IntCallback = void Function(int value);
 
 class VarTransactionTable extends StatelessWidget {
   final List<VarTransaction> varTransactions;
-  final IntCallback interaction;
+  final IntCallback delete;
+  final IntCallback edit;
 
   const VarTransactionTable({
     super.key,
     required this.varTransactions,
-    required this.interaction,
+    required this.delete,
+    required this.edit,
   });
 
   @override
@@ -119,6 +140,13 @@ class VarTransactionTable extends StatelessWidget {
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
+                Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Text(
+                    'Edit',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
               ],
             ),
             ...varTransactions.map(
@@ -139,8 +167,15 @@ class VarTransactionTable extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: IconButton(
-                      onPressed: () => interaction.call(t.id),
+                      onPressed: () => delete.call(t.id),
                       icon: Icon(Icons.delete),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: IconButton(
+                      onPressed: () => edit.call(t.id),
+                      icon: Icon(Icons.edit),
                     ),
                   ),
                 ],

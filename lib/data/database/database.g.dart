@@ -1259,12 +1259,12 @@ class $VarTransactionsTable extends VarTransactions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _decriptionMeta = const VerificationMeta(
-    'decription',
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
   );
   @override
-  late final GeneratedColumn<String> decription = GeneratedColumn<String>(
-    'decription',
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -1299,7 +1299,7 @@ class $VarTransactionsTable extends VarTransactions
     date,
     value,
     compensations,
-    decription,
+    description,
     fixRefId,
     varRefId,
   ];
@@ -1351,10 +1351,13 @@ class $VarTransactionsTable extends VarTransactions
         ),
       );
     }
-    if (data.containsKey('decription')) {
+    if (data.containsKey('description')) {
       context.handle(
-        _decriptionMeta,
-        decription.isAcceptableOrUnknown(data['decription']!, _decriptionMeta),
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
       );
     }
     if (data.containsKey('fix_ref_id')) {
@@ -1398,9 +1401,9 @@ class $VarTransactionsTable extends VarTransactions
         DriftSqlType.string,
         data['${effectivePrefix}compensations'],
       ),
-      decription: attachedDatabase.typeMapping.read(
+      description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}decription'],
+        data['${effectivePrefix}description'],
       ),
       fixRefId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
@@ -1425,7 +1428,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
   final DateTime date;
   final int value;
   final String? compensations;
-  final String? decription;
+  final String? description;
   final int? fixRefId;
   final int? varRefId;
   const VarTransaction({
@@ -1434,7 +1437,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
     required this.date,
     required this.value,
     this.compensations,
-    this.decription,
+    this.description,
     this.fixRefId,
     this.varRefId,
   });
@@ -1448,8 +1451,8 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
     if (!nullToAbsent || compensations != null) {
       map['compensations'] = Variable<String>(compensations);
     }
-    if (!nullToAbsent || decription != null) {
-      map['decription'] = Variable<String>(decription);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
     }
     if (!nullToAbsent || fixRefId != null) {
       map['fix_ref_id'] = Variable<int>(fixRefId);
@@ -1469,9 +1472,9 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
       compensations: compensations == null && nullToAbsent
           ? const Value.absent()
           : Value(compensations),
-      decription: decription == null && nullToAbsent
+      description: description == null && nullToAbsent
           ? const Value.absent()
-          : Value(decription),
+          : Value(description),
       fixRefId: fixRefId == null && nullToAbsent
           ? const Value.absent()
           : Value(fixRefId),
@@ -1492,7 +1495,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
       date: serializer.fromJson<DateTime>(json['date']),
       value: serializer.fromJson<int>(json['value']),
       compensations: serializer.fromJson<String?>(json['compensations']),
-      decription: serializer.fromJson<String?>(json['decription']),
+      description: serializer.fromJson<String?>(json['description']),
       fixRefId: serializer.fromJson<int?>(json['fixRefId']),
       varRefId: serializer.fromJson<int?>(json['varRefId']),
     );
@@ -1506,7 +1509,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
       'date': serializer.toJson<DateTime>(date),
       'value': serializer.toJson<int>(value),
       'compensations': serializer.toJson<String?>(compensations),
-      'decription': serializer.toJson<String?>(decription),
+      'description': serializer.toJson<String?>(description),
       'fixRefId': serializer.toJson<int?>(fixRefId),
       'varRefId': serializer.toJson<int?>(varRefId),
     };
@@ -1518,7 +1521,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
     DateTime? date,
     int? value,
     Value<String?> compensations = const Value.absent(),
-    Value<String?> decription = const Value.absent(),
+    Value<String?> description = const Value.absent(),
     Value<int?> fixRefId = const Value.absent(),
     Value<int?> varRefId = const Value.absent(),
   }) => VarTransaction(
@@ -1529,7 +1532,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
     compensations: compensations.present
         ? compensations.value
         : this.compensations,
-    decription: decription.present ? decription.value : this.decription,
+    description: description.present ? description.value : this.description,
     fixRefId: fixRefId.present ? fixRefId.value : this.fixRefId,
     varRefId: varRefId.present ? varRefId.value : this.varRefId,
   );
@@ -1542,9 +1545,9 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
       compensations: data.compensations.present
           ? data.compensations.value
           : this.compensations,
-      decription: data.decription.present
-          ? data.decription.value
-          : this.decription,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
       fixRefId: data.fixRefId.present ? data.fixRefId.value : this.fixRefId,
       varRefId: data.varRefId.present ? data.varRefId.value : this.varRefId,
     );
@@ -1558,7 +1561,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
           ..write('date: $date, ')
           ..write('value: $value, ')
           ..write('compensations: $compensations, ')
-          ..write('decription: $decription, ')
+          ..write('description: $description, ')
           ..write('fixRefId: $fixRefId, ')
           ..write('varRefId: $varRefId')
           ..write(')'))
@@ -1572,7 +1575,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
     date,
     value,
     compensations,
-    decription,
+    description,
     fixRefId,
     varRefId,
   );
@@ -1585,7 +1588,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
           other.date == this.date &&
           other.value == this.value &&
           other.compensations == this.compensations &&
-          other.decription == this.decription &&
+          other.description == this.description &&
           other.fixRefId == this.fixRefId &&
           other.varRefId == this.varRefId);
 }
@@ -1596,7 +1599,7 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
   final Value<DateTime> date;
   final Value<int> value;
   final Value<String?> compensations;
-  final Value<String?> decription;
+  final Value<String?> description;
   final Value<int?> fixRefId;
   final Value<int?> varRefId;
   const VarTransactionsCompanion({
@@ -1605,7 +1608,7 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
     this.date = const Value.absent(),
     this.value = const Value.absent(),
     this.compensations = const Value.absent(),
-    this.decription = const Value.absent(),
+    this.description = const Value.absent(),
     this.fixRefId = const Value.absent(),
     this.varRefId = const Value.absent(),
   });
@@ -1615,7 +1618,7 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
     required DateTime date,
     required int value,
     this.compensations = const Value.absent(),
-    this.decription = const Value.absent(),
+    this.description = const Value.absent(),
     this.fixRefId = const Value.absent(),
     this.varRefId = const Value.absent(),
   }) : topicId = Value(topicId),
@@ -1627,7 +1630,7 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
     Expression<DateTime>? date,
     Expression<int>? value,
     Expression<String>? compensations,
-    Expression<String>? decription,
+    Expression<String>? description,
     Expression<int>? fixRefId,
     Expression<int>? varRefId,
   }) {
@@ -1637,7 +1640,7 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
       if (date != null) 'date': date,
       if (value != null) 'value': value,
       if (compensations != null) 'compensations': compensations,
-      if (decription != null) 'decription': decription,
+      if (description != null) 'description': description,
       if (fixRefId != null) 'fix_ref_id': fixRefId,
       if (varRefId != null) 'var_ref_id': varRefId,
     });
@@ -1649,7 +1652,7 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
     Value<DateTime>? date,
     Value<int>? value,
     Value<String?>? compensations,
-    Value<String?>? decription,
+    Value<String?>? description,
     Value<int?>? fixRefId,
     Value<int?>? varRefId,
   }) {
@@ -1659,7 +1662,7 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
       date: date ?? this.date,
       value: value ?? this.value,
       compensations: compensations ?? this.compensations,
-      decription: decription ?? this.decription,
+      description: description ?? this.description,
       fixRefId: fixRefId ?? this.fixRefId,
       varRefId: varRefId ?? this.varRefId,
     );
@@ -1683,8 +1686,8 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
     if (compensations.present) {
       map['compensations'] = Variable<String>(compensations.value);
     }
-    if (decription.present) {
-      map['decription'] = Variable<String>(decription.value);
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
     }
     if (fixRefId.present) {
       map['fix_ref_id'] = Variable<int>(fixRefId.value);
@@ -1703,7 +1706,7 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
           ..write('date: $date, ')
           ..write('value: $value, ')
           ..write('compensations: $compensations, ')
-          ..write('decription: $decription, ')
+          ..write('description: $description, ')
           ..write('fixRefId: $fixRefId, ')
           ..write('varRefId: $varRefId')
           ..write(')'))
@@ -2917,7 +2920,7 @@ typedef $$VarTransactionsTableCreateCompanionBuilder =
       required DateTime date,
       required int value,
       Value<String?> compensations,
-      Value<String?> decription,
+      Value<String?> description,
       Value<int?> fixRefId,
       Value<int?> varRefId,
     });
@@ -2928,7 +2931,7 @@ typedef $$VarTransactionsTableUpdateCompanionBuilder =
       Value<DateTime> date,
       Value<int> value,
       Value<String?> compensations,
-      Value<String?> decription,
+      Value<String?> description,
       Value<int?> fixRefId,
       Value<int?> varRefId,
     });
@@ -2990,8 +2993,8 @@ class $$VarTransactionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get decription => $composableBuilder(
-    column: $table.decription,
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3058,8 +3061,8 @@ class $$VarTransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get decription => $composableBuilder(
-    column: $table.decription,
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3120,8 +3123,8 @@ class $$VarTransactionsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get decription => $composableBuilder(
-    column: $table.decription,
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => column,
   );
 
@@ -3190,7 +3193,7 @@ class $$VarTransactionsTableTableManager
                 Value<DateTime> date = const Value.absent(),
                 Value<int> value = const Value.absent(),
                 Value<String?> compensations = const Value.absent(),
-                Value<String?> decription = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<int?> fixRefId = const Value.absent(),
                 Value<int?> varRefId = const Value.absent(),
               }) => VarTransactionsCompanion(
@@ -3199,7 +3202,7 @@ class $$VarTransactionsTableTableManager
                 date: date,
                 value: value,
                 compensations: compensations,
-                decription: decription,
+                description: description,
                 fixRefId: fixRefId,
                 varRefId: varRefId,
               ),
@@ -3210,7 +3213,7 @@ class $$VarTransactionsTableTableManager
                 required DateTime date,
                 required int value,
                 Value<String?> compensations = const Value.absent(),
-                Value<String?> decription = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<int?> fixRefId = const Value.absent(),
                 Value<int?> varRefId = const Value.absent(),
               }) => VarTransactionsCompanion.insert(
@@ -3219,7 +3222,7 @@ class $$VarTransactionsTableTableManager
                 date: date,
                 value: value,
                 compensations: compensations,
-                decription: decription,
+                description: description,
                 fixRefId: fixRefId,
                 varRefId: varRefId,
               ),

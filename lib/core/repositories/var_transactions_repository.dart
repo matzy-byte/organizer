@@ -13,6 +13,15 @@ abstract class VarTransactionRepository {
     int? varRefId,
   );
   Future<void> removeVarTransaction(int id);
-  Future<void> updateVarTransaction(VarTransaction varTransaction);
+  Future<void> updateVarTransaction(
+    int id,
+    int? topicId,
+    DateTime? date,
+    int? value,
+    Map<int, CompensationInfo>? compensations,
+    String? description,
+    int? fixRefId,
+    int? varRefId,
+  );
   Future<void> setVarReference(int id, int varRefId);
 }
