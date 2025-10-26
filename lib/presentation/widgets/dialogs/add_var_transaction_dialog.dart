@@ -28,6 +28,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
   List<Category> _categories = [];
   Topic? _selectedTopic;
   List<Topic> _topics = [];
+  List<Topic> _allTopics = [];
   bool _isExpense = true;
 
   DateTime? _date;
@@ -41,6 +42,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
     final categoryProvider = context.read<CategoryProvider>();
     final topicProvider = context.read<TopicProvider>();
     _categories = categoryProvider.categories;
+    _allTopics = topicProvider.topics;
 
     if (widget.topic != null) {
       _selectedCategory = _categories.firstWhere(
@@ -54,6 +56,9 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
       _selectedCategory = _categories.firstWhere(
         (c) => c.id == widget.category!.id,
       );
+      _topics = topicProvider.topics
+          .where((t) => t.categoryId == _selectedCategory!.id)
+          .toList();
     }
 
     _date = DateTime.now();
@@ -211,16 +216,19 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                     decoration: const InputDecoration(
                                       labelText: 'Topic',
                                     ),
-                                    items: _topics
+                                    items: _allTopics
                                         .map(
                                           (t) => DropdownMenuItem(
                                             value: t,
-                                            child: Text(t.name),
+                                            child: Text(
+                                              "${_categories.firstWhere((c) => c.id == t.categoryId).name}/${t.name}",
+                                            ),
                                           ),
                                         )
                                         .toList(),
                                     onChanged: (value) {
                                       setState(() => comp.topic = value);
+                                      _validateForm();
                                     },
                                     validator: (value) =>
                                         value == null ? 'Select a topic' : null,
@@ -235,6 +243,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                     decoration: const InputDecoration(
                                       labelText: 'Value',
                                     ),
+                                    onChanged: (value) => _validateForm(),
                                     validator: (v) {
                                       if (v == null || v.isEmpty) {
                                         return 'Enter value';
@@ -252,6 +261,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                     setState(() {
                                       _compensations.removeAt(index);
                                     });
+                                    _validateForm();
                                   },
                                 ),
                               ],

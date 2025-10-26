@@ -26,7 +26,9 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
             topicId: topicId,
             date: date,
             value: value,
-            compensations: compensations == null ? Value(null) : Value(JsonUtil.compensation2String(compensations)),
+            compensations: compensations == null
+                ? Value(null)
+                : Value(JsonUtil.compensation2String(compensations)),
             decription: Value(description),
             fixRefId: Value(fixRefId),
             varRefId: Value(varRefId),
@@ -60,6 +62,36 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
 
   @override
   Future<void> removeVarTransaction(int id) async {
+    final row = await (db.select(
+      db.varTransactions,
+    )..where((v) => v.id.equals(id))).getSingle();
+    if (row.varRefId != null) {
+      final ref = await (db.select(
+        db.varTransactions,
+      )..where((v) => v.id.equals(row.varRefId!))).getSingle();
+      final compensations = JsonUtil.string2CompensationInfo(ref.compensations);
+      if (compensations != null) {
+        compensations.removeWhere((key, value) => key == row.id);
+        final comps = compensations.isEmpty ? null : compensations;
+        await (db.update(
+          db.varTransactions,
+        )..where((v) => v.id.equals(ref.id))).write(
+          VarTransactionsCompanion(
+            compensations: Value(JsonUtil.compensation2String(comps)),
+          ),
+        );
+      }
+    }
+    if (row.compensations != null) {
+      final compensations = JsonUtil.string2CompensationInfo(row.compensations);
+      if (compensations != null) {
+        for (final compId in compensations.keys) {
+          await (db.delete(
+            db.varTransactions,
+          )..where((v) => v.id.equals(compId))).go();
+        }
+      }
+    }
     await (db.delete(db.varTransactions)..where((v) => v.id.equals(id))).go();
   }
 
@@ -67,5 +99,9 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
   Future<void> updateVarTransaction(VarTransaction varTransaction) async {}
 
   @override
-  Future<void> setVarReference(int id, int refId) async {}
+  Future<void> setVarReference(int id, int refId) async {
+    await (db.update(db.varTransactions)..where((v) => v.id.equals(id))).write(
+      VarTransactionsCompanion(varRefId: Value(refId)),
+    );
+  }
 }

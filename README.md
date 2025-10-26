@@ -7,7 +7,9 @@
 - ✓ VarTransaction (if being a compensation) needs a id reference to the compensated VarTransaction
 - ✓ Same for FixTransaction: FixTransaction entry needs List< Dict < Topic, int > >? compensation
 -> When FixTransaction creates VarTransaction it also creates VarTransaction for compensations ahead (like writen before)
--  Proper removing logic needs to be implemented
+- ✓ Proper removing logic needs to be implemented
+- ✓ Compensation needs to be available from topics from other categories
+-  Add edit dialogs
 
 - UI:  
 Topic: Details, Overview month (+, -, rest, awaited to pay), FixTransaction cards (active and inactive), VarTransaction table with filter options  

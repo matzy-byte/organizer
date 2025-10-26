@@ -39,6 +39,14 @@ class VarTransactionElementState extends State<VarTransactionElement> {
     });
   }
 
+  Future<void> removeVarTransaction(int id) async {
+    setState(() => _isLoading = true);
+    final varTransactionProvider = context.read<VarTransactionProvider>();
+    await varTransactionProvider.removeVarTransaction(id);
+    _varTransactions.removeWhere((v) => v.id == id);
+    setState(() => _isLoading = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -46,20 +54,28 @@ class VarTransactionElementState extends State<VarTransactionElement> {
           ? const Center(child: CircularProgressIndicator())
           : _varTransactions.isEmpty
           ? Text('There is no var transactions')
-          : VarTransactionTable(varTransactions: _varTransactions),
+          : VarTransactionTable(
+              varTransactions: _varTransactions,
+              interaction: (id) => removeVarTransaction(id),
+            ),
     );
   }
 }
 
+typedef IntCallback = void Function(int value);
+
 class VarTransactionTable extends StatelessWidget {
   final List<VarTransaction> varTransactions;
+  final IntCallback interaction;
 
-  const VarTransactionTable({super.key, required this.varTransactions});
+  const VarTransactionTable({
+    super.key,
+    required this.varTransactions,
+    required this.interaction,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final varTransactionProvider = context.watch<VarTransactionProvider>();
-
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
@@ -123,9 +139,7 @@ class VarTransactionTable extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: IconButton(
-                      onPressed: () {
-                        varTransactionProvider.removeVarTransaction(t.id);
-                      },
+                      onPressed: () => interaction.call(t.id),
                       icon: Icon(Icons.delete),
                     ),
                   ),

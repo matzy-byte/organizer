@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
+import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
@@ -30,6 +31,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
   List<Category> _categories = [];
   Topic? _selectedTopic;
   List<Topic> _topics = [];
+  List<Topic> _allTopics = [];
   Status _status = Status.active;
   bool _isExpense = true;
 
@@ -38,6 +40,8 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
   IntervalUnit? _selectedIntervalUnit = IntervalUnit.month;
 
+  List<_CompensationEntry> _compensations = [];
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +49,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
     final categoryProvider = context.read<CategoryProvider>();
     final topicProvider = context.read<TopicProvider>();
     _categories = categoryProvider.categories;
+    _allTopics = topicProvider.topics;
 
     if (widget.topic != null) {
       _selectedCategory = _categories.firstWhere(
@@ -58,6 +63,9 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
       _selectedCategory = _categories.firstWhere(
         (c) => c.id == widget.category!.id,
       );
+      _topics = topicProvider.topics
+          .where((t) => t.categoryId == _selectedCategory!.id)
+          .toList();
     }
 
     _startDate = DateTime.now();
@@ -291,6 +299,96 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
                     const SizedBox(height: 12),
 
+                    ExpansionTile(
+                      title: const Text('Compensations'),
+                      children: [
+                        ..._compensations.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final comp = entry.value;
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                              vertical: 4,
+                              horizontal: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: DropdownButtonFormField<Topic>(
+                                    initialValue: comp.topic,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Topic',
+                                    ),
+                                    items: _allTopics
+                                        .map(
+                                          (t) => DropdownMenuItem(
+                                            value: t,
+                                            child: Text(
+                                              "${_categories.firstWhere((c) => c.id == t.categoryId).name}/${t.name}",
+                                            ),
+                                          ),
+                                        )
+                                        .toList(),
+                                    onChanged: (value) {
+                                      setState(() => comp.topic = value);
+                                      _validateForm();
+                                    },
+                                    validator: (value) =>
+                                        value == null ? 'Select a topic' : null,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Expanded(
+                                  flex: 2,
+                                  child: TextFormField(
+                                    controller: comp.valueController,
+                                    keyboardType: TextInputType.number,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Value',
+                                    ),
+                                    onChanged: (value) => _validateForm(),
+                                    validator: (v) {
+                                      if (v == null || v.isEmpty) {
+                                        return 'Enter value';
+                                      }
+                                      if (num.tryParse(v) == null) {
+                                        return 'Invalid number';
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete),
+                                  onPressed: () {
+                                    setState(() {
+                                      _compensations.removeAt(index);
+                                    });
+                                    _validateForm();
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                        Align(
+                          alignment: Alignment.centerLeft,
+                          child: TextButton.icon(
+                            onPressed: () {
+                              setState(() {
+                                _compensations.add(_CompensationEntry());
+                              });
+                            },
+                            icon: const Icon(Icons.add),
+                            label: const Text('Add Compensation'),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
                     TextFormField(
                       controller: _valueController,
                       decoration: const InputDecoration(labelText: 'Value'),
@@ -329,6 +427,16 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
         ElevatedButton(
           onPressed: _isFormValid
               ? () async {
+                  final Map<int, CompensationInfo> compensationsMap = {};
+                  for (int i = 0; i < _compensations.length; i++) {
+                    final c = _compensations[i];
+                    final value = int.parse(c.valueController.text);
+                    compensationsMap[i] = CompensationInfo(
+                      topicName: c.topic!.name,
+                      value: _isExpense ? -1 * value : value,
+                    );
+                  }
+
                   final intervalCount = int.parse(
                     _intervalCountController.text,
                   );
@@ -341,7 +449,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                     intervalCount,
                     _selectedIntervalUnit!,
                     _isExpense ? -1 * value : value,
-                    null,
+                    _compensations.isEmpty ? null : compensationsMap,
                     _descriptionController.value.text,
                   );
                   Navigator.pop(context, true);
@@ -352,4 +460,11 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
       ],
     );
   }
+}
+
+class _CompensationEntry {
+  Topic? topic;
+  TextEditingController valueController = TextEditingController();
+
+  _CompensationEntry();
 }
