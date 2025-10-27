@@ -24,6 +24,8 @@ class FixTransactionProvider with ChangeNotifier {
     int value,
     Map<int, CompensationInfo>? compensations,
     String? description,
+    DateTime? latestDate,
+    int? varRefId,
   ) async {
     await fixTransactionService.addFixTransaction(
       topicId,
@@ -35,6 +37,8 @@ class FixTransactionProvider with ChangeNotifier {
       value,
       compensations,
       description,
+      latestDate,
+      varRefId,
     );
   }
 

@@ -573,630 +573,6 @@ class TopicsCompanion extends UpdateCompanion<Topic> {
   }
 }
 
-class $FixTransactionsTable extends FixTransactions
-    with TableInfo<$FixTransactionsTable, FixTransaction> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $FixTransactionsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-    'id',
-    aliasedName,
-    false,
-    hasAutoIncrement: true,
-    type: DriftSqlType.int,
-    requiredDuringInsert: false,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'PRIMARY KEY AUTOINCREMENT',
-    ),
-  );
-  static const VerificationMeta _topicIdMeta = const VerificationMeta(
-    'topicId',
-  );
-  @override
-  late final GeneratedColumn<int> topicId = GeneratedColumn<int>(
-    'topic_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES topics (id)',
-    ),
-  );
-  @override
-  late final GeneratedColumnWithTypeConverter<Status, String> status =
-      GeneratedColumn<String>(
-        'status',
-        aliasedName,
-        false,
-        type: DriftSqlType.string,
-        requiredDuringInsert: true,
-      ).withConverter<Status>($FixTransactionsTable.$converterstatus);
-  static const VerificationMeta _startMeta = const VerificationMeta('start');
-  @override
-  late final GeneratedColumn<DateTime> start = GeneratedColumn<DateTime>(
-    'start',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _endMeta = const VerificationMeta('end');
-  @override
-  late final GeneratedColumn<DateTime> end = GeneratedColumn<DateTime>(
-    'end',
-    aliasedName,
-    false,
-    type: DriftSqlType.dateTime,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _intervalCountMeta = const VerificationMeta(
-    'intervalCount',
-  );
-  @override
-  late final GeneratedColumn<int> intervalCount = GeneratedColumn<int>(
-    'interval_count',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  @override
-  late final GeneratedColumnWithTypeConverter<IntervalUnit, String>
-  intervalUnit = GeneratedColumn<String>(
-    'interval_unit',
-    aliasedName,
-    false,
-    type: DriftSqlType.string,
-    requiredDuringInsert: true,
-  ).withConverter<IntervalUnit>($FixTransactionsTable.$converterintervalUnit);
-  static const VerificationMeta _valueMeta = const VerificationMeta('value');
-  @override
-  late final GeneratedColumn<int> value = GeneratedColumn<int>(
-    'value',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-  );
-  static const VerificationMeta _compensationsMeta = const VerificationMeta(
-    'compensations',
-  );
-  @override
-  late final GeneratedColumn<String> compensations = GeneratedColumn<String>(
-    'compensations',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _decriptionMeta = const VerificationMeta(
-    'decription',
-  );
-  @override
-  late final GeneratedColumn<String> decription = GeneratedColumn<String>(
-    'decription',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  @override
-  List<GeneratedColumn> get $columns => [
-    id,
-    topicId,
-    status,
-    start,
-    end,
-    intervalCount,
-    intervalUnit,
-    value,
-    compensations,
-    decription,
-  ];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'fix_transactions';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<FixTransaction> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('topic_id')) {
-      context.handle(
-        _topicIdMeta,
-        topicId.isAcceptableOrUnknown(data['topic_id']!, _topicIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_topicIdMeta);
-    }
-    if (data.containsKey('start')) {
-      context.handle(
-        _startMeta,
-        start.isAcceptableOrUnknown(data['start']!, _startMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_startMeta);
-    }
-    if (data.containsKey('end')) {
-      context.handle(
-        _endMeta,
-        end.isAcceptableOrUnknown(data['end']!, _endMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_endMeta);
-    }
-    if (data.containsKey('interval_count')) {
-      context.handle(
-        _intervalCountMeta,
-        intervalCount.isAcceptableOrUnknown(
-          data['interval_count']!,
-          _intervalCountMeta,
-        ),
-      );
-    } else if (isInserting) {
-      context.missing(_intervalCountMeta);
-    }
-    if (data.containsKey('value')) {
-      context.handle(
-        _valueMeta,
-        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_valueMeta);
-    }
-    if (data.containsKey('compensations')) {
-      context.handle(
-        _compensationsMeta,
-        compensations.isAcceptableOrUnknown(
-          data['compensations']!,
-          _compensationsMeta,
-        ),
-      );
-    }
-    if (data.containsKey('decription')) {
-      context.handle(
-        _decriptionMeta,
-        decription.isAcceptableOrUnknown(data['decription']!, _decriptionMeta),
-      );
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  FixTransaction map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return FixTransaction(
-      id: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}id'],
-      )!,
-      topicId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}topic_id'],
-      )!,
-      status: $FixTransactionsTable.$converterstatus.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}status'],
-        )!,
-      ),
-      start: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}start'],
-      )!,
-      end: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}end'],
-      )!,
-      intervalCount: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}interval_count'],
-      )!,
-      intervalUnit: $FixTransactionsTable.$converterintervalUnit.fromSql(
-        attachedDatabase.typeMapping.read(
-          DriftSqlType.string,
-          data['${effectivePrefix}interval_unit'],
-        )!,
-      ),
-      value: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}value'],
-      )!,
-      compensations: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}compensations'],
-      ),
-      decription: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}decription'],
-      ),
-    );
-  }
-
-  @override
-  $FixTransactionsTable createAlias(String alias) {
-    return $FixTransactionsTable(attachedDatabase, alias);
-  }
-
-  static JsonTypeConverter2<Status, String, String> $converterstatus =
-      const EnumNameConverter<Status>(Status.values);
-  static JsonTypeConverter2<IntervalUnit, String, String>
-  $converterintervalUnit = const EnumNameConverter<IntervalUnit>(
-    IntervalUnit.values,
-  );
-}
-
-class FixTransaction extends DataClass implements Insertable<FixTransaction> {
-  final int id;
-  final int topicId;
-  final Status status;
-  final DateTime start;
-  final DateTime end;
-  final int intervalCount;
-  final IntervalUnit intervalUnit;
-  final int value;
-  final String? compensations;
-  final String? decription;
-  const FixTransaction({
-    required this.id,
-    required this.topicId,
-    required this.status,
-    required this.start,
-    required this.end,
-    required this.intervalCount,
-    required this.intervalUnit,
-    required this.value,
-    this.compensations,
-    this.decription,
-  });
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['topic_id'] = Variable<int>(topicId);
-    {
-      map['status'] = Variable<String>(
-        $FixTransactionsTable.$converterstatus.toSql(status),
-      );
-    }
-    map['start'] = Variable<DateTime>(start);
-    map['end'] = Variable<DateTime>(end);
-    map['interval_count'] = Variable<int>(intervalCount);
-    {
-      map['interval_unit'] = Variable<String>(
-        $FixTransactionsTable.$converterintervalUnit.toSql(intervalUnit),
-      );
-    }
-    map['value'] = Variable<int>(value);
-    if (!nullToAbsent || compensations != null) {
-      map['compensations'] = Variable<String>(compensations);
-    }
-    if (!nullToAbsent || decription != null) {
-      map['decription'] = Variable<String>(decription);
-    }
-    return map;
-  }
-
-  FixTransactionsCompanion toCompanion(bool nullToAbsent) {
-    return FixTransactionsCompanion(
-      id: Value(id),
-      topicId: Value(topicId),
-      status: Value(status),
-      start: Value(start),
-      end: Value(end),
-      intervalCount: Value(intervalCount),
-      intervalUnit: Value(intervalUnit),
-      value: Value(value),
-      compensations: compensations == null && nullToAbsent
-          ? const Value.absent()
-          : Value(compensations),
-      decription: decription == null && nullToAbsent
-          ? const Value.absent()
-          : Value(decription),
-    );
-  }
-
-  factory FixTransaction.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FixTransaction(
-      id: serializer.fromJson<int>(json['id']),
-      topicId: serializer.fromJson<int>(json['topicId']),
-      status: $FixTransactionsTable.$converterstatus.fromJson(
-        serializer.fromJson<String>(json['status']),
-      ),
-      start: serializer.fromJson<DateTime>(json['start']),
-      end: serializer.fromJson<DateTime>(json['end']),
-      intervalCount: serializer.fromJson<int>(json['intervalCount']),
-      intervalUnit: $FixTransactionsTable.$converterintervalUnit.fromJson(
-        serializer.fromJson<String>(json['intervalUnit']),
-      ),
-      value: serializer.fromJson<int>(json['value']),
-      compensations: serializer.fromJson<String?>(json['compensations']),
-      decription: serializer.fromJson<String?>(json['decription']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'topicId': serializer.toJson<int>(topicId),
-      'status': serializer.toJson<String>(
-        $FixTransactionsTable.$converterstatus.toJson(status),
-      ),
-      'start': serializer.toJson<DateTime>(start),
-      'end': serializer.toJson<DateTime>(end),
-      'intervalCount': serializer.toJson<int>(intervalCount),
-      'intervalUnit': serializer.toJson<String>(
-        $FixTransactionsTable.$converterintervalUnit.toJson(intervalUnit),
-      ),
-      'value': serializer.toJson<int>(value),
-      'compensations': serializer.toJson<String?>(compensations),
-      'decription': serializer.toJson<String?>(decription),
-    };
-  }
-
-  FixTransaction copyWith({
-    int? id,
-    int? topicId,
-    Status? status,
-    DateTime? start,
-    DateTime? end,
-    int? intervalCount,
-    IntervalUnit? intervalUnit,
-    int? value,
-    Value<String?> compensations = const Value.absent(),
-    Value<String?> decription = const Value.absent(),
-  }) => FixTransaction(
-    id: id ?? this.id,
-    topicId: topicId ?? this.topicId,
-    status: status ?? this.status,
-    start: start ?? this.start,
-    end: end ?? this.end,
-    intervalCount: intervalCount ?? this.intervalCount,
-    intervalUnit: intervalUnit ?? this.intervalUnit,
-    value: value ?? this.value,
-    compensations: compensations.present
-        ? compensations.value
-        : this.compensations,
-    decription: decription.present ? decription.value : this.decription,
-  );
-  FixTransaction copyWithCompanion(FixTransactionsCompanion data) {
-    return FixTransaction(
-      id: data.id.present ? data.id.value : this.id,
-      topicId: data.topicId.present ? data.topicId.value : this.topicId,
-      status: data.status.present ? data.status.value : this.status,
-      start: data.start.present ? data.start.value : this.start,
-      end: data.end.present ? data.end.value : this.end,
-      intervalCount: data.intervalCount.present
-          ? data.intervalCount.value
-          : this.intervalCount,
-      intervalUnit: data.intervalUnit.present
-          ? data.intervalUnit.value
-          : this.intervalUnit,
-      value: data.value.present ? data.value.value : this.value,
-      compensations: data.compensations.present
-          ? data.compensations.value
-          : this.compensations,
-      decription: data.decription.present
-          ? data.decription.value
-          : this.decription,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FixTransaction(')
-          ..write('id: $id, ')
-          ..write('topicId: $topicId, ')
-          ..write('status: $status, ')
-          ..write('start: $start, ')
-          ..write('end: $end, ')
-          ..write('intervalCount: $intervalCount, ')
-          ..write('intervalUnit: $intervalUnit, ')
-          ..write('value: $value, ')
-          ..write('compensations: $compensations, ')
-          ..write('decription: $decription')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-    id,
-    topicId,
-    status,
-    start,
-    end,
-    intervalCount,
-    intervalUnit,
-    value,
-    compensations,
-    decription,
-  );
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FixTransaction &&
-          other.id == this.id &&
-          other.topicId == this.topicId &&
-          other.status == this.status &&
-          other.start == this.start &&
-          other.end == this.end &&
-          other.intervalCount == this.intervalCount &&
-          other.intervalUnit == this.intervalUnit &&
-          other.value == this.value &&
-          other.compensations == this.compensations &&
-          other.decription == this.decription);
-}
-
-class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
-  final Value<int> id;
-  final Value<int> topicId;
-  final Value<Status> status;
-  final Value<DateTime> start;
-  final Value<DateTime> end;
-  final Value<int> intervalCount;
-  final Value<IntervalUnit> intervalUnit;
-  final Value<int> value;
-  final Value<String?> compensations;
-  final Value<String?> decription;
-  const FixTransactionsCompanion({
-    this.id = const Value.absent(),
-    this.topicId = const Value.absent(),
-    this.status = const Value.absent(),
-    this.start = const Value.absent(),
-    this.end = const Value.absent(),
-    this.intervalCount = const Value.absent(),
-    this.intervalUnit = const Value.absent(),
-    this.value = const Value.absent(),
-    this.compensations = const Value.absent(),
-    this.decription = const Value.absent(),
-  });
-  FixTransactionsCompanion.insert({
-    this.id = const Value.absent(),
-    required int topicId,
-    required Status status,
-    required DateTime start,
-    required DateTime end,
-    required int intervalCount,
-    required IntervalUnit intervalUnit,
-    required int value,
-    this.compensations = const Value.absent(),
-    this.decription = const Value.absent(),
-  }) : topicId = Value(topicId),
-       status = Value(status),
-       start = Value(start),
-       end = Value(end),
-       intervalCount = Value(intervalCount),
-       intervalUnit = Value(intervalUnit),
-       value = Value(value);
-  static Insertable<FixTransaction> custom({
-    Expression<int>? id,
-    Expression<int>? topicId,
-    Expression<String>? status,
-    Expression<DateTime>? start,
-    Expression<DateTime>? end,
-    Expression<int>? intervalCount,
-    Expression<String>? intervalUnit,
-    Expression<int>? value,
-    Expression<String>? compensations,
-    Expression<String>? decription,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (topicId != null) 'topic_id': topicId,
-      if (status != null) 'status': status,
-      if (start != null) 'start': start,
-      if (end != null) 'end': end,
-      if (intervalCount != null) 'interval_count': intervalCount,
-      if (intervalUnit != null) 'interval_unit': intervalUnit,
-      if (value != null) 'value': value,
-      if (compensations != null) 'compensations': compensations,
-      if (decription != null) 'decription': decription,
-    });
-  }
-
-  FixTransactionsCompanion copyWith({
-    Value<int>? id,
-    Value<int>? topicId,
-    Value<Status>? status,
-    Value<DateTime>? start,
-    Value<DateTime>? end,
-    Value<int>? intervalCount,
-    Value<IntervalUnit>? intervalUnit,
-    Value<int>? value,
-    Value<String?>? compensations,
-    Value<String?>? decription,
-  }) {
-    return FixTransactionsCompanion(
-      id: id ?? this.id,
-      topicId: topicId ?? this.topicId,
-      status: status ?? this.status,
-      start: start ?? this.start,
-      end: end ?? this.end,
-      intervalCount: intervalCount ?? this.intervalCount,
-      intervalUnit: intervalUnit ?? this.intervalUnit,
-      value: value ?? this.value,
-      compensations: compensations ?? this.compensations,
-      decription: decription ?? this.decription,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (topicId.present) {
-      map['topic_id'] = Variable<int>(topicId.value);
-    }
-    if (status.present) {
-      map['status'] = Variable<String>(
-        $FixTransactionsTable.$converterstatus.toSql(status.value),
-      );
-    }
-    if (start.present) {
-      map['start'] = Variable<DateTime>(start.value);
-    }
-    if (end.present) {
-      map['end'] = Variable<DateTime>(end.value);
-    }
-    if (intervalCount.present) {
-      map['interval_count'] = Variable<int>(intervalCount.value);
-    }
-    if (intervalUnit.present) {
-      map['interval_unit'] = Variable<String>(
-        $FixTransactionsTable.$converterintervalUnit.toSql(intervalUnit.value),
-      );
-    }
-    if (value.present) {
-      map['value'] = Variable<int>(value.value);
-    }
-    if (compensations.present) {
-      map['compensations'] = Variable<String>(compensations.value);
-    }
-    if (decription.present) {
-      map['decription'] = Variable<String>(decription.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FixTransactionsCompanion(')
-          ..write('id: $id, ')
-          ..write('topicId: $topicId, ')
-          ..write('status: $status, ')
-          ..write('start: $start, ')
-          ..write('end: $end, ')
-          ..write('intervalCount: $intervalCount, ')
-          ..write('intervalUnit: $intervalUnit, ')
-          ..write('value: $value, ')
-          ..write('compensations: $compensations, ')
-          ..write('decription: $decription')
-          ..write(')'))
-        .toString();
-  }
-}
-
 class $VarTransactionsTable extends VarTransactions
     with TableInfo<$VarTransactionsTable, VarTransaction> {
   @override
@@ -1291,6 +667,9 @@ class $VarTransactionsTable extends VarTransactions
     true,
     type: DriftSqlType.int,
     requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES var_transactions (id)',
+    ),
   );
   @override
   List<GeneratedColumn> get $columns => [
@@ -1714,15 +1093,742 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
   }
 }
 
+class $FixTransactionsTable extends FixTransactions
+    with TableInfo<$FixTransactionsTable, FixTransaction> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FixTransactionsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _topicIdMeta = const VerificationMeta(
+    'topicId',
+  );
+  @override
+  late final GeneratedColumn<int> topicId = GeneratedColumn<int>(
+    'topic_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES topics (id)',
+    ),
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<Status, String> status =
+      GeneratedColumn<String>(
+        'status',
+        aliasedName,
+        false,
+        type: DriftSqlType.string,
+        requiredDuringInsert: true,
+      ).withConverter<Status>($FixTransactionsTable.$converterstatus);
+  static const VerificationMeta _startMeta = const VerificationMeta('start');
+  @override
+  late final GeneratedColumn<DateTime> start = GeneratedColumn<DateTime>(
+    'start',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _endMeta = const VerificationMeta('end');
+  @override
+  late final GeneratedColumn<DateTime> end = GeneratedColumn<DateTime>(
+    'end',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _intervalCountMeta = const VerificationMeta(
+    'intervalCount',
+  );
+  @override
+  late final GeneratedColumn<int> intervalCount = GeneratedColumn<int>(
+    'interval_count',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  late final GeneratedColumnWithTypeConverter<IntervalUnit, String>
+  intervalUnit = GeneratedColumn<String>(
+    'interval_unit',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  ).withConverter<IntervalUnit>($FixTransactionsTable.$converterintervalUnit);
+  static const VerificationMeta _valueMeta = const VerificationMeta('value');
+  @override
+  late final GeneratedColumn<int> value = GeneratedColumn<int>(
+    'value',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _compensationsMeta = const VerificationMeta(
+    'compensations',
+  );
+  @override
+  late final GeneratedColumn<String> compensations = GeneratedColumn<String>(
+    'compensations',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _decriptionMeta = const VerificationMeta(
+    'decription',
+  );
+  @override
+  late final GeneratedColumn<String> decription = GeneratedColumn<String>(
+    'decription',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _latestDateMeta = const VerificationMeta(
+    'latestDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> latestDate = GeneratedColumn<DateTime>(
+    'latest_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _varRefIdMeta = const VerificationMeta(
+    'varRefId',
+  );
+  @override
+  late final GeneratedColumn<int> varRefId = GeneratedColumn<int>(
+    'var_ref_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES var_transactions (id)',
+    ),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    topicId,
+    status,
+    start,
+    end,
+    intervalCount,
+    intervalUnit,
+    value,
+    compensations,
+    decription,
+    latestDate,
+    varRefId,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'fix_transactions';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<FixTransaction> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('topic_id')) {
+      context.handle(
+        _topicIdMeta,
+        topicId.isAcceptableOrUnknown(data['topic_id']!, _topicIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_topicIdMeta);
+    }
+    if (data.containsKey('start')) {
+      context.handle(
+        _startMeta,
+        start.isAcceptableOrUnknown(data['start']!, _startMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startMeta);
+    }
+    if (data.containsKey('end')) {
+      context.handle(
+        _endMeta,
+        end.isAcceptableOrUnknown(data['end']!, _endMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_endMeta);
+    }
+    if (data.containsKey('interval_count')) {
+      context.handle(
+        _intervalCountMeta,
+        intervalCount.isAcceptableOrUnknown(
+          data['interval_count']!,
+          _intervalCountMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_intervalCountMeta);
+    }
+    if (data.containsKey('value')) {
+      context.handle(
+        _valueMeta,
+        value.isAcceptableOrUnknown(data['value']!, _valueMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueMeta);
+    }
+    if (data.containsKey('compensations')) {
+      context.handle(
+        _compensationsMeta,
+        compensations.isAcceptableOrUnknown(
+          data['compensations']!,
+          _compensationsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('decription')) {
+      context.handle(
+        _decriptionMeta,
+        decription.isAcceptableOrUnknown(data['decription']!, _decriptionMeta),
+      );
+    }
+    if (data.containsKey('latest_date')) {
+      context.handle(
+        _latestDateMeta,
+        latestDate.isAcceptableOrUnknown(data['latest_date']!, _latestDateMeta),
+      );
+    }
+    if (data.containsKey('var_ref_id')) {
+      context.handle(
+        _varRefIdMeta,
+        varRefId.isAcceptableOrUnknown(data['var_ref_id']!, _varRefIdMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  FixTransaction map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FixTransaction(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      topicId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}topic_id'],
+      )!,
+      status: $FixTransactionsTable.$converterstatus.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}status'],
+        )!,
+      ),
+      start: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start'],
+      )!,
+      end: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}end'],
+      )!,
+      intervalCount: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}interval_count'],
+      )!,
+      intervalUnit: $FixTransactionsTable.$converterintervalUnit.fromSql(
+        attachedDatabase.typeMapping.read(
+          DriftSqlType.string,
+          data['${effectivePrefix}interval_unit'],
+        )!,
+      ),
+      value: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}value'],
+      )!,
+      compensations: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}compensations'],
+      ),
+      decription: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}decription'],
+      ),
+      latestDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}latest_date'],
+      ),
+      varRefId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}var_ref_id'],
+      ),
+    );
+  }
+
+  @override
+  $FixTransactionsTable createAlias(String alias) {
+    return $FixTransactionsTable(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<Status, String, String> $converterstatus =
+      const EnumNameConverter<Status>(Status.values);
+  static JsonTypeConverter2<IntervalUnit, String, String>
+  $converterintervalUnit = const EnumNameConverter<IntervalUnit>(
+    IntervalUnit.values,
+  );
+}
+
+class FixTransaction extends DataClass implements Insertable<FixTransaction> {
+  final int id;
+  final int topicId;
+  final Status status;
+  final DateTime start;
+  final DateTime end;
+  final int intervalCount;
+  final IntervalUnit intervalUnit;
+  final int value;
+  final String? compensations;
+  final String? decription;
+  final DateTime? latestDate;
+  final int? varRefId;
+  const FixTransaction({
+    required this.id,
+    required this.topicId,
+    required this.status,
+    required this.start,
+    required this.end,
+    required this.intervalCount,
+    required this.intervalUnit,
+    required this.value,
+    this.compensations,
+    this.decription,
+    this.latestDate,
+    this.varRefId,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['topic_id'] = Variable<int>(topicId);
+    {
+      map['status'] = Variable<String>(
+        $FixTransactionsTable.$converterstatus.toSql(status),
+      );
+    }
+    map['start'] = Variable<DateTime>(start);
+    map['end'] = Variable<DateTime>(end);
+    map['interval_count'] = Variable<int>(intervalCount);
+    {
+      map['interval_unit'] = Variable<String>(
+        $FixTransactionsTable.$converterintervalUnit.toSql(intervalUnit),
+      );
+    }
+    map['value'] = Variable<int>(value);
+    if (!nullToAbsent || compensations != null) {
+      map['compensations'] = Variable<String>(compensations);
+    }
+    if (!nullToAbsent || decription != null) {
+      map['decription'] = Variable<String>(decription);
+    }
+    if (!nullToAbsent || latestDate != null) {
+      map['latest_date'] = Variable<DateTime>(latestDate);
+    }
+    if (!nullToAbsent || varRefId != null) {
+      map['var_ref_id'] = Variable<int>(varRefId);
+    }
+    return map;
+  }
+
+  FixTransactionsCompanion toCompanion(bool nullToAbsent) {
+    return FixTransactionsCompanion(
+      id: Value(id),
+      topicId: Value(topicId),
+      status: Value(status),
+      start: Value(start),
+      end: Value(end),
+      intervalCount: Value(intervalCount),
+      intervalUnit: Value(intervalUnit),
+      value: Value(value),
+      compensations: compensations == null && nullToAbsent
+          ? const Value.absent()
+          : Value(compensations),
+      decription: decription == null && nullToAbsent
+          ? const Value.absent()
+          : Value(decription),
+      latestDate: latestDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(latestDate),
+      varRefId: varRefId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(varRefId),
+    );
+  }
+
+  factory FixTransaction.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FixTransaction(
+      id: serializer.fromJson<int>(json['id']),
+      topicId: serializer.fromJson<int>(json['topicId']),
+      status: $FixTransactionsTable.$converterstatus.fromJson(
+        serializer.fromJson<String>(json['status']),
+      ),
+      start: serializer.fromJson<DateTime>(json['start']),
+      end: serializer.fromJson<DateTime>(json['end']),
+      intervalCount: serializer.fromJson<int>(json['intervalCount']),
+      intervalUnit: $FixTransactionsTable.$converterintervalUnit.fromJson(
+        serializer.fromJson<String>(json['intervalUnit']),
+      ),
+      value: serializer.fromJson<int>(json['value']),
+      compensations: serializer.fromJson<String?>(json['compensations']),
+      decription: serializer.fromJson<String?>(json['decription']),
+      latestDate: serializer.fromJson<DateTime?>(json['latestDate']),
+      varRefId: serializer.fromJson<int?>(json['varRefId']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'topicId': serializer.toJson<int>(topicId),
+      'status': serializer.toJson<String>(
+        $FixTransactionsTable.$converterstatus.toJson(status),
+      ),
+      'start': serializer.toJson<DateTime>(start),
+      'end': serializer.toJson<DateTime>(end),
+      'intervalCount': serializer.toJson<int>(intervalCount),
+      'intervalUnit': serializer.toJson<String>(
+        $FixTransactionsTable.$converterintervalUnit.toJson(intervalUnit),
+      ),
+      'value': serializer.toJson<int>(value),
+      'compensations': serializer.toJson<String?>(compensations),
+      'decription': serializer.toJson<String?>(decription),
+      'latestDate': serializer.toJson<DateTime?>(latestDate),
+      'varRefId': serializer.toJson<int?>(varRefId),
+    };
+  }
+
+  FixTransaction copyWith({
+    int? id,
+    int? topicId,
+    Status? status,
+    DateTime? start,
+    DateTime? end,
+    int? intervalCount,
+    IntervalUnit? intervalUnit,
+    int? value,
+    Value<String?> compensations = const Value.absent(),
+    Value<String?> decription = const Value.absent(),
+    Value<DateTime?> latestDate = const Value.absent(),
+    Value<int?> varRefId = const Value.absent(),
+  }) => FixTransaction(
+    id: id ?? this.id,
+    topicId: topicId ?? this.topicId,
+    status: status ?? this.status,
+    start: start ?? this.start,
+    end: end ?? this.end,
+    intervalCount: intervalCount ?? this.intervalCount,
+    intervalUnit: intervalUnit ?? this.intervalUnit,
+    value: value ?? this.value,
+    compensations: compensations.present
+        ? compensations.value
+        : this.compensations,
+    decription: decription.present ? decription.value : this.decription,
+    latestDate: latestDate.present ? latestDate.value : this.latestDate,
+    varRefId: varRefId.present ? varRefId.value : this.varRefId,
+  );
+  FixTransaction copyWithCompanion(FixTransactionsCompanion data) {
+    return FixTransaction(
+      id: data.id.present ? data.id.value : this.id,
+      topicId: data.topicId.present ? data.topicId.value : this.topicId,
+      status: data.status.present ? data.status.value : this.status,
+      start: data.start.present ? data.start.value : this.start,
+      end: data.end.present ? data.end.value : this.end,
+      intervalCount: data.intervalCount.present
+          ? data.intervalCount.value
+          : this.intervalCount,
+      intervalUnit: data.intervalUnit.present
+          ? data.intervalUnit.value
+          : this.intervalUnit,
+      value: data.value.present ? data.value.value : this.value,
+      compensations: data.compensations.present
+          ? data.compensations.value
+          : this.compensations,
+      decription: data.decription.present
+          ? data.decription.value
+          : this.decription,
+      latestDate: data.latestDate.present
+          ? data.latestDate.value
+          : this.latestDate,
+      varRefId: data.varRefId.present ? data.varRefId.value : this.varRefId,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FixTransaction(')
+          ..write('id: $id, ')
+          ..write('topicId: $topicId, ')
+          ..write('status: $status, ')
+          ..write('start: $start, ')
+          ..write('end: $end, ')
+          ..write('intervalCount: $intervalCount, ')
+          ..write('intervalUnit: $intervalUnit, ')
+          ..write('value: $value, ')
+          ..write('compensations: $compensations, ')
+          ..write('decription: $decription, ')
+          ..write('latestDate: $latestDate, ')
+          ..write('varRefId: $varRefId')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    topicId,
+    status,
+    start,
+    end,
+    intervalCount,
+    intervalUnit,
+    value,
+    compensations,
+    decription,
+    latestDate,
+    varRefId,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FixTransaction &&
+          other.id == this.id &&
+          other.topicId == this.topicId &&
+          other.status == this.status &&
+          other.start == this.start &&
+          other.end == this.end &&
+          other.intervalCount == this.intervalCount &&
+          other.intervalUnit == this.intervalUnit &&
+          other.value == this.value &&
+          other.compensations == this.compensations &&
+          other.decription == this.decription &&
+          other.latestDate == this.latestDate &&
+          other.varRefId == this.varRefId);
+}
+
+class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
+  final Value<int> id;
+  final Value<int> topicId;
+  final Value<Status> status;
+  final Value<DateTime> start;
+  final Value<DateTime> end;
+  final Value<int> intervalCount;
+  final Value<IntervalUnit> intervalUnit;
+  final Value<int> value;
+  final Value<String?> compensations;
+  final Value<String?> decription;
+  final Value<DateTime?> latestDate;
+  final Value<int?> varRefId;
+  const FixTransactionsCompanion({
+    this.id = const Value.absent(),
+    this.topicId = const Value.absent(),
+    this.status = const Value.absent(),
+    this.start = const Value.absent(),
+    this.end = const Value.absent(),
+    this.intervalCount = const Value.absent(),
+    this.intervalUnit = const Value.absent(),
+    this.value = const Value.absent(),
+    this.compensations = const Value.absent(),
+    this.decription = const Value.absent(),
+    this.latestDate = const Value.absent(),
+    this.varRefId = const Value.absent(),
+  });
+  FixTransactionsCompanion.insert({
+    this.id = const Value.absent(),
+    required int topicId,
+    required Status status,
+    required DateTime start,
+    required DateTime end,
+    required int intervalCount,
+    required IntervalUnit intervalUnit,
+    required int value,
+    this.compensations = const Value.absent(),
+    this.decription = const Value.absent(),
+    this.latestDate = const Value.absent(),
+    this.varRefId = const Value.absent(),
+  }) : topicId = Value(topicId),
+       status = Value(status),
+       start = Value(start),
+       end = Value(end),
+       intervalCount = Value(intervalCount),
+       intervalUnit = Value(intervalUnit),
+       value = Value(value);
+  static Insertable<FixTransaction> custom({
+    Expression<int>? id,
+    Expression<int>? topicId,
+    Expression<String>? status,
+    Expression<DateTime>? start,
+    Expression<DateTime>? end,
+    Expression<int>? intervalCount,
+    Expression<String>? intervalUnit,
+    Expression<int>? value,
+    Expression<String>? compensations,
+    Expression<String>? decription,
+    Expression<DateTime>? latestDate,
+    Expression<int>? varRefId,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (topicId != null) 'topic_id': topicId,
+      if (status != null) 'status': status,
+      if (start != null) 'start': start,
+      if (end != null) 'end': end,
+      if (intervalCount != null) 'interval_count': intervalCount,
+      if (intervalUnit != null) 'interval_unit': intervalUnit,
+      if (value != null) 'value': value,
+      if (compensations != null) 'compensations': compensations,
+      if (decription != null) 'decription': decription,
+      if (latestDate != null) 'latest_date': latestDate,
+      if (varRefId != null) 'var_ref_id': varRefId,
+    });
+  }
+
+  FixTransactionsCompanion copyWith({
+    Value<int>? id,
+    Value<int>? topicId,
+    Value<Status>? status,
+    Value<DateTime>? start,
+    Value<DateTime>? end,
+    Value<int>? intervalCount,
+    Value<IntervalUnit>? intervalUnit,
+    Value<int>? value,
+    Value<String?>? compensations,
+    Value<String?>? decription,
+    Value<DateTime?>? latestDate,
+    Value<int?>? varRefId,
+  }) {
+    return FixTransactionsCompanion(
+      id: id ?? this.id,
+      topicId: topicId ?? this.topicId,
+      status: status ?? this.status,
+      start: start ?? this.start,
+      end: end ?? this.end,
+      intervalCount: intervalCount ?? this.intervalCount,
+      intervalUnit: intervalUnit ?? this.intervalUnit,
+      value: value ?? this.value,
+      compensations: compensations ?? this.compensations,
+      decription: decription ?? this.decription,
+      latestDate: latestDate ?? this.latestDate,
+      varRefId: varRefId ?? this.varRefId,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (topicId.present) {
+      map['topic_id'] = Variable<int>(topicId.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(
+        $FixTransactionsTable.$converterstatus.toSql(status.value),
+      );
+    }
+    if (start.present) {
+      map['start'] = Variable<DateTime>(start.value);
+    }
+    if (end.present) {
+      map['end'] = Variable<DateTime>(end.value);
+    }
+    if (intervalCount.present) {
+      map['interval_count'] = Variable<int>(intervalCount.value);
+    }
+    if (intervalUnit.present) {
+      map['interval_unit'] = Variable<String>(
+        $FixTransactionsTable.$converterintervalUnit.toSql(intervalUnit.value),
+      );
+    }
+    if (value.present) {
+      map['value'] = Variable<int>(value.value);
+    }
+    if (compensations.present) {
+      map['compensations'] = Variable<String>(compensations.value);
+    }
+    if (decription.present) {
+      map['decription'] = Variable<String>(decription.value);
+    }
+    if (latestDate.present) {
+      map['latest_date'] = Variable<DateTime>(latestDate.value);
+    }
+    if (varRefId.present) {
+      map['var_ref_id'] = Variable<int>(varRefId.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FixTransactionsCompanion(')
+          ..write('id: $id, ')
+          ..write('topicId: $topicId, ')
+          ..write('status: $status, ')
+          ..write('start: $start, ')
+          ..write('end: $end, ')
+          ..write('intervalCount: $intervalCount, ')
+          ..write('intervalUnit: $intervalUnit, ')
+          ..write('value: $value, ')
+          ..write('compensations: $compensations, ')
+          ..write('decription: $decription, ')
+          ..write('latestDate: $latestDate, ')
+          ..write('varRefId: $varRefId')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $TopicsTable topics = $TopicsTable(this);
-  late final $FixTransactionsTable fixTransactions = $FixTransactionsTable(
+  late final $VarTransactionsTable varTransactions = $VarTransactionsTable(
     this,
   );
-  late final $VarTransactionsTable varTransactions = $VarTransactionsTable(
+  late final $FixTransactionsTable fixTransactions = $FixTransactionsTable(
     this,
   );
   @override
@@ -1732,8 +1838,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     categories,
     topics,
-    fixTransactions,
     varTransactions,
+    fixTransactions,
   ];
 }
 
@@ -2031,26 +2137,6 @@ final class $$TopicsTableReferences
     );
   }
 
-  static MultiTypedResultKey<$FixTransactionsTable, List<FixTransaction>>
-  _fixTransactionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.fixTransactions,
-    aliasName: $_aliasNameGenerator(db.topics.id, db.fixTransactions.topicId),
-  );
-
-  $$FixTransactionsTableProcessedTableManager get fixTransactionsRefs {
-    final manager = $$FixTransactionsTableTableManager(
-      $_db,
-      $_db.fixTransactions,
-    ).filter((f) => f.topicId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(
-      _fixTransactionsRefsTable($_db),
-    );
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
   static MultiTypedResultKey<$VarTransactionsTable, List<VarTransaction>>
   _varTransactionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.varTransactions,
@@ -2065,6 +2151,26 @@ final class $$TopicsTableReferences
 
     final cache = $_typedResult.readTableOrNull(
       _varTransactionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$FixTransactionsTable, List<FixTransaction>>
+  _fixTransactionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.fixTransactions,
+    aliasName: $_aliasNameGenerator(db.topics.id, db.fixTransactions.topicId),
+  );
+
+  $$FixTransactionsTableProcessedTableManager get fixTransactionsRefs {
+    final manager = $$FixTransactionsTableTableManager(
+      $_db,
+      $_db.fixTransactions,
+    ).filter((f) => f.topicId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _fixTransactionsRefsTable($_db),
     );
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
@@ -2119,31 +2225,6 @@ class $$TopicsTableFilterComposer
     return composer;
   }
 
-  Expression<bool> fixTransactionsRefs(
-    Expression<bool> Function($$FixTransactionsTableFilterComposer f) f,
-  ) {
-    final $$FixTransactionsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.fixTransactions,
-      getReferencedColumn: (t) => t.topicId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$FixTransactionsTableFilterComposer(
-            $db: $db,
-            $table: $db.fixTransactions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
   Expression<bool> varTransactionsRefs(
     Expression<bool> Function($$VarTransactionsTableFilterComposer f) f,
   ) {
@@ -2160,6 +2241,31 @@ class $$TopicsTableFilterComposer
           }) => $$VarTransactionsTableFilterComposer(
             $db: $db,
             $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> fixTransactionsRefs(
+    Expression<bool> Function($$FixTransactionsTableFilterComposer f) f,
+  ) {
+    final $$FixTransactionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.fixTransactions,
+      getReferencedColumn: (t) => t.topicId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FixTransactionsTableFilterComposer(
+            $db: $db,
+            $table: $db.fixTransactions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2261,31 +2367,6 @@ class $$TopicsTableAnnotationComposer
     return composer;
   }
 
-  Expression<T> fixTransactionsRefs<T extends Object>(
-    Expression<T> Function($$FixTransactionsTableAnnotationComposer a) f,
-  ) {
-    final $$FixTransactionsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.fixTransactions,
-      getReferencedColumn: (t) => t.topicId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$FixTransactionsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.fixTransactions,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
   Expression<T> varTransactionsRefs<T extends Object>(
     Expression<T> Function($$VarTransactionsTableAnnotationComposer a) f,
   ) {
@@ -2302,6 +2383,31 @@ class $$TopicsTableAnnotationComposer
           }) => $$VarTransactionsTableAnnotationComposer(
             $db: $db,
             $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> fixTransactionsRefs<T extends Object>(
+    Expression<T> Function($$FixTransactionsTableAnnotationComposer a) f,
+  ) {
+    final $$FixTransactionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.fixTransactions,
+      getReferencedColumn: (t) => t.topicId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FixTransactionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.fixTransactions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2327,8 +2433,8 @@ class $$TopicsTableTableManager
           Topic,
           PrefetchHooks Function({
             bool categoryId,
-            bool fixTransactionsRefs,
             bool varTransactionsRefs,
+            bool fixTransactionsRefs,
           })
         > {
   $$TopicsTableTableManager(_$AppDatabase db, $TopicsTable table)
@@ -2375,14 +2481,14 @@ class $$TopicsTableTableManager
           prefetchHooksCallback:
               ({
                 categoryId = false,
-                fixTransactionsRefs = false,
                 varTransactionsRefs = false,
+                fixTransactionsRefs = false,
               }) {
                 return PrefetchHooks(
                   db: db,
                   explicitlyWatchedTables: [
-                    if (fixTransactionsRefs) db.fixTransactions,
                     if (varTransactionsRefs) db.varTransactions,
+                    if (fixTransactionsRefs) db.fixTransactions,
                   ],
                   addJoins:
                       <
@@ -2418,27 +2524,6 @@ class $$TopicsTableTableManager
                       },
                   getPrefetchedDataCallback: (items) async {
                     return [
-                      if (fixTransactionsRefs)
-                        await $_getPrefetchedData<
-                          Topic,
-                          $TopicsTable,
-                          FixTransaction
-                        >(
-                          currentTable: table,
-                          referencedTable: $$TopicsTableReferences
-                              ._fixTransactionsRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$TopicsTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).fixTransactionsRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.topicId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
                       if (varTransactionsRefs)
                         await $_getPrefetchedData<
                           Topic,
@@ -2454,6 +2539,27 @@ class $$TopicsTableTableManager
                                 table,
                                 p0,
                               ).varTransactionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.topicId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (fixTransactionsRefs)
+                        await $_getPrefetchedData<
+                          Topic,
+                          $TopicsTable,
+                          FixTransaction
+                        >(
+                          currentTable: table,
+                          referencedTable: $$TopicsTableReferences
+                              ._fixTransactionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$TopicsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).fixTransactionsRefs,
                           referencedItemsForCurrentItem:
                               (item, referencedItems) => referencedItems.where(
                                 (e) => e.topicId == item.id,
@@ -2482,8 +2588,593 @@ typedef $$TopicsTableProcessedTableManager =
       Topic,
       PrefetchHooks Function({
         bool categoryId,
-        bool fixTransactionsRefs,
         bool varTransactionsRefs,
+        bool fixTransactionsRefs,
+      })
+    >;
+typedef $$VarTransactionsTableCreateCompanionBuilder =
+    VarTransactionsCompanion Function({
+      Value<int> id,
+      required int topicId,
+      required DateTime date,
+      required int value,
+      Value<String?> compensations,
+      Value<String?> description,
+      Value<int?> fixRefId,
+      Value<int?> varRefId,
+    });
+typedef $$VarTransactionsTableUpdateCompanionBuilder =
+    VarTransactionsCompanion Function({
+      Value<int> id,
+      Value<int> topicId,
+      Value<DateTime> date,
+      Value<int> value,
+      Value<String?> compensations,
+      Value<String?> description,
+      Value<int?> fixRefId,
+      Value<int?> varRefId,
+    });
+
+final class $$VarTransactionsTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $VarTransactionsTable, VarTransaction> {
+  $$VarTransactionsTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TopicsTable _topicIdTable(_$AppDatabase db) => db.topics.createAlias(
+    $_aliasNameGenerator(db.varTransactions.topicId, db.topics.id),
+  );
+
+  $$TopicsTableProcessedTableManager get topicId {
+    final $_column = $_itemColumn<int>('topic_id')!;
+
+    final manager = $$TopicsTableTableManager(
+      $_db,
+      $_db.topics,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_topicIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $VarTransactionsTable _varRefIdTable(_$AppDatabase db) =>
+      db.varTransactions.createAlias(
+        $_aliasNameGenerator(
+          db.varTransactions.varRefId,
+          db.varTransactions.id,
+        ),
+      );
+
+  $$VarTransactionsTableProcessedTableManager? get varRefId {
+    final $_column = $_itemColumn<int>('var_ref_id');
+    if ($_column == null) return null;
+    final manager = $$VarTransactionsTableTableManager(
+      $_db,
+      $_db.varTransactions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_varRefIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$FixTransactionsTable, List<FixTransaction>>
+  _fixTransactionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.fixTransactions,
+    aliasName: $_aliasNameGenerator(
+      db.varTransactions.id,
+      db.fixTransactions.varRefId,
+    ),
+  );
+
+  $$FixTransactionsTableProcessedTableManager get fixTransactionsRefs {
+    final manager = $$FixTransactionsTableTableManager(
+      $_db,
+      $_db.fixTransactions,
+    ).filter((f) => f.varRefId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _fixTransactionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$VarTransactionsTableFilterComposer
+    extends Composer<_$AppDatabase, $VarTransactionsTable> {
+  $$VarTransactionsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get compensations => $composableBuilder(
+    column: $table.compensations,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get fixRefId => $composableBuilder(
+    column: $table.fixRefId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TopicsTableFilterComposer get topicId {
+    final $$TopicsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.topicId,
+      referencedTable: $db.topics,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TopicsTableFilterComposer(
+            $db: $db,
+            $table: $db.topics,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VarTransactionsTableFilterComposer get varRefId {
+    final $$VarTransactionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.varRefId,
+      referencedTable: $db.varTransactions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VarTransactionsTableFilterComposer(
+            $db: $db,
+            $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> fixTransactionsRefs(
+    Expression<bool> Function($$FixTransactionsTableFilterComposer f) f,
+  ) {
+    final $$FixTransactionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.fixTransactions,
+      getReferencedColumn: (t) => t.varRefId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FixTransactionsTableFilterComposer(
+            $db: $db,
+            $table: $db.fixTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$VarTransactionsTableOrderingComposer
+    extends Composer<_$AppDatabase, $VarTransactionsTable> {
+  $$VarTransactionsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get value => $composableBuilder(
+    column: $table.value,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get compensations => $composableBuilder(
+    column: $table.compensations,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get fixRefId => $composableBuilder(
+    column: $table.fixRefId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TopicsTableOrderingComposer get topicId {
+    final $$TopicsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.topicId,
+      referencedTable: $db.topics,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TopicsTableOrderingComposer(
+            $db: $db,
+            $table: $db.topics,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VarTransactionsTableOrderingComposer get varRefId {
+    final $$VarTransactionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.varRefId,
+      referencedTable: $db.varTransactions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VarTransactionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$VarTransactionsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $VarTransactionsTable> {
+  $$VarTransactionsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get value =>
+      $composableBuilder(column: $table.value, builder: (column) => column);
+
+  GeneratedColumn<String> get compensations => $composableBuilder(
+    column: $table.compensations,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get fixRefId =>
+      $composableBuilder(column: $table.fixRefId, builder: (column) => column);
+
+  $$TopicsTableAnnotationComposer get topicId {
+    final $$TopicsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.topicId,
+      referencedTable: $db.topics,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TopicsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.topics,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VarTransactionsTableAnnotationComposer get varRefId {
+    final $$VarTransactionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.varRefId,
+      referencedTable: $db.varTransactions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VarTransactionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> fixTransactionsRefs<T extends Object>(
+    Expression<T> Function($$FixTransactionsTableAnnotationComposer a) f,
+  ) {
+    final $$FixTransactionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.fixTransactions,
+      getReferencedColumn: (t) => t.varRefId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FixTransactionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.fixTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$VarTransactionsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $VarTransactionsTable,
+          VarTransaction,
+          $$VarTransactionsTableFilterComposer,
+          $$VarTransactionsTableOrderingComposer,
+          $$VarTransactionsTableAnnotationComposer,
+          $$VarTransactionsTableCreateCompanionBuilder,
+          $$VarTransactionsTableUpdateCompanionBuilder,
+          (VarTransaction, $$VarTransactionsTableReferences),
+          VarTransaction,
+          PrefetchHooks Function({
+            bool topicId,
+            bool varRefId,
+            bool fixTransactionsRefs,
+          })
+        > {
+  $$VarTransactionsTableTableManager(
+    _$AppDatabase db,
+    $VarTransactionsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$VarTransactionsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$VarTransactionsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$VarTransactionsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> topicId = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<int> value = const Value.absent(),
+                Value<String?> compensations = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<int?> fixRefId = const Value.absent(),
+                Value<int?> varRefId = const Value.absent(),
+              }) => VarTransactionsCompanion(
+                id: id,
+                topicId: topicId,
+                date: date,
+                value: value,
+                compensations: compensations,
+                description: description,
+                fixRefId: fixRefId,
+                varRefId: varRefId,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int topicId,
+                required DateTime date,
+                required int value,
+                Value<String?> compensations = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<int?> fixRefId = const Value.absent(),
+                Value<int?> varRefId = const Value.absent(),
+              }) => VarTransactionsCompanion.insert(
+                id: id,
+                topicId: topicId,
+                date: date,
+                value: value,
+                compensations: compensations,
+                description: description,
+                fixRefId: fixRefId,
+                varRefId: varRefId,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable(table),
+                  $$VarTransactionsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({
+                topicId = false,
+                varRefId = false,
+                fixTransactionsRefs = false,
+              }) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (fixTransactionsRefs) db.fixTransactions,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (topicId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.topicId,
+                                    referencedTable:
+                                        $$VarTransactionsTableReferences
+                                            ._topicIdTable(db),
+                                    referencedColumn:
+                                        $$VarTransactionsTableReferences
+                                            ._topicIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (varRefId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.varRefId,
+                                    referencedTable:
+                                        $$VarTransactionsTableReferences
+                                            ._varRefIdTable(db),
+                                    referencedColumn:
+                                        $$VarTransactionsTableReferences
+                                            ._varRefIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (fixTransactionsRefs)
+                        await $_getPrefetchedData<
+                          VarTransaction,
+                          $VarTransactionsTable,
+                          FixTransaction
+                        >(
+                          currentTable: table,
+                          referencedTable: $$VarTransactionsTableReferences
+                              ._fixTransactionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$VarTransactionsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).fixTransactionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.varRefId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$VarTransactionsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $VarTransactionsTable,
+      VarTransaction,
+      $$VarTransactionsTableFilterComposer,
+      $$VarTransactionsTableOrderingComposer,
+      $$VarTransactionsTableAnnotationComposer,
+      $$VarTransactionsTableCreateCompanionBuilder,
+      $$VarTransactionsTableUpdateCompanionBuilder,
+      (VarTransaction, $$VarTransactionsTableReferences),
+      VarTransaction,
+      PrefetchHooks Function({
+        bool topicId,
+        bool varRefId,
+        bool fixTransactionsRefs,
       })
     >;
 typedef $$FixTransactionsTableCreateCompanionBuilder =
@@ -2498,6 +3189,8 @@ typedef $$FixTransactionsTableCreateCompanionBuilder =
       required int value,
       Value<String?> compensations,
       Value<String?> decription,
+      Value<DateTime?> latestDate,
+      Value<int?> varRefId,
     });
 typedef $$FixTransactionsTableUpdateCompanionBuilder =
     FixTransactionsCompanion Function({
@@ -2511,6 +3204,8 @@ typedef $$FixTransactionsTableUpdateCompanionBuilder =
       Value<int> value,
       Value<String?> compensations,
       Value<String?> decription,
+      Value<DateTime?> latestDate,
+      Value<int?> varRefId,
     });
 
 final class $$FixTransactionsTableReferences
@@ -2534,6 +3229,28 @@ final class $$FixTransactionsTableReferences
       $_db.topics,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_topicIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $VarTransactionsTable _varRefIdTable(_$AppDatabase db) =>
+      db.varTransactions.createAlias(
+        $_aliasNameGenerator(
+          db.fixTransactions.varRefId,
+          db.varTransactions.id,
+        ),
+      );
+
+  $$VarTransactionsTableProcessedTableManager? get varRefId {
+    final $_column = $_itemColumn<int>('var_ref_id');
+    if ($_column == null) return null;
+    final manager = $$VarTransactionsTableTableManager(
+      $_db,
+      $_db.varTransactions,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_varRefIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -2597,6 +3314,11 @@ class $$FixTransactionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<DateTime> get latestDate => $composableBuilder(
+    column: $table.latestDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$TopicsTableFilterComposer get topicId {
     final $$TopicsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -2611,6 +3333,29 @@ class $$FixTransactionsTableFilterComposer
           }) => $$TopicsTableFilterComposer(
             $db: $db,
             $table: $db.topics,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VarTransactionsTableFilterComposer get varRefId {
+    final $$VarTransactionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.varRefId,
+      referencedTable: $db.varTransactions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VarTransactionsTableFilterComposer(
+            $db: $db,
+            $table: $db.varTransactions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2675,6 +3420,11 @@ class $$FixTransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<DateTime> get latestDate => $composableBuilder(
+    column: $table.latestDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$TopicsTableOrderingComposer get topicId {
     final $$TopicsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -2689,6 +3439,29 @@ class $$FixTransactionsTableOrderingComposer
           }) => $$TopicsTableOrderingComposer(
             $db: $db,
             $table: $db.topics,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VarTransactionsTableOrderingComposer get varRefId {
+    final $$VarTransactionsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.varRefId,
+      referencedTable: $db.varTransactions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VarTransactionsTableOrderingComposer(
+            $db: $db,
+            $table: $db.varTransactions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2744,6 +3517,11 @@ class $$FixTransactionsTableAnnotationComposer
     builder: (column) => column,
   );
 
+  GeneratedColumn<DateTime> get latestDate => $composableBuilder(
+    column: $table.latestDate,
+    builder: (column) => column,
+  );
+
   $$TopicsTableAnnotationComposer get topicId {
     final $$TopicsTableAnnotationComposer composer = $composerBuilder(
       composer: this,
@@ -2758,6 +3536,29 @@ class $$FixTransactionsTableAnnotationComposer
           }) => $$TopicsTableAnnotationComposer(
             $db: $db,
             $table: $db.topics,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$VarTransactionsTableAnnotationComposer get varRefId {
+    final $$VarTransactionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.varRefId,
+      referencedTable: $db.varTransactions,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VarTransactionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.varTransactions,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -2781,7 +3582,7 @@ class $$FixTransactionsTableTableManager
           $$FixTransactionsTableUpdateCompanionBuilder,
           (FixTransaction, $$FixTransactionsTableReferences),
           FixTransaction,
-          PrefetchHooks Function({bool topicId})
+          PrefetchHooks Function({bool topicId, bool varRefId})
         > {
   $$FixTransactionsTableTableManager(
     _$AppDatabase db,
@@ -2808,6 +3609,8 @@ class $$FixTransactionsTableTableManager
                 Value<int> value = const Value.absent(),
                 Value<String?> compensations = const Value.absent(),
                 Value<String?> decription = const Value.absent(),
+                Value<DateTime?> latestDate = const Value.absent(),
+                Value<int?> varRefId = const Value.absent(),
               }) => FixTransactionsCompanion(
                 id: id,
                 topicId: topicId,
@@ -2819,6 +3622,8 @@ class $$FixTransactionsTableTableManager
                 value: value,
                 compensations: compensations,
                 decription: decription,
+                latestDate: latestDate,
+                varRefId: varRefId,
               ),
           createCompanionCallback:
               ({
@@ -2832,6 +3637,8 @@ class $$FixTransactionsTableTableManager
                 required int value,
                 Value<String?> compensations = const Value.absent(),
                 Value<String?> decription = const Value.absent(),
+                Value<DateTime?> latestDate = const Value.absent(),
+                Value<int?> varRefId = const Value.absent(),
               }) => FixTransactionsCompanion.insert(
                 id: id,
                 topicId: topicId,
@@ -2843,6 +3650,8 @@ class $$FixTransactionsTableTableManager
                 value: value,
                 compensations: compensations,
                 decription: decription,
+                latestDate: latestDate,
+                varRefId: varRefId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -2852,7 +3661,7 @@ class $$FixTransactionsTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({topicId = false}) {
+          prefetchHooksCallback: ({topicId = false, varRefId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -2883,6 +3692,21 @@ class $$FixTransactionsTableTableManager
                                 referencedColumn:
                                     $$FixTransactionsTableReferences
                                         ._topicIdTable(db)
+                                        .id,
+                              )
+                              as T;
+                    }
+                    if (varRefId) {
+                      state =
+                          state.withJoin(
+                                currentTable: table,
+                                currentColumn: table.varRefId,
+                                referencedTable:
+                                    $$FixTransactionsTableReferences
+                                        ._varRefIdTable(db),
+                                referencedColumn:
+                                    $$FixTransactionsTableReferences
+                                        ._varRefIdTable(db)
                                         .id,
                               )
                               as T;
@@ -2911,389 +3735,7 @@ typedef $$FixTransactionsTableProcessedTableManager =
       $$FixTransactionsTableUpdateCompanionBuilder,
       (FixTransaction, $$FixTransactionsTableReferences),
       FixTransaction,
-      PrefetchHooks Function({bool topicId})
-    >;
-typedef $$VarTransactionsTableCreateCompanionBuilder =
-    VarTransactionsCompanion Function({
-      Value<int> id,
-      required int topicId,
-      required DateTime date,
-      required int value,
-      Value<String?> compensations,
-      Value<String?> description,
-      Value<int?> fixRefId,
-      Value<int?> varRefId,
-    });
-typedef $$VarTransactionsTableUpdateCompanionBuilder =
-    VarTransactionsCompanion Function({
-      Value<int> id,
-      Value<int> topicId,
-      Value<DateTime> date,
-      Value<int> value,
-      Value<String?> compensations,
-      Value<String?> description,
-      Value<int?> fixRefId,
-      Value<int?> varRefId,
-    });
-
-final class $$VarTransactionsTableReferences
-    extends
-        BaseReferences<_$AppDatabase, $VarTransactionsTable, VarTransaction> {
-  $$VarTransactionsTableReferences(
-    super.$_db,
-    super.$_table,
-    super.$_typedResult,
-  );
-
-  static $TopicsTable _topicIdTable(_$AppDatabase db) => db.topics.createAlias(
-    $_aliasNameGenerator(db.varTransactions.topicId, db.topics.id),
-  );
-
-  $$TopicsTableProcessedTableManager get topicId {
-    final $_column = $_itemColumn<int>('topic_id')!;
-
-    final manager = $$TopicsTableTableManager(
-      $_db,
-      $_db.topics,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_topicIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$VarTransactionsTableFilterComposer
-    extends Composer<_$AppDatabase, $VarTransactionsTable> {
-  $$VarTransactionsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<DateTime> get date => $composableBuilder(
-    column: $table.date,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get compensations => $composableBuilder(
-    column: $table.compensations,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get fixRefId => $composableBuilder(
-    column: $table.fixRefId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  ColumnFilters<int> get varRefId => $composableBuilder(
-    column: $table.varRefId,
-    builder: (column) => ColumnFilters(column),
-  );
-
-  $$TopicsTableFilterComposer get topicId {
-    final $$TopicsTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.topicId,
-      referencedTable: $db.topics,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TopicsTableFilterComposer(
-            $db: $db,
-            $table: $db.topics,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$VarTransactionsTableOrderingComposer
-    extends Composer<_$AppDatabase, $VarTransactionsTable> {
-  $$VarTransactionsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-    column: $table.id,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<DateTime> get date => $composableBuilder(
-    column: $table.date,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get value => $composableBuilder(
-    column: $table.value,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get compensations => $composableBuilder(
-    column: $table.compensations,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get fixRefId => $composableBuilder(
-    column: $table.fixRefId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  ColumnOrderings<int> get varRefId => $composableBuilder(
-    column: $table.varRefId,
-    builder: (column) => ColumnOrderings(column),
-  );
-
-  $$TopicsTableOrderingComposer get topicId {
-    final $$TopicsTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.topicId,
-      referencedTable: $db.topics,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TopicsTableOrderingComposer(
-            $db: $db,
-            $table: $db.topics,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$VarTransactionsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $VarTransactionsTable> {
-  $$VarTransactionsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<DateTime> get date =>
-      $composableBuilder(column: $table.date, builder: (column) => column);
-
-  GeneratedColumn<int> get value =>
-      $composableBuilder(column: $table.value, builder: (column) => column);
-
-  GeneratedColumn<String> get compensations => $composableBuilder(
-    column: $table.compensations,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<String> get description => $composableBuilder(
-    column: $table.description,
-    builder: (column) => column,
-  );
-
-  GeneratedColumn<int> get fixRefId =>
-      $composableBuilder(column: $table.fixRefId, builder: (column) => column);
-
-  GeneratedColumn<int> get varRefId =>
-      $composableBuilder(column: $table.varRefId, builder: (column) => column);
-
-  $$TopicsTableAnnotationComposer get topicId {
-    final $$TopicsTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.topicId,
-      referencedTable: $db.topics,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$TopicsTableAnnotationComposer(
-            $db: $db,
-            $table: $db.topics,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$VarTransactionsTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $VarTransactionsTable,
-          VarTransaction,
-          $$VarTransactionsTableFilterComposer,
-          $$VarTransactionsTableOrderingComposer,
-          $$VarTransactionsTableAnnotationComposer,
-          $$VarTransactionsTableCreateCompanionBuilder,
-          $$VarTransactionsTableUpdateCompanionBuilder,
-          (VarTransaction, $$VarTransactionsTableReferences),
-          VarTransaction,
-          PrefetchHooks Function({bool topicId})
-        > {
-  $$VarTransactionsTableTableManager(
-    _$AppDatabase db,
-    $VarTransactionsTable table,
-  ) : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$VarTransactionsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$VarTransactionsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$VarTransactionsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                Value<int> topicId = const Value.absent(),
-                Value<DateTime> date = const Value.absent(),
-                Value<int> value = const Value.absent(),
-                Value<String?> compensations = const Value.absent(),
-                Value<String?> description = const Value.absent(),
-                Value<int?> fixRefId = const Value.absent(),
-                Value<int?> varRefId = const Value.absent(),
-              }) => VarTransactionsCompanion(
-                id: id,
-                topicId: topicId,
-                date: date,
-                value: value,
-                compensations: compensations,
-                description: description,
-                fixRefId: fixRefId,
-                varRefId: varRefId,
-              ),
-          createCompanionCallback:
-              ({
-                Value<int> id = const Value.absent(),
-                required int topicId,
-                required DateTime date,
-                required int value,
-                Value<String?> compensations = const Value.absent(),
-                Value<String?> description = const Value.absent(),
-                Value<int?> fixRefId = const Value.absent(),
-                Value<int?> varRefId = const Value.absent(),
-              }) => VarTransactionsCompanion.insert(
-                id: id,
-                topicId: topicId,
-                date: date,
-                value: value,
-                compensations: compensations,
-                description: description,
-                fixRefId: fixRefId,
-                varRefId: varRefId,
-              ),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$VarTransactionsTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({topicId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (topicId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.topicId,
-                                referencedTable:
-                                    $$VarTransactionsTableReferences
-                                        ._topicIdTable(db),
-                                referencedColumn:
-                                    $$VarTransactionsTableReferences
-                                        ._topicIdTable(db)
-                                        .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$VarTransactionsTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $VarTransactionsTable,
-      VarTransaction,
-      $$VarTransactionsTableFilterComposer,
-      $$VarTransactionsTableOrderingComposer,
-      $$VarTransactionsTableAnnotationComposer,
-      $$VarTransactionsTableCreateCompanionBuilder,
-      $$VarTransactionsTableUpdateCompanionBuilder,
-      (VarTransaction, $$VarTransactionsTableReferences),
-      VarTransaction,
-      PrefetchHooks Function({bool topicId})
+      PrefetchHooks Function({bool topicId, bool varRefId})
     >;
 
 class $AppDatabaseManager {
@@ -3303,8 +3745,8 @@ class $AppDatabaseManager {
       $$CategoriesTableTableManager(_db, _db.categories);
   $$TopicsTableTableManager get topics =>
       $$TopicsTableTableManager(_db, _db.topics);
-  $$FixTransactionsTableTableManager get fixTransactions =>
-      $$FixTransactionsTableTableManager(_db, _db.fixTransactions);
   $$VarTransactionsTableTableManager get varTransactions =>
       $$VarTransactionsTableTableManager(_db, _db.varTransactions);
+  $$FixTransactionsTableTableManager get fixTransactions =>
+      $$FixTransactionsTableTableManager(_db, _db.fixTransactions);
 }

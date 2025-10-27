@@ -22,6 +22,8 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
     int value,
     Map<int, CompensationInfo>? compensations,
     String? description,
+    int? varRefId,
+    DateTime? latestDate,
   ) async {
     await db
         .into(db.fixTransactions)
@@ -36,6 +38,8 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             value: value,
             compensations: compensations == null ? Value(null) : Value(JsonUtil.compensation2String(compensations)),
             decription: Value(description),
+            latestDate: Value(latestDate),
+            varRefId: Value(varRefId),
           ),
         );
   }
@@ -60,6 +64,8 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             value: f.value,
             compensations: JsonUtil.string2CompensationInfo(f.compensations),
             description: f.decription,
+            latestDate: f.latestDate,
+            varRefId: f.varRefId,
           ),
         )
         .toList();

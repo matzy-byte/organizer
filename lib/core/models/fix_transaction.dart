@@ -13,6 +13,8 @@ class FixTransaction {
   final int value;
   final Map<int, CompensationInfo>? compensations;
   final String? description;
+  final DateTime? latestDate;
+  final int? varRefId;
 
   const FixTransaction({
     required this.id,
@@ -25,5 +27,7 @@ class FixTransaction {
     required this.value,
     this.compensations,
     this.description,
+    this.latestDate,
+    this.varRefId,
   });
 }

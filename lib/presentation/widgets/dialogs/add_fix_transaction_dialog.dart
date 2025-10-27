@@ -452,6 +452,8 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                     _isExpense ? -1 * value : value,
                     _compensations.isEmpty ? null : compensationsMap,
                     _descriptionController.value.text,
+                    null,
+                    null,
                   );
                   Navigator.pop(context, true);
                 }

@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:organizer/data/database/tables/fix_transactions.dart';
 import 'package:organizer/data/database/tables/topics.dart';
 
 class VarTransactions extends Table {
@@ -8,6 +9,6 @@ class VarTransactions extends Table {
   IntColumn get value => integer()();
   TextColumn get compensations => text().nullable()();
   TextColumn get description => text().nullable()();
-  IntColumn get fixRefId => integer().nullable()();
-  IntColumn get varRefId => integer().nullable()();
+  IntColumn get fixRefId => integer().references(FixTransactions, #id).nullable()();
+  IntColumn get varRefId => integer().references(VarTransactions, #id).nullable()();
 }

@@ -28,6 +28,8 @@ class FixTransactionService {
     int value,
     Map<int, CompensationInfo>? compensations,
     String? description,
+    DateTime? latestDate,
+    int? varRefId,
   ) => repository.addFixTransaction(
     topicId,
     status,
@@ -38,6 +40,8 @@ class FixTransactionService {
     value,
     compensations,
     description,
+    varRefId,
+    latestDate,
   );
   Future<void> removeFixTransaction(int id) =>
       repository.removeFixTransaction(id);

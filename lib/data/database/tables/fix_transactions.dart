@@ -2,6 +2,7 @@ import 'package:drift/drift.dart';
 import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/data/database/tables/topics.dart';
+import 'package:organizer/data/database/tables/var_transactions.dart';
 
 class FixTransactions extends Table {
   IntColumn get id => integer().autoIncrement()();
@@ -14,4 +15,7 @@ class FixTransactions extends Table {
   IntColumn get value => integer()();
   TextColumn get compensations => text().nullable()();
   TextColumn get decription => text().nullable()();
+  DateTimeColumn get latestDate => dateTime().nullable()();
+  IntColumn get varRefId =>
+      integer().references(VarTransactions, #id).nullable()();
 }

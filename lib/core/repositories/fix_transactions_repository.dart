@@ -15,6 +15,8 @@ abstract class FixTransactionRepository {
     int value,
     Map<int, CompensationInfo>? compensations,
     String? description,
+    int? varRefId,
+    DateTime? latestDate,
   );
   Future<void> removeFixTransaction(int id);
 }
