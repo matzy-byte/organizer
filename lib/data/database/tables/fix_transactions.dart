@@ -14,7 +14,7 @@ class FixTransactions extends Table {
   TextColumn get intervalUnit => textEnum<IntervalUnit>()();
   IntColumn get value => integer()();
   TextColumn get compensations => text().nullable()();
-  TextColumn get decription => text().nullable()();
+  TextColumn get description => text().nullable()();
   DateTimeColumn get latestDate => dateTime().nullable()();
   IntColumn get varRefId =>
       integer().references(VarTransactions, #id).nullable()();

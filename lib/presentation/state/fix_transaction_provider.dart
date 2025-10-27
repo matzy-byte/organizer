@@ -10,7 +10,9 @@ class FixTransactionProvider with ChangeNotifier {
 
   FixTransactionProvider({required this.fixTransactionService});
 
-  Future<List<FixTransaction>> getAllFixTransactionsByTopicId(int topicId) async {
+  Future<List<FixTransaction>> getAllFixTransactionsByTopicId(
+    int topicId,
+  ) async {
     return await fixTransactionService.getAllFixTransactionsByTopicId(topicId);
   }
 
@@ -44,5 +46,35 @@ class FixTransactionProvider with ChangeNotifier {
 
   Future<void> removeFixTransaction(int id) async {
     await fixTransactionService.removeFixTransaction(id);
+  }
+
+  Future<void> updateFixTransaction(
+    int id,
+    int? topicId,
+    Status? status,
+    DateTime? start,
+    DateTime? end,
+    int? intervalCount,
+    IntervalUnit? intervalUnit,
+    int? value,
+    Map<int, CompensationInfo>? compensations,
+    String? description,
+    DateTime? latestDate,
+    int? varRefId,
+  ) async {
+    await fixTransactionService.updateFixTransaction(
+      id,
+      topicId,
+      status,
+      start,
+      end,
+      intervalCount,
+      intervalUnit,
+      value,
+      compensations,
+      description,
+      latestDate,
+      varRefId,
+    );
   }
 }

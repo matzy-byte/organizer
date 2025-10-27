@@ -22,8 +22,8 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
     int value,
     Map<int, CompensationInfo>? compensations,
     String? description,
-    int? varRefId,
     DateTime? latestDate,
+    int? varRefId,
   ) async {
     await db
         .into(db.fixTransactions)
@@ -36,8 +36,10 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             intervalCount: intervalCount,
             intervalUnit: intervalUnit,
             value: value,
-            compensations: compensations == null ? Value(null) : Value(JsonUtil.compensation2String(compensations)),
-            decription: Value(description),
+            compensations: compensations == null
+                ? Value(null)
+                : Value(JsonUtil.compensation2String(compensations)),
+            description: Value(description),
             latestDate: Value(latestDate),
             varRefId: Value(varRefId),
           ),
@@ -63,7 +65,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             intervalUnit: f.intervalUnit,
             value: f.value,
             compensations: JsonUtil.string2CompensationInfo(f.compensations),
-            description: f.decription,
+            description: f.description,
             latestDate: f.latestDate,
             varRefId: f.varRefId,
           ),
@@ -74,5 +76,45 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
   @override
   Future<void> removeFixTransaction(int id) async {
     await (db.delete(db.fixTransactions)..where((f) => f.id.equals(id))).go();
+  }
+
+  @override
+  Future<void> updateFixTransaction(
+    int id,
+    int? topicId,
+    Status? status,
+    DateTime? start,
+    DateTime? end,
+    int? intervalCount,
+    IntervalUnit? intervalUnit,
+    int? value,
+    Map<int, CompensationInfo>? compensations,
+    String? description,
+    DateTime? latestDate,
+    int? varRefId,
+  ) async {
+    final row = await (db.select(
+      db.fixTransactions,
+    )..where((v) => v.id.equals(id))).getSingle();
+    await (db.update(db.fixTransactions)..where((v) => v.id.equals(id))).write(
+      FixTransactionsCompanion(
+        id: Value(id),
+        topicId: topicId == null ? Value(row.topicId) : Value(topicId),
+        status: status == null ? Value(row.status) : Value(status),
+        start: start == null ? Value(row.start) : Value(start),
+        end: end == null ? Value(row.end) : Value(end),
+        intervalCount: intervalCount == null ? Value(row.intervalCount) : Value(intervalCount),
+        intervalUnit: intervalUnit == null ? Value(row.intervalUnit) : Value(intervalUnit),
+        value: value == null ? Value(row.value) : Value(value),
+        compensations: compensations == null
+            ? Value(row.compensations)
+            : Value(JsonUtil.compensation2String(compensations)),
+        description: description == null
+            ? Value(row.description)
+            : Value(description),
+        latestDate: latestDate == null ? Value(row.latestDate) : Value(latestDate),
+        varRefId: varRefId == null ? Value(row.varRefId) : Value(varRefId),
+      ),
+    );
   }
 }

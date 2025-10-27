@@ -1,26 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation_info.dart';
+import 'package:organizer/core/models/fix_transaction.dart';
+import 'package:organizer/core/models/interval_unit.dart';
+import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
-import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
+import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
-import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:provider/provider.dart';
 
-class EditVarTransactionDialog extends StatefulWidget {
-  final VarTransaction varTransaction;
-  const EditVarTransactionDialog({super.key, required this.varTransaction});
+class EditFixTransactionDialog extends StatefulWidget {
+  final FixTransaction fixTransaction;
+  const EditFixTransactionDialog({super.key,required this.fixTransaction});
 
   @override
-  State<EditVarTransactionDialog> createState() =>
-      _EditVarTransactionDialogState();
+  State<EditFixTransactionDialog> createState() =>
+      _EditFixTransactionDialogState();
 }
 
-class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
+class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
 
+  final _intervalCountController = TextEditingController();
   final _valueController = TextEditingController();
   final _descriptionController = TextEditingController();
 
@@ -29,12 +32,15 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
   Topic? _selectedTopic;
   List<Topic> _topics = [];
   List<Topic> _allTopics = [];
+  Status _status = Status.active;
   bool _isExpense = true;
 
-  DateTime? _date;
+  DateTime? _startDate;
+  DateTime? _endDate;
+
+  IntervalUnit? _selectedIntervalUnit = IntervalUnit.month;
 
   List<_CompensationEntry> _compensations = [];
-  List<_CompensationEntry> _compensationsToDelete = [];
 
   @override
   void initState() {
@@ -46,7 +52,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
     _allTopics = topicProvider.topics;
 
     _selectedTopic = _allTopics.firstWhere(
-      (t) => t.id == widget.varTransaction.topicId,
+      (t) => t.id == widget.fixTransaction.topicId,
     );
     _selectedCategory = _categories.firstWhere(
       (c) => c.id == _selectedTopic!.categoryId,
@@ -55,15 +61,20 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
         .where((t) => t.categoryId == _selectedCategory!.id)
         .toList();
 
-    _date = widget.varTransaction.date;
-    _valueController.text = widget.varTransaction.value.abs().toString();
-    _descriptionController.text = widget.varTransaction.description ?? '';
+    _isExpense = widget.fixTransaction.value < 0;
+    _status = widget.fixTransaction.status;
+    _startDate = DateTime.now();
+    _endDate = DateTime.now();
+    _intervalCountController.text = widget.fixTransaction.intervalCount.toString();
+    _selectedIntervalUnit = widget.fixTransaction.intervalUnit;
+    _valueController.text = widget.fixTransaction.value.abs().toString();
+    _descriptionController.text = widget.fixTransaction.description ?? '';
 
-    if (widget.varTransaction.compensations != null) {
-      for (final e in widget.varTransaction.compensations!.entries) {
+    if (widget.fixTransaction.compensations != null) {
+      for (final e in widget.fixTransaction.compensations!.entries) {
         final topic = _allTopics.firstWhere((t) => t.id == e.value.topicId);
         _compensations.add(
-          _CompensationEntry.withData(e.key, topic, e.value.value.abs().toString()),
+          _CompensationEntry.withData(topic, e.value.value.abs().toString()),
         );
       }
     }
@@ -75,14 +86,15 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
 
   @override
   void dispose() {
+    _intervalCountController.dispose();
     _valueController.dispose();
     _descriptionController.dispose();
     super.dispose();
   }
 
-  Future<void> _pickDate(BuildContext context) async {
+  Future<void> _pickDate(BuildContext context, bool isStart) async {
     final now = DateTime.now();
-    final initialDate = now;
+    final initialDate = isStart ? (_startDate ?? now) : (_endDate ?? now);
     final firstDate = DateTime(now.year - 10);
     final lastDate = DateTime(now.year + 10);
 
@@ -94,7 +106,19 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
     );
 
     if (picked != null) {
-      setState(() => _date = picked);
+      setState(() {
+        if (isStart) {
+          _startDate = picked;
+          if (_endDate != null && _endDate!.isBefore(picked)) {
+            _endDate = picked;
+          }
+        } else {
+          _endDate = picked;
+          if (_startDate != null && _startDate!.isAfter(picked)) {
+            _startDate = picked;
+          }
+        }
+      });
       _validateForm();
     }
   }
@@ -111,10 +135,10 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
   @override
   Widget build(BuildContext context) {
     final topicProvider = context.read<TopicProvider>();
-    final varTransactionProvider = context.read<VarTransactionProvider>();
+    final fixTransactionProvider = context.read<FixTransactionProvider>();
 
     return AlertDialog(
-      title: const Text('Edit Var Transaction'),
+      title: const Text('Edit Fix Transaction'),
       content: _categories.isEmpty
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -168,6 +192,25 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                             value == null ? 'Please select a topic' : null,
                       ),
                     const SizedBox(height: 12),
+                    SegmentedButton<Status>(
+                      segments: const [
+                        ButtonSegment(
+                          value: Status.active,
+                          label: Text('Active'),
+                        ),
+                        ButtonSegment(
+                          value: Status.inactive,
+                          label: Text('Inactive'),
+                        ),
+                      ],
+                      selected: <Status>{_status},
+                      onSelectionChanged: (newSelection) {
+                        setState(() {
+                          _status = newSelection.first;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 12),
                     SegmentedButton<bool>(
                       segments: const [
                         ButtonSegment(value: true, label: Text('Negative')),
@@ -185,21 +228,85 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                     TextFormField(
                       readOnly: true,
                       decoration: InputDecoration(
-                        labelText: 'Date',
+                        labelText: 'Start Date',
                         suffixIcon: const Icon(Icons.calendar_today),
                       ),
                       controller: TextEditingController(
-                        text: _date == null
+                        text: _startDate == null
                             ? ''
-                            : "${_date!.toLocal()}".split(' ')[0],
+                            : "${_startDate!.toLocal()}".split(' ')[0],
                       ),
-                      onTap: () => _pickDate(context),
+                      onTap: () => _pickDate(context, true),
                       validator: (value) => (value == null || value.isEmpty)
                           ? 'Please select a start date'
                           : null,
                     ),
 
                     const SizedBox(height: 12),
+
+                    TextFormField(
+                      readOnly: true,
+                      decoration: InputDecoration(
+                        labelText: 'End Date',
+                        suffixIcon: const Icon(Icons.calendar_today),
+                      ),
+                      controller: TextEditingController(
+                        text: _endDate == null
+                            ? ''
+                            : "${_endDate!.toLocal()}".split(' ')[0],
+                      ),
+                      onTap: () => _pickDate(context, false),
+                      validator: (value) => (value == null || value.isEmpty)
+                          ? 'Please select an end date'
+                          : null,
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          controller: _intervalCountController,
+                          decoration: const InputDecoration(
+                            labelText: 'Interval Count',
+                          ),
+                          keyboardType: TextInputType.number,
+                          onChanged: (value) => _validateForm(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter interval';
+                            }
+                            final n = int.tryParse(value);
+                            if (n == null || n <= 0) {
+                              return 'Enter valid positive number';
+                            }
+                            return null;
+                          },
+                        ),
+                        DropdownButtonFormField<IntervalUnit>(
+                          initialValue: _selectedIntervalUnit,
+                          decoration: const InputDecoration(
+                            labelText: 'Interval Unit',
+                          ),
+                          items: IntervalUnit.values
+                              .map(
+                                (i) => DropdownMenuItem(
+                                  value: i,
+                                  child: Text(i.name),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) {
+                            setState(() => _selectedIntervalUnit = value);
+                            _validateForm();
+                          },
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 12),
+
                     ExpansionTile(
                       title: const Text('Compensations'),
                       children: [
@@ -264,9 +371,6 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                                   icon: const Icon(Icons.delete),
                                   onPressed: () {
                                     setState(() {
-                                      _compensationsToDelete.add(
-                                        _compensations.elementAt(index),
-                                      );
                                       _compensations.removeAt(index);
                                     });
                                     _validateForm();
@@ -332,70 +436,35 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
           onPressed: _isFormValid
               ? () async {
                   final Map<int, CompensationInfo> compensationsMap = {};
-                  for (final c in _compensations) {
+                  for (int i = 0; i < _compensations.length; i++) {
+                    final c = _compensations[i];
                     final value = int.parse(c.valueController.text);
-                    if (c.id != null) {
-                      await varTransactionProvider.updateVarTransaction(
-                        c.id!,
-                        c.topic!.id,
-                        null,
-                        _isExpense ? -1 * value : value,
-                        null,
-                        "Compensation: ${_descriptionController.text}",
-                        null,
-                        null,
-                      );
-
-                      compensationsMap[c.id!] = CompensationInfo(
-                        topicId: c.topic!.id,
-                        topicName: c.topic!.name,
-                        value: _isExpense ? -1 * value : value,
-                      );
-                    } else {
-                      final compId = await varTransactionProvider
-                          .addVarTransaction(
-                            c.topic!.id,
-                            _date!,
-                            _isExpense ? -1 * value : value,
-                            null,
-                            "Compensation: ${_descriptionController.text}",
-                            null,
-                            null,
-                          );
-
-                      compensationsMap[compId] = CompensationInfo(
-                        topicId: c.topic!.id,
-                        topicName: c.topic!.name,
-                        value: _isExpense ? -1 * value : value,
-                      );
-                    }
-                  }
-
-                  final value = int.parse(_valueController.text);
-                  await varTransactionProvider.updateVarTransaction(
-                    widget.varTransaction.id,
-                    _selectedTopic!.id,
-                    _date,
-                    _isExpense ? -1 * value : value,
-                    compensationsMap.isEmpty ? null : compensationsMap,
-                    _descriptionController.value.text,
-                    null,
-                    null,
-                  );
-
-                  for (final id in compensationsMap.keys) {
-                    await varTransactionProvider.setVarReference(
-                      id,
-                      widget.varTransaction.id,
+                    compensationsMap[i] = CompensationInfo(
+                      topicId: c.topic!.id,
+                      topicName: c.topic!.name,
+                      value: _isExpense ? -1 * value : value,
                     );
                   }
 
-                  for (final c in _compensationsToDelete) {
-                    if (c.id != null) {
-                      await varTransactionProvider.removeVarTransaction(c.id!);
-                    }
-                  }
+                  final intervalCount = int.parse(
+                    _intervalCountController.text,
+                  );
+                  final value = int.parse(_valueController.text);
 
+                  await fixTransactionProvider.updateFixTransaction(
+                    widget.fixTransaction.id,
+                    _selectedTopic!.id,
+                    _status,
+                    _startDate!,
+                    _endDate!,
+                    intervalCount,
+                    _selectedIntervalUnit!,
+                    _isExpense ? -1 * value : value,
+                    _compensations.isEmpty ? null : compensationsMap,
+                    _descriptionController.value.text,
+                    widget.fixTransaction.latestDate,
+                    widget.fixTransaction.varRefId,
+                  );
                   Navigator.pop(context, true);
                 }
               : null,
@@ -407,13 +476,12 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
 }
 
 class _CompensationEntry {
-  int? id;
   Topic? topic;
   TextEditingController valueController = TextEditingController();
 
   _CompensationEntry();
 
-  _CompensationEntry.withData(this.id, this.topic, String value) {
+  _CompensationEntry.withData(this.topic, String value) {
     valueController.text = value.toString();
   }
 }

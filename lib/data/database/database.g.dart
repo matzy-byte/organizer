@@ -1193,12 +1193,12 @@ class $FixTransactionsTable extends FixTransactions
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
-  static const VerificationMeta _decriptionMeta = const VerificationMeta(
-    'decription',
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
   );
   @override
-  late final GeneratedColumn<String> decription = GeneratedColumn<String>(
-    'decription',
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
     aliasedName,
     true,
     type: DriftSqlType.string,
@@ -1240,7 +1240,7 @@ class $FixTransactionsTable extends FixTransactions
     intervalUnit,
     value,
     compensations,
-    decription,
+    description,
     latestDate,
     varRefId,
   ];
@@ -1311,10 +1311,13 @@ class $FixTransactionsTable extends FixTransactions
         ),
       );
     }
-    if (data.containsKey('decription')) {
+    if (data.containsKey('description')) {
       context.handle(
-        _decriptionMeta,
-        decription.isAcceptableOrUnknown(data['decription']!, _decriptionMeta),
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
       );
     }
     if (data.containsKey('latest_date')) {
@@ -1378,9 +1381,9 @@ class $FixTransactionsTable extends FixTransactions
         DriftSqlType.string,
         data['${effectivePrefix}compensations'],
       ),
-      decription: attachedDatabase.typeMapping.read(
+      description: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}decription'],
+        data['${effectivePrefix}description'],
       ),
       latestDate: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -1416,7 +1419,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
   final IntervalUnit intervalUnit;
   final int value;
   final String? compensations;
-  final String? decription;
+  final String? description;
   final DateTime? latestDate;
   final int? varRefId;
   const FixTransaction({
@@ -1429,7 +1432,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     required this.intervalUnit,
     required this.value,
     this.compensations,
-    this.decription,
+    this.description,
     this.latestDate,
     this.varRefId,
   });
@@ -1455,8 +1458,8 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     if (!nullToAbsent || compensations != null) {
       map['compensations'] = Variable<String>(compensations);
     }
-    if (!nullToAbsent || decription != null) {
-      map['decription'] = Variable<String>(decription);
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
     }
     if (!nullToAbsent || latestDate != null) {
       map['latest_date'] = Variable<DateTime>(latestDate);
@@ -1480,9 +1483,9 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
       compensations: compensations == null && nullToAbsent
           ? const Value.absent()
           : Value(compensations),
-      decription: decription == null && nullToAbsent
+      description: description == null && nullToAbsent
           ? const Value.absent()
-          : Value(decription),
+          : Value(description),
       latestDate: latestDate == null && nullToAbsent
           ? const Value.absent()
           : Value(latestDate),
@@ -1511,7 +1514,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
       ),
       value: serializer.fromJson<int>(json['value']),
       compensations: serializer.fromJson<String?>(json['compensations']),
-      decription: serializer.fromJson<String?>(json['decription']),
+      description: serializer.fromJson<String?>(json['description']),
       latestDate: serializer.fromJson<DateTime?>(json['latestDate']),
       varRefId: serializer.fromJson<int?>(json['varRefId']),
     );
@@ -1533,7 +1536,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
       ),
       'value': serializer.toJson<int>(value),
       'compensations': serializer.toJson<String?>(compensations),
-      'decription': serializer.toJson<String?>(decription),
+      'description': serializer.toJson<String?>(description),
       'latestDate': serializer.toJson<DateTime?>(latestDate),
       'varRefId': serializer.toJson<int?>(varRefId),
     };
@@ -1549,7 +1552,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     IntervalUnit? intervalUnit,
     int? value,
     Value<String?> compensations = const Value.absent(),
-    Value<String?> decription = const Value.absent(),
+    Value<String?> description = const Value.absent(),
     Value<DateTime?> latestDate = const Value.absent(),
     Value<int?> varRefId = const Value.absent(),
   }) => FixTransaction(
@@ -1564,7 +1567,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     compensations: compensations.present
         ? compensations.value
         : this.compensations,
-    decription: decription.present ? decription.value : this.decription,
+    description: description.present ? description.value : this.description,
     latestDate: latestDate.present ? latestDate.value : this.latestDate,
     varRefId: varRefId.present ? varRefId.value : this.varRefId,
   );
@@ -1585,9 +1588,9 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
       compensations: data.compensations.present
           ? data.compensations.value
           : this.compensations,
-      decription: data.decription.present
-          ? data.decription.value
-          : this.decription,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
       latestDate: data.latestDate.present
           ? data.latestDate.value
           : this.latestDate,
@@ -1607,7 +1610,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
           ..write('intervalUnit: $intervalUnit, ')
           ..write('value: $value, ')
           ..write('compensations: $compensations, ')
-          ..write('decription: $decription, ')
+          ..write('description: $description, ')
           ..write('latestDate: $latestDate, ')
           ..write('varRefId: $varRefId')
           ..write(')'))
@@ -1625,7 +1628,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     intervalUnit,
     value,
     compensations,
-    decription,
+    description,
     latestDate,
     varRefId,
   );
@@ -1642,7 +1645,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
           other.intervalUnit == this.intervalUnit &&
           other.value == this.value &&
           other.compensations == this.compensations &&
-          other.decription == this.decription &&
+          other.description == this.description &&
           other.latestDate == this.latestDate &&
           other.varRefId == this.varRefId);
 }
@@ -1657,7 +1660,7 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
   final Value<IntervalUnit> intervalUnit;
   final Value<int> value;
   final Value<String?> compensations;
-  final Value<String?> decription;
+  final Value<String?> description;
   final Value<DateTime?> latestDate;
   final Value<int?> varRefId;
   const FixTransactionsCompanion({
@@ -1670,7 +1673,7 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     this.intervalUnit = const Value.absent(),
     this.value = const Value.absent(),
     this.compensations = const Value.absent(),
-    this.decription = const Value.absent(),
+    this.description = const Value.absent(),
     this.latestDate = const Value.absent(),
     this.varRefId = const Value.absent(),
   });
@@ -1684,7 +1687,7 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     required IntervalUnit intervalUnit,
     required int value,
     this.compensations = const Value.absent(),
-    this.decription = const Value.absent(),
+    this.description = const Value.absent(),
     this.latestDate = const Value.absent(),
     this.varRefId = const Value.absent(),
   }) : topicId = Value(topicId),
@@ -1704,7 +1707,7 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     Expression<String>? intervalUnit,
     Expression<int>? value,
     Expression<String>? compensations,
-    Expression<String>? decription,
+    Expression<String>? description,
     Expression<DateTime>? latestDate,
     Expression<int>? varRefId,
   }) {
@@ -1718,7 +1721,7 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
       if (intervalUnit != null) 'interval_unit': intervalUnit,
       if (value != null) 'value': value,
       if (compensations != null) 'compensations': compensations,
-      if (decription != null) 'decription': decription,
+      if (description != null) 'description': description,
       if (latestDate != null) 'latest_date': latestDate,
       if (varRefId != null) 'var_ref_id': varRefId,
     });
@@ -1734,7 +1737,7 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     Value<IntervalUnit>? intervalUnit,
     Value<int>? value,
     Value<String?>? compensations,
-    Value<String?>? decription,
+    Value<String?>? description,
     Value<DateTime?>? latestDate,
     Value<int?>? varRefId,
   }) {
@@ -1748,7 +1751,7 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
       intervalUnit: intervalUnit ?? this.intervalUnit,
       value: value ?? this.value,
       compensations: compensations ?? this.compensations,
-      decription: decription ?? this.decription,
+      description: description ?? this.description,
       latestDate: latestDate ?? this.latestDate,
       varRefId: varRefId ?? this.varRefId,
     );
@@ -1788,8 +1791,8 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     if (compensations.present) {
       map['compensations'] = Variable<String>(compensations.value);
     }
-    if (decription.present) {
-      map['decription'] = Variable<String>(decription.value);
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
     }
     if (latestDate.present) {
       map['latest_date'] = Variable<DateTime>(latestDate.value);
@@ -1812,7 +1815,7 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
           ..write('intervalUnit: $intervalUnit, ')
           ..write('value: $value, ')
           ..write('compensations: $compensations, ')
-          ..write('decription: $decription, ')
+          ..write('description: $description, ')
           ..write('latestDate: $latestDate, ')
           ..write('varRefId: $varRefId')
           ..write(')'))
@@ -3188,7 +3191,7 @@ typedef $$FixTransactionsTableCreateCompanionBuilder =
       required IntervalUnit intervalUnit,
       required int value,
       Value<String?> compensations,
-      Value<String?> decription,
+      Value<String?> description,
       Value<DateTime?> latestDate,
       Value<int?> varRefId,
     });
@@ -3203,7 +3206,7 @@ typedef $$FixTransactionsTableUpdateCompanionBuilder =
       Value<IntervalUnit> intervalUnit,
       Value<int> value,
       Value<String?> compensations,
-      Value<String?> decription,
+      Value<String?> description,
       Value<DateTime?> latestDate,
       Value<int?> varRefId,
     });
@@ -3309,8 +3312,8 @@ class $$FixTransactionsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get decription => $composableBuilder(
-    column: $table.decription,
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3415,8 +3418,8 @@ class $$FixTransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get decription => $composableBuilder(
-    column: $table.decription,
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -3512,8 +3515,8 @@ class $$FixTransactionsTableAnnotationComposer
     builder: (column) => column,
   );
 
-  GeneratedColumn<String> get decription => $composableBuilder(
-    column: $table.decription,
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
     builder: (column) => column,
   );
 
@@ -3608,7 +3611,7 @@ class $$FixTransactionsTableTableManager
                 Value<IntervalUnit> intervalUnit = const Value.absent(),
                 Value<int> value = const Value.absent(),
                 Value<String?> compensations = const Value.absent(),
-                Value<String?> decription = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<DateTime?> latestDate = const Value.absent(),
                 Value<int?> varRefId = const Value.absent(),
               }) => FixTransactionsCompanion(
@@ -3621,7 +3624,7 @@ class $$FixTransactionsTableTableManager
                 intervalUnit: intervalUnit,
                 value: value,
                 compensations: compensations,
-                decription: decription,
+                description: description,
                 latestDate: latestDate,
                 varRefId: varRefId,
               ),
@@ -3636,7 +3639,7 @@ class $$FixTransactionsTableTableManager
                 required IntervalUnit intervalUnit,
                 required int value,
                 Value<String?> compensations = const Value.absent(),
-                Value<String?> decription = const Value.absent(),
+                Value<String?> description = const Value.absent(),
                 Value<DateTime?> latestDate = const Value.absent(),
                 Value<int?> varRefId = const Value.absent(),
               }) => FixTransactionsCompanion.insert(
@@ -3649,7 +3652,7 @@ class $$FixTransactionsTableTableManager
                 intervalUnit: intervalUnit,
                 value: value,
                 compensations: compensations,
-                decription: decription,
+                description: description,
                 latestDate: latestDate,
                 varRefId: varRefId,
               ),

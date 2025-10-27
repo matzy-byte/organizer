@@ -40,9 +40,36 @@ class FixTransactionService {
     value,
     compensations,
     description,
-    varRefId,
     latestDate,
+    varRefId,
   );
   Future<void> removeFixTransaction(int id) =>
       repository.removeFixTransaction(id);
+  Future<void> updateFixTransaction(
+    int id,
+    int? topicId,
+    Status? status,
+    DateTime? start,
+    DateTime? end,
+    int? intervalCount,
+    IntervalUnit? intervalUnit,
+    int? value,
+    Map<int, CompensationInfo>? compensations,
+    String? description,
+    DateTime? latestDate,
+    int? varRefId,
+  ) => repository.updateFixTransaction(
+    id,
+    topicId,
+    status,
+    start,
+    end,
+    intervalCount,
+    intervalUnit,
+    value,
+    compensations,
+    description,
+    latestDate,
+    varRefId,
+  );
 }

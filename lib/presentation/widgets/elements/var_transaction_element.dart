@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/var_transaction.dart';
+import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/edit_var_transaction_dialog.dart';
 import 'package:provider/provider.dart';
@@ -80,8 +81,6 @@ class VarTransactionElementState extends State<VarTransactionElement> {
     );
   }
 }
-
-typedef IntCallback = void Function(int value);
 
 class VarTransactionTable extends StatelessWidget {
   final List<VarTransaction> varTransactions;
