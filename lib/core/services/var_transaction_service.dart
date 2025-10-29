@@ -58,4 +58,6 @@ class VarTransactionService {
 
   Future<void> setVarReference(int id, int refId) =>
       repository.setVarReference(id, refId);
+  
+  Future<VarTransaction> get(int id) => repository.get(id);
 }

@@ -70,6 +70,7 @@ class MultiFunctionFloatingButton extends StatelessWidget {
                         .where((c) => c.id == topic?.categoryId)
                         .cast<Category?>()
                         .firstOrNull,
+                topic: topic,
               ),
             );
 

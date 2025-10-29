@@ -10,6 +10,8 @@
 - ✓ Proper removing logic needs to be implemented
 - ✓ Compensation needs to be available from topics from other categories
 - ✓ Add edit fix transaction dialogs
+- ✓ Show compensations dialog
+-  Overview ui element
 
 - UI:  
 Topic: Details, Overview month (+, -, rest, awaited to pay), FixTransaction cards (active and inactive), VarTransaction table with filter options  

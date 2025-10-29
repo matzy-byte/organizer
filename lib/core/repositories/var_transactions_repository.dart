@@ -24,4 +24,5 @@ abstract class VarTransactionRepository {
     int? varRefId,
   );
   Future<void> setVarReference(int id, int varRefId);
+  Future<VarTransaction> get(int id);
 }

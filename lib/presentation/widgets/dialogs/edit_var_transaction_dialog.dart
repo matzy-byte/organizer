@@ -378,7 +378,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                     _date,
                     _isExpense ? -1 * value : value,
                     compensationsMap.isEmpty ? null : compensationsMap,
-                    _descriptionController.value.text,
+                    _descriptionController.value.text.isEmpty ? null : _descriptionController.value.text,
                     null,
                     null,
                   );

@@ -461,7 +461,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                     _selectedIntervalUnit!,
                     _isExpense ? -1 * value : value,
                     _compensations.isEmpty ? null : compensationsMap,
-                    _descriptionController.value.text,
+                    _descriptionController.value.text.isEmpty ? null : _descriptionController.value.text,
                     widget.fixTransaction.latestDate,
                     widget.fixTransaction.varRefId,
                   );

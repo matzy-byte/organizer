@@ -43,4 +43,8 @@ class VarTransactionProvider with ChangeNotifier {
   Future<void> setVarReference(int id, int refId) async {
     await varTransactionService.setVarReference(id, refId);
   }
+
+  Future<VarTransaction> get(int id) async {
+    return await varTransactionService.get(id);
+  }
 }
