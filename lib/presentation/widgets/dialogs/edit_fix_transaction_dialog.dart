@@ -95,8 +95,8 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
   Future<void> _pickDate(BuildContext context, bool isStart) async {
     final now = DateTime.now();
     final initialDate = isStart ? (_startDate ?? now) : (_endDate ?? now);
-    final firstDate = DateTime(now.year - 10);
-    final lastDate = DateTime(now.year + 10);
+    final firstDate = DateTime(now.year - 99);
+    final lastDate = DateTime(now.year + 99);
 
     final picked = await showDatePicker(
       context: context,

@@ -83,8 +83,8 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
   Future<void> _pickDate(BuildContext context) async {
     final now = DateTime.now();
     final initialDate = now;
-    final firstDate = DateTime(now.year - 10);
-    final lastDate = DateTime(now.year + 10);
+    final firstDate = DateTime(now.year - 99);
+    final lastDate = DateTime(now.year + 99);
 
     final picked = await showDatePicker(
       context: context,

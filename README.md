@@ -12,6 +12,9 @@
 - ✓ Add edit fix transaction dialogs
 - ✓ Show compensations dialog
 -  Overview ui element
+-  Split overview_elemnt into multiple classes
+-  Var transaction table needs media control
+-  Options element needs styling and filter logic for backend
 
 - UI:  
 Topic: Details, Overview month (+, -, rest, awaited to pay), FixTransaction cards (active and inactive), VarTransaction table with filter options  
