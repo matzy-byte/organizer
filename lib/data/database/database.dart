@@ -4,6 +4,7 @@ import 'package:drift/native.dart';
 import 'package:organizer/data/database/tables/categories.dart';
 import 'package:organizer/data/database/tables/fix_transactions.dart';
 import 'package:organizer/data/database/tables/topics.dart';
+import 'package:organizer/data/database/tables/transaction_labels.dart';
 import 'package:organizer/data/database/tables/var_transactions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -13,12 +14,30 @@ import 'package:organizer/core/models/interval_unit.dart';
 
 part 'database.g.dart';
 
-@DriftDatabase(tables: [Categories, Topics, FixTransactions, VarTransactions])
+@DriftDatabase(
+  tables: [
+    Categories,
+    Topics,
+    FixTransactions,
+    VarTransactions,
+    TransactionLabels,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onCreate: (m) async => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      if (from < 3) {
+        await m.createTable(transactionLabels);
+      }
+    },
+  );
 
   Future<void> deleteAllData() {
     return transaction(() async {

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/main.dart';
+import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/show_compensations_dialog.dart';
+import 'package:provider/provider.dart';
 
 class VarTransactionTable extends StatelessWidget {
   final List<VarTransaction> varTransactions;
@@ -22,11 +24,12 @@ class VarTransactionTable extends StatelessWidget {
       return const Center(child: Text('No variable transactions'));
     }
 
+    final transactionLabelProvider = context.read<TransactionLabelProvider>();
+
     return ListView.separated(
       padding: const EdgeInsets.all(16),
       shrinkWrap: true,
-      physics:
-          const NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: varTransactions.length,
       separatorBuilder: (context, index) =>
           Divider(color: Colors.grey.shade300, height: 1),
@@ -57,13 +60,7 @@ class VarTransactionTable extends StatelessWidget {
                   child: Row(
                     children: [
                       Text(
-                        '(${NumberFormat.currency(symbol: "€").format(
-                          t.compensations!.values.fold<int>(
-                                0,
-                                (sum, c) => sum + c.value,
-                              ) /
-                              100,
-                        )})',
+                        '(${NumberFormat.currency(symbol: "€").format(t.compensations!.values.fold<int>(0, (sum, c) => sum + c.value) / 100)})',
                         style: TextStyle(
                           color: t.value > 0
                               ? const Color(0xFF006400)
@@ -71,10 +68,26 @@ class VarTransactionTable extends StatelessWidget {
                         ),
                         textAlign: TextAlign.center,
                       ),
-                      IconButton(onPressed: () async {
-                        await showDialog(context: context, builder: (context) => ShowCompensationsDialog(varTransation: t));
-                      }, icon: Icon(Icons.info, color: Colors.blueGrey,)),
+                      IconButton(
+                        onPressed: () async {
+                          await showDialog(
+                            context: context,
+                            builder: (context) =>
+                                ShowCompensationsDialog(varTransation: t),
+                          );
+                        },
+                        icon: Icon(Icons.info, color: Colors.blueGrey),
+                      ),
                     ],
+                  ),
+                ),
+
+              if (t.transactionLabelId != null)
+                Chip(
+                  label: Text(
+                    transactionLabelProvider.transactionLabels
+                        .firstWhere((l) => l.id == t.transactionLabelId)
+                        .name,
                   ),
                 ),
 

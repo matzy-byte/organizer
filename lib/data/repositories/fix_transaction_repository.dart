@@ -21,6 +21,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
     IntervalUnit intervalUnit,
     int value,
     Map<int, CompensationInfo>? compensations,
+    int? transactionLabelId,
     String? description,
     DateTime? latestDate,
     int? varRefId,
@@ -39,6 +40,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             compensations: compensations == null
                 ? Value(null)
                 : Value(JsonUtil.compensation2String(compensations)),
+            transactionLabelId: Value(transactionLabelId),
             description: Value(description),
             latestDate: Value(latestDate),
             varRefId: Value(varRefId),
@@ -65,6 +67,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             intervalUnit: f.intervalUnit,
             value: f.value,
             compensations: JsonUtil.string2CompensationInfo(f.compensations),
+            transactionLabelId: f.transactionLabelId,
             description: f.description,
             latestDate: f.latestDate,
             varRefId: f.varRefId,
@@ -89,6 +92,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
     IntervalUnit? intervalUnit,
     int? value,
     Map<int, CompensationInfo>? compensations,
+    int? transactionLabelId,
     String? description,
     DateTime? latestDate,
     int? varRefId,
@@ -103,16 +107,25 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
         status: status == null ? Value(row.status) : Value(status),
         start: start == null ? Value(row.start) : Value(start),
         end: end == null ? Value(row.end) : Value(end),
-        intervalCount: intervalCount == null ? Value(row.intervalCount) : Value(intervalCount),
-        intervalUnit: intervalUnit == null ? Value(row.intervalUnit) : Value(intervalUnit),
+        intervalCount: intervalCount == null
+            ? Value(row.intervalCount)
+            : Value(intervalCount),
+        intervalUnit: intervalUnit == null
+            ? Value(row.intervalUnit)
+            : Value(intervalUnit),
         value: value == null ? Value(row.value) : Value(value),
         compensations: compensations == null
             ? Value(row.compensations)
             : Value(JsonUtil.compensation2String(compensations)),
+        transactionLabelId: transactionLabelId == null
+            ? Value(row.transactionLabelId)
+            : Value(transactionLabelId),
         description: description == null
             ? Value(row.description)
             : Value(description),
-        latestDate: latestDate == null ? Value(row.latestDate) : Value(latestDate),
+        latestDate: latestDate == null
+            ? Value(row.latestDate)
+            : Value(latestDate),
         varRefId: varRefId == null ? Value(row.varRefId) : Value(varRefId),
       ),
     );

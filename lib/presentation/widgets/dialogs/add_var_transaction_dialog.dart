@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/topic.dart';
+import 'package:organizer/core/models/transaction_label.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
+import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
+import 'package:organizer/presentation/widgets/dialogs/manage_transaction_labels_dialog.dart';
 import 'package:provider/provider.dart';
 
 class AddVarTransactionDialog extends StatefulWidget {
@@ -34,6 +37,8 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
   DateTime? _date;
 
   List<_CompensationEntry> _compensations = [];
+
+  TransactionLabel? _selectedTransactionLabel;
 
   @override
   void initState() {
@@ -105,6 +110,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final transactionLabelProvider = context.read<TransactionLabelProvider>();
     final topicProvider = context.read<TopicProvider>();
     final varTransactionProvider = context.read<VarTransactionProvider>();
 
@@ -285,6 +291,37 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
 
                     const SizedBox(height: 12),
 
+                    DropdownButtonFormField<TransactionLabel>(
+                      decoration: const InputDecoration(
+                        labelText: 'Label',
+                        border: OutlineInputBorder(),
+                      ),
+                      initialValue: _selectedTransactionLabel,
+                      hint: const Text('None'),
+                      items: transactionLabelProvider.transactionLabels.map((
+                        l,
+                      ) {
+                        return DropdownMenuItem<TransactionLabel>(
+                          value: l,
+                          child: Text(l.name),
+                        );
+                      }).toList(),
+                      onChanged: (value) async {
+                        if (value!.id == -1) {
+                          setState(() => _selectedTransactionLabel = null);
+
+                          await showDialog(
+                            context: context,
+                            builder: (_) => ManageTransactionLabelsDialog(),
+                          );
+                        } else {
+                          setState(() {
+                            _selectedTransactionLabel = value;
+                          });
+                        }
+                      },
+                    ),
+
                     TextFormField(
                       controller: _valueController,
                       decoration: const InputDecoration(labelText: 'Value'),
@@ -332,6 +369,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                           _date!,
                           _isExpense ? -1 * value : value,
                           null,
+                          _selectedTransactionLabel?.id,
                           "Compensation: ${_descriptionController.text}",
                           null,
                           null,
@@ -351,6 +389,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                         _date!,
                         _isExpense ? -1 * value : value,
                         compensationsMap.isEmpty ? null : compensationsMap,
+                        _selectedTransactionLabel?.id,
                         _descriptionController.value.text.isEmpty ? null : _descriptionController.value.text,
                         null,
                         null,

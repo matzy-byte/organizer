@@ -8,7 +8,9 @@ class VarTransactionProvider with ChangeNotifier {
 
   VarTransactionProvider({required this.varTransactionService});
 
-  Future<List<VarTransaction>> getAllVarTransactionsByTopicId(int topicId) async {
+  Future<List<VarTransaction>> getAllVarTransactionsByTopicId(
+    int topicId,
+  ) async {
     return await varTransactionService.getAllVarTransactionsByTopicId(topicId);
   }
 
@@ -17,6 +19,7 @@ class VarTransactionProvider with ChangeNotifier {
     DateTime date,
     int value,
     Map<int, CompensationInfo>? compensations,
+    int? transactionLabelId,
     String? description,
     int? fixRefId,
     int? varRefId,
@@ -26,6 +29,7 @@ class VarTransactionProvider with ChangeNotifier {
       date,
       value,
       compensations,
+      transactionLabelId,
       description,
       fixRefId,
       varRefId,
@@ -36,8 +40,28 @@ class VarTransactionProvider with ChangeNotifier {
     await varTransactionService.removeVarTransaction(id);
   }
 
-  Future<void> updateVarTransaction(int id, int? topicId, DateTime? date, int? value, Map<int, CompensationInfo>? compensations, String? description, int? fixRefId, int? varRefId) async {
-    await varTransactionService.updateVarTransaction(id, topicId, date, value, compensations, description, fixRefId, varRefId);
+  Future<void> updateVarTransaction(
+    int id,
+    int? topicId,
+    DateTime? date,
+    int? value,
+    Map<int, CompensationInfo>? compensations,
+    int? transactionLabelId,
+    String? description,
+    int? fixRefId,
+    int? varRefId,
+  ) async {
+    await varTransactionService.updateVarTransaction(
+      id,
+      topicId,
+      date,
+      value,
+      compensations,
+      transactionLabelId,
+      description,
+      fixRefId,
+      varRefId,
+    );
   }
 
   Future<void> setVarReference(int id, int refId) async {

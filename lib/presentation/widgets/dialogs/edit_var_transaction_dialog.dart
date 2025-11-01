@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/topic.dart';
+import 'package:organizer/core/models/transaction_label.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
+import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
+import 'package:organizer/presentation/widgets/dialogs/manage_transaction_labels_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:collection/collection.dart';
 
 class EditVarTransactionDialog extends StatefulWidget {
   final VarTransaction varTransaction;
@@ -36,19 +40,28 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
   List<_CompensationEntry> _compensations = [];
   List<_CompensationEntry> _compensationsToDelete = [];
 
+  TransactionLabel? _lastTransactionLabel;
+  TransactionLabel? _selectedTransactionLabel;
+  final TransactionLabel _manageTransactionLabels = TransactionLabel(
+    -1,
+    'Manage Transaction Labels',
+  );
+
   @override
   void initState() {
     super.initState();
 
+    final transactionLabelProvider = context.read<TransactionLabelProvider>();
     final categoryProvider = context.read<CategoryProvider>();
     final topicProvider = context.read<TopicProvider>();
+    final transactionLabels = transactionLabelProvider.transactionLabels;
     _categories = categoryProvider.categories;
     _allTopics = topicProvider.topics;
 
-    _selectedTopic = _allTopics.firstWhere(
+    _selectedTopic = _allTopics.firstWhereOrNull(
       (t) => t.id == widget.varTransaction.topicId,
     );
-    _selectedCategory = _categories.firstWhere(
+    _selectedCategory = _categories.firstWhereOrNull(
       (c) => c.id == _selectedTopic!.categoryId,
     );
     _topics = _allTopics
@@ -56,6 +69,9 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
         .toList();
 
     _date = widget.varTransaction.date;
+    _selectedTransactionLabel = transactionLabels.firstWhereOrNull(
+      (l) => l.id == widget.varTransaction.transactionLabelId,
+    );
     _valueController.text = widget.varTransaction.value.abs().toString();
     _descriptionController.text = widget.varTransaction.description ?? '';
 
@@ -63,7 +79,11 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
       for (final e in widget.varTransaction.compensations!.entries) {
         final topic = _allTopics.firstWhere((t) => t.id == e.value.topicId);
         _compensations.add(
-          _CompensationEntry.withData(e.key, topic, e.value.value.abs().toString()),
+          _CompensationEntry.withData(
+            e.key,
+            topic,
+            e.value.value.abs().toString(),
+          ),
         );
       }
     }
@@ -110,6 +130,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final transactionLabelProvider = context.read<TransactionLabelProvider>();
     final topicProvider = context.read<TopicProvider>();
     final varTransactionProvider = context.read<VarTransactionProvider>();
 
@@ -293,6 +314,48 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
 
                     const SizedBox(height: 12),
 
+                    DropdownMenuFormField<TransactionLabel?>(
+                      initialSelection: _selectedTransactionLabel,
+                      label: const Text('Label'),
+                      hintText: 'None',
+                      requestFocusOnTap: false,
+                      dropdownMenuEntries: [
+                        const DropdownMenuEntry<TransactionLabel?>(
+                          value: null,
+                          label: 'None',
+                        ),
+                        ...transactionLabelProvider.transactionLabels.map((l) {
+                          return DropdownMenuEntry<TransactionLabel?>(
+                            value: l,
+                            label: l.name,
+                          );
+                        }),
+                        DropdownMenuEntry<TransactionLabel?>(
+                          value: _manageTransactionLabels,
+                          label: 'Manage labels',
+                          leadingIcon: const Icon(Icons.settings, size: 18),
+                        ),
+                      ],
+                      onSelected: (value) async {
+                        if (value == _lastTransactionLabel) return;
+                        if (value?.id == _manageTransactionLabels.id) {
+                          setState(() {
+                            _selectedTransactionLabel = null;
+                            _lastTransactionLabel = value;
+                          });
+                          await showDialog(
+                            context: context,
+                            builder: (_) => ManageTransactionLabelsDialog(),
+                          );
+                        } else {
+                          setState(() {
+                            _selectedTransactionLabel = value;
+                            _lastTransactionLabel = value;
+                          });
+                        }
+                      },
+                    ),
+
                     TextFormField(
                       controller: _valueController,
                       decoration: const InputDecoration(labelText: 'Value'),
@@ -341,6 +404,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                         null,
                         _isExpense ? -1 * value : value,
                         null,
+                        _selectedTransactionLabel?.id,
                         "Compensation: ${_descriptionController.text}",
                         null,
                         null,
@@ -358,6 +422,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                             _date!,
                             _isExpense ? -1 * value : value,
                             null,
+                            _selectedTransactionLabel?.id,
                             "Compensation: ${_descriptionController.text}",
                             null,
                             null,
@@ -378,7 +443,10 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                     _date,
                     _isExpense ? -1 * value : value,
                     compensationsMap.isEmpty ? null : compensationsMap,
-                    _descriptionController.value.text.isEmpty ? null : _descriptionController.value.text,
+                    _selectedTransactionLabel?.id,
+                    _descriptionController.value.text.isEmpty
+                        ? null
+                        : _descriptionController.value.text,
                     null,
                     null,
                   );

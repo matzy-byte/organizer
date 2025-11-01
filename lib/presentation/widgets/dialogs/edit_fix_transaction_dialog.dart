@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation_info.dart';
@@ -5,14 +6,17 @@ import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
+import 'package:organizer/core/models/transaction_label.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
+import 'package:organizer/presentation/state/transaction_label_provider.dart';
+import 'package:organizer/presentation/widgets/dialogs/manage_transaction_labels_dialog.dart';
 import 'package:provider/provider.dart';
 
 class EditFixTransactionDialog extends StatefulWidget {
   final FixTransaction fixTransaction;
-  const EditFixTransactionDialog({super.key,required this.fixTransaction});
+  const EditFixTransactionDialog({super.key, required this.fixTransaction});
 
   @override
   State<EditFixTransactionDialog> createState() =>
@@ -42,19 +46,22 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
 
   List<_CompensationEntry> _compensations = [];
 
+  TransactionLabel? _selectedTransactionLabel;
+
   @override
   void initState() {
     super.initState();
 
+    final transactionLabelProvider = context.read<TransactionLabelProvider>();
     final categoryProvider = context.read<CategoryProvider>();
     final topicProvider = context.read<TopicProvider>();
     _categories = categoryProvider.categories;
     _allTopics = topicProvider.topics;
 
-    _selectedTopic = _allTopics.firstWhere(
+    _selectedTopic = _allTopics.firstWhereOrNull(
       (t) => t.id == widget.fixTransaction.topicId,
     );
-    _selectedCategory = _categories.firstWhere(
+    _selectedCategory = _categories.firstWhereOrNull(
       (c) => c.id == _selectedTopic!.categoryId,
     );
     _topics = _allTopics
@@ -65,8 +72,11 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
     _status = widget.fixTransaction.status;
     _startDate = DateTime.now();
     _endDate = DateTime.now();
-    _intervalCountController.text = widget.fixTransaction.intervalCount.toString();
+    _intervalCountController.text = widget.fixTransaction.intervalCount
+        .toString();
     _selectedIntervalUnit = widget.fixTransaction.intervalUnit;
+    _selectedTransactionLabel = transactionLabelProvider.transactionLabels
+        .firstWhereOrNull((l) => l.id == widget.fixTransaction.transactionLabelId);
     _valueController.text = widget.fixTransaction.value.abs().toString();
     _descriptionController.text = widget.fixTransaction.description ?? '';
 
@@ -134,6 +144,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final transactionLabelProvider = context.read<TransactionLabelProvider>();
     final topicProvider = context.read<TopicProvider>();
     final fixTransactionProvider = context.read<FixTransactionProvider>();
 
@@ -397,6 +408,47 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
 
                     const SizedBox(height: 12),
 
+                    DropdownButtonFormField<TransactionLabel>(
+                      decoration: const InputDecoration(
+                        labelText: 'Label',
+                        border: OutlineInputBorder(),
+                      ),
+                      initialValue: _selectedTransactionLabel,
+                      hint: const Text('None'),
+                      items: [
+                        ...transactionLabelProvider.transactionLabels.map((l) {
+                          return DropdownMenuItem<TransactionLabel>(
+                            value: l,
+                            child: Text(l.name),
+                          );
+                        }),
+                        DropdownMenuItem(
+                          value: TransactionLabel(-1, 'Manage Labels'),
+                          child: const Row(
+                            children: [
+                              Icon(Icons.settings, size: 18),
+                              SizedBox(width: 4),
+                              Text('Manage labels'),
+                            ],
+                          ),
+                        ),
+                      ],
+                      onChanged: (value) async {
+                        if (value!.id == -1) {
+                          setState(() => _selectedTransactionLabel = null);
+
+                          await showDialog(
+                            context: context,
+                            builder: (_) => ManageTransactionLabelsDialog(),
+                          );
+                        } else {
+                          setState(() {
+                            _selectedTransactionLabel = value;
+                          });
+                        }
+                      },
+                    ),
+
                     TextFormField(
                       controller: _valueController,
                       decoration: const InputDecoration(labelText: 'Value'),
@@ -461,7 +513,10 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                     _selectedIntervalUnit!,
                     _isExpense ? -1 * value : value,
                     _compensations.isEmpty ? null : compensationsMap,
-                    _descriptionController.value.text.isEmpty ? null : _descriptionController.value.text,
+                    _selectedTransactionLabel?.id,
+                    _descriptionController.value.text.isEmpty
+                        ? null
+                        : _descriptionController.value.text,
                     widget.fixTransaction.latestDate,
                     widget.fixTransaction.varRefId,
                   );

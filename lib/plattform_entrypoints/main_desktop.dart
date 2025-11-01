@@ -4,37 +4,50 @@ import 'package:organizer/app/theme.dart';
 import 'package:organizer/core/services/category_service.dart';
 import 'package:organizer/core/services/fix_transaction_service.dart';
 import 'package:organizer/core/services/topic_service.dart';
+import 'package:organizer/core/services/transaction_label_service.dart';
 import 'package:organizer/core/services/var_transaction_service.dart';
 import 'package:organizer/data/providers/drift_provider.dart';
 import 'package:organizer/data/repositories/category_repository.dart';
 import 'package:organizer/data/repositories/fix_transaction_repository.dart';
 import 'package:organizer/data/repositories/topic_repository.dart';
+import 'package:organizer/data/repositories/transaction_label_repository.dart';
 import 'package:organizer/data/repositories/var_transaction_repository.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
+import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:provider/provider.dart';
 
 Future<void> runDesktop() async {
   final db = await DriftProvider.instance;
 
+  final row = await db.customSelect('PRAGMA user_version;').getSingle();
+  print("DB schema version = ${row.data.values.first}");
+
   final categoryService = CategoryService(CategoryRepositoryDrift(db));
   final topicService = TopicService(TopicRepositoryDrift(db));
   final fixTransactionService = FixTransactionService(
     FixTransactionRepositoryDrift(db),
   );
-  final varTransactionService = VarTransactionService(VarTransactionRepositoryDrift(db));
+  final varTransactionService = VarTransactionService(
+    VarTransactionRepositoryDrift(db),
+  );
+  final transactionLabelService = TransactionLabelService(
+    TransactionLabellRepositoryDrift(db),
+  );
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (_) =>
-              CategoryProvider(categoryService: categoryService)..loadCategories(),
+              CategoryProvider(categoryService: categoryService)
+                ..loadCategories(),
         ),
         ChangeNotifierProvider(
-          create: (_) => TopicProvider(topicService: topicService)..loadAllTopics(),
+          create: (_) =>
+              TopicProvider(topicService: topicService)..loadAllTopics(),
         ),
         ChangeNotifierProvider(
           create: (_) => FixTransactionProvider(
@@ -45,7 +58,12 @@ Future<void> runDesktop() async {
           create: (_) => VarTransactionProvider(
             varTransactionService: varTransactionService,
           ),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (_) => TransactionLabelProvider(
+            transactionLabelService: transactionLabelService,
+          )..loadAllTransactionLabels(),
+        ),
       ],
       child: const DesktopApp(),
     ),

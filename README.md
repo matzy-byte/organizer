@@ -11,6 +11,7 @@
 - ✓ Compensation needs to be available from topics from other categories
 - ✓ Add edit fix transaction dialogs
 - ✓ Show compensations dialog
+- ✓ Properly set up TransactionLabels in add loggig and settings to control.
 -  Overview ui element
 -  Split overview_elemnt into multiple classes
 -  Var transaction table needs media control

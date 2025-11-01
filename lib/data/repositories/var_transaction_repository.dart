@@ -15,6 +15,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
     DateTime date,
     int value,
     Map<int, CompensationInfo>? compensations,
+    int? transactionLabelId,
     String? description,
     int? fixRefId,
     int? varRefId,
@@ -29,6 +30,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
             compensations: compensations == null
                 ? Value(null)
                 : Value(JsonUtil.compensation2String(compensations)),
+            transactionLabelId: Value(transactionLabelId),
             description: Value(description),
             fixRefId: Value(fixRefId),
             varRefId: Value(varRefId),
@@ -52,6 +54,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
             date: v.date,
             value: v.value,
             compensations: JsonUtil.string2CompensationInfo(v.compensations),
+            transactionLabelId: v.transactionLabelId,
             description: v.description,
             fixRefId: v.fixRefId,
             varRefId: v.varRefId,
@@ -102,6 +105,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
     DateTime? date,
     int? value,
     Map<int, CompensationInfo>? compensations,
+    int? transactionLabelId,
     String? description,
     int? fixRefId,
     int? varRefId,
@@ -118,6 +122,9 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
         compensations: compensations == null
             ? Value(row.compensations)
             : Value(JsonUtil.compensation2String(compensations)),
+        transactionLabelId: transactionLabelId == null
+            ? Value(row.transactionLabelId)
+            : Value(transactionLabelId),
         description: description == null
             ? Value(row.description)
             : Value(description),
@@ -172,6 +179,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
       date: row.date,
       value: row.value,
       compensations: JsonUtil.string2CompensationInfo(row.compensations),
+      transactionLabelId: row.transactionLabelId,
       description: row.description,
       fixRefId: row.fixRefId,
       varRefId: row.varRefId,
