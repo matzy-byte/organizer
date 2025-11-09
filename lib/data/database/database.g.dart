@@ -573,6 +573,190 @@ class TopicsCompanion extends UpdateCompanion<Topic> {
   }
 }
 
+class $UsersTable extends Users with TableInfo<$UsersTable, User> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $UsersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'users';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<User> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  User map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return User(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+    );
+  }
+
+  @override
+  $UsersTable createAlias(String alias) {
+    return $UsersTable(attachedDatabase, alias);
+  }
+}
+
+class User extends DataClass implements Insertable<User> {
+  final int id;
+  final String name;
+  const User({required this.id, required this.name});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  UsersCompanion toCompanion(bool nullToAbsent) {
+    return UsersCompanion(id: Value(id), name: Value(name));
+  }
+
+  factory User.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return User(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  User copyWith({int? id, String? name}) =>
+      User(id: id ?? this.id, name: name ?? this.name);
+  User copyWithCompanion(UsersCompanion data) {
+    return User(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('User(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is User && other.id == this.id && other.name == this.name);
+}
+
+class UsersCompanion extends UpdateCompanion<User> {
+  final Value<int> id;
+  final Value<String> name;
+  const UsersCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  UsersCompanion.insert({this.id = const Value.absent(), required String name})
+    : name = Value(name);
+  static Insertable<User> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+    });
+  }
+
+  UsersCompanion copyWith({Value<int>? id, Value<String>? name}) {
+    return UsersCompanion(id: id ?? this.id, name: name ?? this.name);
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('UsersCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $TransactionLabelsTable extends TransactionLabels
     with TableInfo<$TransactionLabelsTable, TransactionLabel> {
   @override
@@ -766,6 +950,190 @@ class TransactionLabelsCompanion extends UpdateCompanion<TransactionLabel> {
   }
 }
 
+class $FilesTable extends Files with TableInfo<$FilesTable, File> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $FilesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _pathMeta = const VerificationMeta('path');
+  @override
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
+    'path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, path];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'files';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<File> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('path')) {
+      context.handle(
+        _pathMeta,
+        path.isAcceptableOrUnknown(data['path']!, _pathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pathMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  File map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return File(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      path: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}path'],
+      )!,
+    );
+  }
+
+  @override
+  $FilesTable createAlias(String alias) {
+    return $FilesTable(attachedDatabase, alias);
+  }
+}
+
+class File extends DataClass implements Insertable<File> {
+  final int id;
+  final String path;
+  const File({required this.id, required this.path});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['path'] = Variable<String>(path);
+    return map;
+  }
+
+  FilesCompanion toCompanion(bool nullToAbsent) {
+    return FilesCompanion(id: Value(id), path: Value(path));
+  }
+
+  factory File.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return File(
+      id: serializer.fromJson<int>(json['id']),
+      path: serializer.fromJson<String>(json['path']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'path': serializer.toJson<String>(path),
+    };
+  }
+
+  File copyWith({int? id, String? path}) =>
+      File(id: id ?? this.id, path: path ?? this.path);
+  File copyWithCompanion(FilesCompanion data) {
+    return File(
+      id: data.id.present ? data.id.value : this.id,
+      path: data.path.present ? data.path.value : this.path,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('File(')
+          ..write('id: $id, ')
+          ..write('path: $path')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, path);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is File && other.id == this.id && other.path == this.path);
+}
+
+class FilesCompanion extends UpdateCompanion<File> {
+  final Value<int> id;
+  final Value<String> path;
+  const FilesCompanion({
+    this.id = const Value.absent(),
+    this.path = const Value.absent(),
+  });
+  FilesCompanion.insert({this.id = const Value.absent(), required String path})
+    : path = Value(path);
+  static Insertable<File> custom({
+    Expression<int>? id,
+    Expression<String>? path,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (path != null) 'path': path,
+    });
+  }
+
+  FilesCompanion copyWith({Value<int>? id, Value<String>? path}) {
+    return FilesCompanion(id: id ?? this.id, path: path ?? this.path);
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (path.present) {
+      map['path'] = Variable<String>(path.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FilesCompanion(')
+          ..write('id: $id, ')
+          ..write('path: $path')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class $VarTransactionsTable extends VarTransactions
     with TableInfo<$VarTransactionsTable, VarTransaction> {
   @override
@@ -816,6 +1184,20 @@ class $VarTransactionsTable extends VarTransactions
     false,
     type: DriftSqlType.int,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _userRefIdMeta = const VerificationMeta(
+    'userRefId',
+  );
+  @override
+  late final GeneratedColumn<int> userRefId = GeneratedColumn<int>(
+    'user_ref_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (id)',
+    ),
   );
   static const VerificationMeta _compensationsMeta = const VerificationMeta(
     'compensations',
@@ -877,17 +1259,33 @@ class $VarTransactionsTable extends VarTransactions
       'REFERENCES var_transactions (id)',
     ),
   );
+  static const VerificationMeta _fileRefIdMeta = const VerificationMeta(
+    'fileRefId',
+  );
+  @override
+  late final GeneratedColumn<int> fileRefId = GeneratedColumn<int>(
+    'file_ref_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES files (id)',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     topicId,
     date,
     value,
+    userRefId,
     compensations,
     transactionLabelId,
     description,
     fixRefId,
     varRefId,
+    fileRefId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -928,6 +1326,14 @@ class $VarTransactionsTable extends VarTransactions
     } else if (isInserting) {
       context.missing(_valueMeta);
     }
+    if (data.containsKey('user_ref_id')) {
+      context.handle(
+        _userRefIdMeta,
+        userRefId.isAcceptableOrUnknown(data['user_ref_id']!, _userRefIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userRefIdMeta);
+    }
     if (data.containsKey('compensations')) {
       context.handle(
         _compensationsMeta,
@@ -967,6 +1373,12 @@ class $VarTransactionsTable extends VarTransactions
         varRefId.isAcceptableOrUnknown(data['var_ref_id']!, _varRefIdMeta),
       );
     }
+    if (data.containsKey('file_ref_id')) {
+      context.handle(
+        _fileRefIdMeta,
+        fileRefId.isAcceptableOrUnknown(data['file_ref_id']!, _fileRefIdMeta),
+      );
+    }
     return context;
   }
 
@@ -992,6 +1404,10 @@ class $VarTransactionsTable extends VarTransactions
         DriftSqlType.int,
         data['${effectivePrefix}value'],
       )!,
+      userRefId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_ref_id'],
+      )!,
       compensations: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}compensations'],
@@ -1012,6 +1428,10 @@ class $VarTransactionsTable extends VarTransactions
         DriftSqlType.int,
         data['${effectivePrefix}var_ref_id'],
       ),
+      fileRefId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}file_ref_id'],
+      ),
     );
   }
 
@@ -1026,21 +1446,25 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
   final int topicId;
   final DateTime date;
   final int value;
+  final int userRefId;
   final String? compensations;
   final int? transactionLabelId;
   final String? description;
   final int? fixRefId;
   final int? varRefId;
+  final int? fileRefId;
   const VarTransaction({
     required this.id,
     required this.topicId,
     required this.date,
     required this.value,
+    required this.userRefId,
     this.compensations,
     this.transactionLabelId,
     this.description,
     this.fixRefId,
     this.varRefId,
+    this.fileRefId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1049,6 +1473,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
     map['topic_id'] = Variable<int>(topicId);
     map['date'] = Variable<DateTime>(date);
     map['value'] = Variable<int>(value);
+    map['user_ref_id'] = Variable<int>(userRefId);
     if (!nullToAbsent || compensations != null) {
       map['compensations'] = Variable<String>(compensations);
     }
@@ -1064,6 +1489,9 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
     if (!nullToAbsent || varRefId != null) {
       map['var_ref_id'] = Variable<int>(varRefId);
     }
+    if (!nullToAbsent || fileRefId != null) {
+      map['file_ref_id'] = Variable<int>(fileRefId);
+    }
     return map;
   }
 
@@ -1073,6 +1501,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
       topicId: Value(topicId),
       date: Value(date),
       value: Value(value),
+      userRefId: Value(userRefId),
       compensations: compensations == null && nullToAbsent
           ? const Value.absent()
           : Value(compensations),
@@ -1088,6 +1517,9 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
       varRefId: varRefId == null && nullToAbsent
           ? const Value.absent()
           : Value(varRefId),
+      fileRefId: fileRefId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fileRefId),
     );
   }
 
@@ -1101,11 +1533,13 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
       topicId: serializer.fromJson<int>(json['topicId']),
       date: serializer.fromJson<DateTime>(json['date']),
       value: serializer.fromJson<int>(json['value']),
+      userRefId: serializer.fromJson<int>(json['userRefId']),
       compensations: serializer.fromJson<String?>(json['compensations']),
       transactionLabelId: serializer.fromJson<int?>(json['transactionLabelId']),
       description: serializer.fromJson<String?>(json['description']),
       fixRefId: serializer.fromJson<int?>(json['fixRefId']),
       varRefId: serializer.fromJson<int?>(json['varRefId']),
+      fileRefId: serializer.fromJson<int?>(json['fileRefId']),
     );
   }
   @override
@@ -1116,11 +1550,13 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
       'topicId': serializer.toJson<int>(topicId),
       'date': serializer.toJson<DateTime>(date),
       'value': serializer.toJson<int>(value),
+      'userRefId': serializer.toJson<int>(userRefId),
       'compensations': serializer.toJson<String?>(compensations),
       'transactionLabelId': serializer.toJson<int?>(transactionLabelId),
       'description': serializer.toJson<String?>(description),
       'fixRefId': serializer.toJson<int?>(fixRefId),
       'varRefId': serializer.toJson<int?>(varRefId),
+      'fileRefId': serializer.toJson<int?>(fileRefId),
     };
   }
 
@@ -1129,16 +1565,19 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
     int? topicId,
     DateTime? date,
     int? value,
+    int? userRefId,
     Value<String?> compensations = const Value.absent(),
     Value<int?> transactionLabelId = const Value.absent(),
     Value<String?> description = const Value.absent(),
     Value<int?> fixRefId = const Value.absent(),
     Value<int?> varRefId = const Value.absent(),
+    Value<int?> fileRefId = const Value.absent(),
   }) => VarTransaction(
     id: id ?? this.id,
     topicId: topicId ?? this.topicId,
     date: date ?? this.date,
     value: value ?? this.value,
+    userRefId: userRefId ?? this.userRefId,
     compensations: compensations.present
         ? compensations.value
         : this.compensations,
@@ -1148,6 +1587,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
     description: description.present ? description.value : this.description,
     fixRefId: fixRefId.present ? fixRefId.value : this.fixRefId,
     varRefId: varRefId.present ? varRefId.value : this.varRefId,
+    fileRefId: fileRefId.present ? fileRefId.value : this.fileRefId,
   );
   VarTransaction copyWithCompanion(VarTransactionsCompanion data) {
     return VarTransaction(
@@ -1155,6 +1595,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
       topicId: data.topicId.present ? data.topicId.value : this.topicId,
       date: data.date.present ? data.date.value : this.date,
       value: data.value.present ? data.value.value : this.value,
+      userRefId: data.userRefId.present ? data.userRefId.value : this.userRefId,
       compensations: data.compensations.present
           ? data.compensations.value
           : this.compensations,
@@ -1166,6 +1607,7 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
           : this.description,
       fixRefId: data.fixRefId.present ? data.fixRefId.value : this.fixRefId,
       varRefId: data.varRefId.present ? data.varRefId.value : this.varRefId,
+      fileRefId: data.fileRefId.present ? data.fileRefId.value : this.fileRefId,
     );
   }
 
@@ -1176,11 +1618,13 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
           ..write('topicId: $topicId, ')
           ..write('date: $date, ')
           ..write('value: $value, ')
+          ..write('userRefId: $userRefId, ')
           ..write('compensations: $compensations, ')
           ..write('transactionLabelId: $transactionLabelId, ')
           ..write('description: $description, ')
           ..write('fixRefId: $fixRefId, ')
-          ..write('varRefId: $varRefId')
+          ..write('varRefId: $varRefId, ')
+          ..write('fileRefId: $fileRefId')
           ..write(')'))
         .toString();
   }
@@ -1191,11 +1635,13 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
     topicId,
     date,
     value,
+    userRefId,
     compensations,
     transactionLabelId,
     description,
     fixRefId,
     varRefId,
+    fileRefId,
   );
   @override
   bool operator ==(Object other) =>
@@ -1205,11 +1651,13 @@ class VarTransaction extends DataClass implements Insertable<VarTransaction> {
           other.topicId == this.topicId &&
           other.date == this.date &&
           other.value == this.value &&
+          other.userRefId == this.userRefId &&
           other.compensations == this.compensations &&
           other.transactionLabelId == this.transactionLabelId &&
           other.description == this.description &&
           other.fixRefId == this.fixRefId &&
-          other.varRefId == this.varRefId);
+          other.varRefId == this.varRefId &&
+          other.fileRefId == this.fileRefId);
 }
 
 class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
@@ -1217,57 +1665,68 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
   final Value<int> topicId;
   final Value<DateTime> date;
   final Value<int> value;
+  final Value<int> userRefId;
   final Value<String?> compensations;
   final Value<int?> transactionLabelId;
   final Value<String?> description;
   final Value<int?> fixRefId;
   final Value<int?> varRefId;
+  final Value<int?> fileRefId;
   const VarTransactionsCompanion({
     this.id = const Value.absent(),
     this.topicId = const Value.absent(),
     this.date = const Value.absent(),
     this.value = const Value.absent(),
+    this.userRefId = const Value.absent(),
     this.compensations = const Value.absent(),
     this.transactionLabelId = const Value.absent(),
     this.description = const Value.absent(),
     this.fixRefId = const Value.absent(),
     this.varRefId = const Value.absent(),
+    this.fileRefId = const Value.absent(),
   });
   VarTransactionsCompanion.insert({
     this.id = const Value.absent(),
     required int topicId,
     required DateTime date,
     required int value,
+    required int userRefId,
     this.compensations = const Value.absent(),
     this.transactionLabelId = const Value.absent(),
     this.description = const Value.absent(),
     this.fixRefId = const Value.absent(),
     this.varRefId = const Value.absent(),
+    this.fileRefId = const Value.absent(),
   }) : topicId = Value(topicId),
        date = Value(date),
-       value = Value(value);
+       value = Value(value),
+       userRefId = Value(userRefId);
   static Insertable<VarTransaction> custom({
     Expression<int>? id,
     Expression<int>? topicId,
     Expression<DateTime>? date,
     Expression<int>? value,
+    Expression<int>? userRefId,
     Expression<String>? compensations,
     Expression<int>? transactionLabelId,
     Expression<String>? description,
     Expression<int>? fixRefId,
     Expression<int>? varRefId,
+    Expression<int>? fileRefId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (topicId != null) 'topic_id': topicId,
       if (date != null) 'date': date,
       if (value != null) 'value': value,
+      if (userRefId != null) 'user_ref_id': userRefId,
       if (compensations != null) 'compensations': compensations,
       if (transactionLabelId != null)
         'transaction_label_id': transactionLabelId,
       if (description != null) 'description': description,
       if (fixRefId != null) 'fix_ref_id': fixRefId,
       if (varRefId != null) 'var_ref_id': varRefId,
+      if (fileRefId != null) 'file_ref_id': fileRefId,
     });
   }
 
@@ -1276,22 +1735,26 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
     Value<int>? topicId,
     Value<DateTime>? date,
     Value<int>? value,
+    Value<int>? userRefId,
     Value<String?>? compensations,
     Value<int?>? transactionLabelId,
     Value<String?>? description,
     Value<int?>? fixRefId,
     Value<int?>? varRefId,
+    Value<int?>? fileRefId,
   }) {
     return VarTransactionsCompanion(
       id: id ?? this.id,
       topicId: topicId ?? this.topicId,
       date: date ?? this.date,
       value: value ?? this.value,
+      userRefId: userRefId ?? this.userRefId,
       compensations: compensations ?? this.compensations,
       transactionLabelId: transactionLabelId ?? this.transactionLabelId,
       description: description ?? this.description,
       fixRefId: fixRefId ?? this.fixRefId,
       varRefId: varRefId ?? this.varRefId,
+      fileRefId: fileRefId ?? this.fileRefId,
     );
   }
 
@@ -1310,6 +1773,9 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
     if (value.present) {
       map['value'] = Variable<int>(value.value);
     }
+    if (userRefId.present) {
+      map['user_ref_id'] = Variable<int>(userRefId.value);
+    }
     if (compensations.present) {
       map['compensations'] = Variable<String>(compensations.value);
     }
@@ -1325,6 +1791,9 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
     if (varRefId.present) {
       map['var_ref_id'] = Variable<int>(varRefId.value);
     }
+    if (fileRefId.present) {
+      map['file_ref_id'] = Variable<int>(fileRefId.value);
+    }
     return map;
   }
 
@@ -1335,11 +1804,13 @@ class VarTransactionsCompanion extends UpdateCompanion<VarTransaction> {
           ..write('topicId: $topicId, ')
           ..write('date: $date, ')
           ..write('value: $value, ')
+          ..write('userRefId: $userRefId, ')
           ..write('compensations: $compensations, ')
           ..write('transactionLabelId: $transactionLabelId, ')
           ..write('description: $description, ')
           ..write('fixRefId: $fixRefId, ')
-          ..write('varRefId: $varRefId')
+          ..write('varRefId: $varRefId, ')
+          ..write('fileRefId: $fileRefId')
           ..write(')'))
         .toString();
   }
@@ -1434,6 +1905,20 @@ class $FixTransactionsTable extends FixTransactions
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _userRefIdMeta = const VerificationMeta(
+    'userRefId',
+  );
+  @override
+  late final GeneratedColumn<int> userRefId = GeneratedColumn<int>(
+    'user_ref_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES users (id)',
+    ),
+  );
   static const VerificationMeta _compensationsMeta = const VerificationMeta(
     'compensations',
   );
@@ -1494,6 +1979,20 @@ class $FixTransactionsTable extends FixTransactions
       'REFERENCES var_transactions (id)',
     ),
   );
+  static const VerificationMeta _fileRefIdMeta = const VerificationMeta(
+    'fileRefId',
+  );
+  @override
+  late final GeneratedColumn<int> fileRefId = GeneratedColumn<int>(
+    'file_ref_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES files (id)',
+    ),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1504,11 +2003,13 @@ class $FixTransactionsTable extends FixTransactions
     intervalCount,
     intervalUnit,
     value,
+    userRefId,
     compensations,
     transactionLabelId,
     description,
     latestDate,
     varRefId,
+    fileRefId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1568,6 +2069,14 @@ class $FixTransactionsTable extends FixTransactions
     } else if (isInserting) {
       context.missing(_valueMeta);
     }
+    if (data.containsKey('user_ref_id')) {
+      context.handle(
+        _userRefIdMeta,
+        userRefId.isAcceptableOrUnknown(data['user_ref_id']!, _userRefIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_userRefIdMeta);
+    }
     if (data.containsKey('compensations')) {
       context.handle(
         _compensationsMeta,
@@ -1605,6 +2114,12 @@ class $FixTransactionsTable extends FixTransactions
       context.handle(
         _varRefIdMeta,
         varRefId.isAcceptableOrUnknown(data['var_ref_id']!, _varRefIdMeta),
+      );
+    }
+    if (data.containsKey('file_ref_id')) {
+      context.handle(
+        _fileRefIdMeta,
+        fileRefId.isAcceptableOrUnknown(data['file_ref_id']!, _fileRefIdMeta),
       );
     }
     return context;
@@ -1652,6 +2167,10 @@ class $FixTransactionsTable extends FixTransactions
         DriftSqlType.int,
         data['${effectivePrefix}value'],
       )!,
+      userRefId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}user_ref_id'],
+      )!,
       compensations: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}compensations'],
@@ -1671,6 +2190,10 @@ class $FixTransactionsTable extends FixTransactions
       varRefId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}var_ref_id'],
+      ),
+      fileRefId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}file_ref_id'],
       ),
     );
   }
@@ -1697,11 +2220,13 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
   final int intervalCount;
   final IntervalUnit intervalUnit;
   final int value;
+  final int userRefId;
   final String? compensations;
   final int? transactionLabelId;
   final String? description;
   final DateTime? latestDate;
   final int? varRefId;
+  final int? fileRefId;
   const FixTransaction({
     required this.id,
     required this.topicId,
@@ -1711,11 +2236,13 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     required this.intervalCount,
     required this.intervalUnit,
     required this.value,
+    required this.userRefId,
     this.compensations,
     this.transactionLabelId,
     this.description,
     this.latestDate,
     this.varRefId,
+    this.fileRefId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1736,6 +2263,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
       );
     }
     map['value'] = Variable<int>(value);
+    map['user_ref_id'] = Variable<int>(userRefId);
     if (!nullToAbsent || compensations != null) {
       map['compensations'] = Variable<String>(compensations);
     }
@@ -1751,6 +2279,9 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     if (!nullToAbsent || varRefId != null) {
       map['var_ref_id'] = Variable<int>(varRefId);
     }
+    if (!nullToAbsent || fileRefId != null) {
+      map['file_ref_id'] = Variable<int>(fileRefId);
+    }
     return map;
   }
 
@@ -1764,6 +2295,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
       intervalCount: Value(intervalCount),
       intervalUnit: Value(intervalUnit),
       value: Value(value),
+      userRefId: Value(userRefId),
       compensations: compensations == null && nullToAbsent
           ? const Value.absent()
           : Value(compensations),
@@ -1779,6 +2311,9 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
       varRefId: varRefId == null && nullToAbsent
           ? const Value.absent()
           : Value(varRefId),
+      fileRefId: fileRefId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(fileRefId),
     );
   }
 
@@ -1800,11 +2335,13 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
         serializer.fromJson<String>(json['intervalUnit']),
       ),
       value: serializer.fromJson<int>(json['value']),
+      userRefId: serializer.fromJson<int>(json['userRefId']),
       compensations: serializer.fromJson<String?>(json['compensations']),
       transactionLabelId: serializer.fromJson<int?>(json['transactionLabelId']),
       description: serializer.fromJson<String?>(json['description']),
       latestDate: serializer.fromJson<DateTime?>(json['latestDate']),
       varRefId: serializer.fromJson<int?>(json['varRefId']),
+      fileRefId: serializer.fromJson<int?>(json['fileRefId']),
     );
   }
   @override
@@ -1823,11 +2360,13 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
         $FixTransactionsTable.$converterintervalUnit.toJson(intervalUnit),
       ),
       'value': serializer.toJson<int>(value),
+      'userRefId': serializer.toJson<int>(userRefId),
       'compensations': serializer.toJson<String?>(compensations),
       'transactionLabelId': serializer.toJson<int?>(transactionLabelId),
       'description': serializer.toJson<String?>(description),
       'latestDate': serializer.toJson<DateTime?>(latestDate),
       'varRefId': serializer.toJson<int?>(varRefId),
+      'fileRefId': serializer.toJson<int?>(fileRefId),
     };
   }
 
@@ -1840,11 +2379,13 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     int? intervalCount,
     IntervalUnit? intervalUnit,
     int? value,
+    int? userRefId,
     Value<String?> compensations = const Value.absent(),
     Value<int?> transactionLabelId = const Value.absent(),
     Value<String?> description = const Value.absent(),
     Value<DateTime?> latestDate = const Value.absent(),
     Value<int?> varRefId = const Value.absent(),
+    Value<int?> fileRefId = const Value.absent(),
   }) => FixTransaction(
     id: id ?? this.id,
     topicId: topicId ?? this.topicId,
@@ -1854,6 +2395,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     intervalCount: intervalCount ?? this.intervalCount,
     intervalUnit: intervalUnit ?? this.intervalUnit,
     value: value ?? this.value,
+    userRefId: userRefId ?? this.userRefId,
     compensations: compensations.present
         ? compensations.value
         : this.compensations,
@@ -1863,6 +2405,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     description: description.present ? description.value : this.description,
     latestDate: latestDate.present ? latestDate.value : this.latestDate,
     varRefId: varRefId.present ? varRefId.value : this.varRefId,
+    fileRefId: fileRefId.present ? fileRefId.value : this.fileRefId,
   );
   FixTransaction copyWithCompanion(FixTransactionsCompanion data) {
     return FixTransaction(
@@ -1878,6 +2421,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
           ? data.intervalUnit.value
           : this.intervalUnit,
       value: data.value.present ? data.value.value : this.value,
+      userRefId: data.userRefId.present ? data.userRefId.value : this.userRefId,
       compensations: data.compensations.present
           ? data.compensations.value
           : this.compensations,
@@ -1891,6 +2435,7 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
           ? data.latestDate.value
           : this.latestDate,
       varRefId: data.varRefId.present ? data.varRefId.value : this.varRefId,
+      fileRefId: data.fileRefId.present ? data.fileRefId.value : this.fileRefId,
     );
   }
 
@@ -1905,11 +2450,13 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
           ..write('intervalCount: $intervalCount, ')
           ..write('intervalUnit: $intervalUnit, ')
           ..write('value: $value, ')
+          ..write('userRefId: $userRefId, ')
           ..write('compensations: $compensations, ')
           ..write('transactionLabelId: $transactionLabelId, ')
           ..write('description: $description, ')
           ..write('latestDate: $latestDate, ')
-          ..write('varRefId: $varRefId')
+          ..write('varRefId: $varRefId, ')
+          ..write('fileRefId: $fileRefId')
           ..write(')'))
         .toString();
   }
@@ -1924,11 +2471,13 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
     intervalCount,
     intervalUnit,
     value,
+    userRefId,
     compensations,
     transactionLabelId,
     description,
     latestDate,
     varRefId,
+    fileRefId,
   );
   @override
   bool operator ==(Object other) =>
@@ -1942,11 +2491,13 @@ class FixTransaction extends DataClass implements Insertable<FixTransaction> {
           other.intervalCount == this.intervalCount &&
           other.intervalUnit == this.intervalUnit &&
           other.value == this.value &&
+          other.userRefId == this.userRefId &&
           other.compensations == this.compensations &&
           other.transactionLabelId == this.transactionLabelId &&
           other.description == this.description &&
           other.latestDate == this.latestDate &&
-          other.varRefId == this.varRefId);
+          other.varRefId == this.varRefId &&
+          other.fileRefId == this.fileRefId);
 }
 
 class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
@@ -1958,11 +2509,13 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
   final Value<int> intervalCount;
   final Value<IntervalUnit> intervalUnit;
   final Value<int> value;
+  final Value<int> userRefId;
   final Value<String?> compensations;
   final Value<int?> transactionLabelId;
   final Value<String?> description;
   final Value<DateTime?> latestDate;
   final Value<int?> varRefId;
+  final Value<int?> fileRefId;
   const FixTransactionsCompanion({
     this.id = const Value.absent(),
     this.topicId = const Value.absent(),
@@ -1972,11 +2525,13 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     this.intervalCount = const Value.absent(),
     this.intervalUnit = const Value.absent(),
     this.value = const Value.absent(),
+    this.userRefId = const Value.absent(),
     this.compensations = const Value.absent(),
     this.transactionLabelId = const Value.absent(),
     this.description = const Value.absent(),
     this.latestDate = const Value.absent(),
     this.varRefId = const Value.absent(),
+    this.fileRefId = const Value.absent(),
   });
   FixTransactionsCompanion.insert({
     this.id = const Value.absent(),
@@ -1987,18 +2542,21 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     required int intervalCount,
     required IntervalUnit intervalUnit,
     required int value,
+    required int userRefId,
     this.compensations = const Value.absent(),
     this.transactionLabelId = const Value.absent(),
     this.description = const Value.absent(),
     this.latestDate = const Value.absent(),
     this.varRefId = const Value.absent(),
+    this.fileRefId = const Value.absent(),
   }) : topicId = Value(topicId),
        status = Value(status),
        start = Value(start),
        end = Value(end),
        intervalCount = Value(intervalCount),
        intervalUnit = Value(intervalUnit),
-       value = Value(value);
+       value = Value(value),
+       userRefId = Value(userRefId);
   static Insertable<FixTransaction> custom({
     Expression<int>? id,
     Expression<int>? topicId,
@@ -2008,11 +2566,13 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     Expression<int>? intervalCount,
     Expression<String>? intervalUnit,
     Expression<int>? value,
+    Expression<int>? userRefId,
     Expression<String>? compensations,
     Expression<int>? transactionLabelId,
     Expression<String>? description,
     Expression<DateTime>? latestDate,
     Expression<int>? varRefId,
+    Expression<int>? fileRefId,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2023,12 +2583,14 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
       if (intervalCount != null) 'interval_count': intervalCount,
       if (intervalUnit != null) 'interval_unit': intervalUnit,
       if (value != null) 'value': value,
+      if (userRefId != null) 'user_ref_id': userRefId,
       if (compensations != null) 'compensations': compensations,
       if (transactionLabelId != null)
         'transaction_label_id': transactionLabelId,
       if (description != null) 'description': description,
       if (latestDate != null) 'latest_date': latestDate,
       if (varRefId != null) 'var_ref_id': varRefId,
+      if (fileRefId != null) 'file_ref_id': fileRefId,
     });
   }
 
@@ -2041,11 +2603,13 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     Value<int>? intervalCount,
     Value<IntervalUnit>? intervalUnit,
     Value<int>? value,
+    Value<int>? userRefId,
     Value<String?>? compensations,
     Value<int?>? transactionLabelId,
     Value<String?>? description,
     Value<DateTime?>? latestDate,
     Value<int?>? varRefId,
+    Value<int?>? fileRefId,
   }) {
     return FixTransactionsCompanion(
       id: id ?? this.id,
@@ -2056,11 +2620,13 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
       intervalCount: intervalCount ?? this.intervalCount,
       intervalUnit: intervalUnit ?? this.intervalUnit,
       value: value ?? this.value,
+      userRefId: userRefId ?? this.userRefId,
       compensations: compensations ?? this.compensations,
       transactionLabelId: transactionLabelId ?? this.transactionLabelId,
       description: description ?? this.description,
       latestDate: latestDate ?? this.latestDate,
       varRefId: varRefId ?? this.varRefId,
+      fileRefId: fileRefId ?? this.fileRefId,
     );
   }
 
@@ -2095,6 +2661,9 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     if (value.present) {
       map['value'] = Variable<int>(value.value);
     }
+    if (userRefId.present) {
+      map['user_ref_id'] = Variable<int>(userRefId.value);
+    }
     if (compensations.present) {
       map['compensations'] = Variable<String>(compensations.value);
     }
@@ -2110,6 +2679,9 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
     if (varRefId.present) {
       map['var_ref_id'] = Variable<int>(varRefId.value);
     }
+    if (fileRefId.present) {
+      map['file_ref_id'] = Variable<int>(fileRefId.value);
+    }
     return map;
   }
 
@@ -2124,11 +2696,13 @@ class FixTransactionsCompanion extends UpdateCompanion<FixTransaction> {
           ..write('intervalCount: $intervalCount, ')
           ..write('intervalUnit: $intervalUnit, ')
           ..write('value: $value, ')
+          ..write('userRefId: $userRefId, ')
           ..write('compensations: $compensations, ')
           ..write('transactionLabelId: $transactionLabelId, ')
           ..write('description: $description, ')
           ..write('latestDate: $latestDate, ')
-          ..write('varRefId: $varRefId')
+          ..write('varRefId: $varRefId, ')
+          ..write('fileRefId: $fileRefId')
           ..write(')'))
         .toString();
   }
@@ -2139,8 +2713,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $TopicsTable topics = $TopicsTable(this);
+  late final $UsersTable users = $UsersTable(this);
   late final $TransactionLabelsTable transactionLabels =
       $TransactionLabelsTable(this);
+  late final $FilesTable files = $FilesTable(this);
   late final $VarTransactionsTable varTransactions = $VarTransactionsTable(
     this,
   );
@@ -2154,7 +2730,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     categories,
     topics,
+    users,
     transactionLabels,
+    files,
     varTransactions,
     fixTransactions,
   ];
@@ -2909,6 +3487,332 @@ typedef $$TopicsTableProcessedTableManager =
         bool fixTransactionsRefs,
       })
     >;
+typedef $$UsersTableCreateCompanionBuilder =
+    UsersCompanion Function({Value<int> id, required String name});
+typedef $$UsersTableUpdateCompanionBuilder =
+    UsersCompanion Function({Value<int> id, Value<String> name});
+
+final class $$UsersTableReferences
+    extends BaseReferences<_$AppDatabase, $UsersTable, User> {
+  $$UsersTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$VarTransactionsTable, List<VarTransaction>>
+  _varTransactionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.varTransactions,
+    aliasName: $_aliasNameGenerator(db.users.id, db.varTransactions.userRefId),
+  );
+
+  $$VarTransactionsTableProcessedTableManager get varTransactionsRefs {
+    final manager = $$VarTransactionsTableTableManager(
+      $_db,
+      $_db.varTransactions,
+    ).filter((f) => f.userRefId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _varTransactionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$FixTransactionsTable, List<FixTransaction>>
+  _fixTransactionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.fixTransactions,
+    aliasName: $_aliasNameGenerator(db.users.id, db.fixTransactions.userRefId),
+  );
+
+  $$FixTransactionsTableProcessedTableManager get fixTransactionsRefs {
+    final manager = $$FixTransactionsTableTableManager(
+      $_db,
+      $_db.fixTransactions,
+    ).filter((f) => f.userRefId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _fixTransactionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
+  $$UsersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> varTransactionsRefs(
+    Expression<bool> Function($$VarTransactionsTableFilterComposer f) f,
+  ) {
+    final $$VarTransactionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.varTransactions,
+      getReferencedColumn: (t) => t.userRefId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VarTransactionsTableFilterComposer(
+            $db: $db,
+            $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> fixTransactionsRefs(
+    Expression<bool> Function($$FixTransactionsTableFilterComposer f) f,
+  ) {
+    final $$FixTransactionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.fixTransactions,
+      getReferencedColumn: (t) => t.userRefId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FixTransactionsTableFilterComposer(
+            $db: $db,
+            $table: $db.fixTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$UsersTableOrderingComposer
+    extends Composer<_$AppDatabase, $UsersTable> {
+  $$UsersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$UsersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UsersTable> {
+  $$UsersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  Expression<T> varTransactionsRefs<T extends Object>(
+    Expression<T> Function($$VarTransactionsTableAnnotationComposer a) f,
+  ) {
+    final $$VarTransactionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.varTransactions,
+      getReferencedColumn: (t) => t.userRefId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VarTransactionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> fixTransactionsRefs<T extends Object>(
+    Expression<T> Function($$FixTransactionsTableAnnotationComposer a) f,
+  ) {
+    final $$FixTransactionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.fixTransactions,
+      getReferencedColumn: (t) => t.userRefId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FixTransactionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.fixTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$UsersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $UsersTable,
+          User,
+          $$UsersTableFilterComposer,
+          $$UsersTableOrderingComposer,
+          $$UsersTableAnnotationComposer,
+          $$UsersTableCreateCompanionBuilder,
+          $$UsersTableUpdateCompanionBuilder,
+          (User, $$UsersTableReferences),
+          User,
+          PrefetchHooks Function({
+            bool varTransactionsRefs,
+            bool fixTransactionsRefs,
+          })
+        > {
+  $$UsersTableTableManager(_$AppDatabase db, $UsersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$UsersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$UsersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$UsersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+              }) => UsersCompanion(id: id, name: name),
+          createCompanionCallback:
+              ({Value<int> id = const Value.absent(), required String name}) =>
+                  UsersCompanion.insert(id: id, name: name),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable(table), $$UsersTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({varTransactionsRefs = false, fixTransactionsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (varTransactionsRefs) db.varTransactions,
+                    if (fixTransactionsRefs) db.fixTransactions,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (varTransactionsRefs)
+                        await $_getPrefetchedData<
+                          User,
+                          $UsersTable,
+                          VarTransaction
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._varTransactionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).varTransactionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userRefId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (fixTransactionsRefs)
+                        await $_getPrefetchedData<
+                          User,
+                          $UsersTable,
+                          FixTransaction
+                        >(
+                          currentTable: table,
+                          referencedTable: $$UsersTableReferences
+                              ._fixTransactionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$UsersTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).fixTransactionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.userRefId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$UsersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $UsersTable,
+      User,
+      $$UsersTableFilterComposer,
+      $$UsersTableOrderingComposer,
+      $$UsersTableAnnotationComposer,
+      $$UsersTableCreateCompanionBuilder,
+      $$UsersTableUpdateCompanionBuilder,
+      (User, $$UsersTableReferences),
+      User,
+      PrefetchHooks Function({
+        bool varTransactionsRefs,
+        bool fixTransactionsRefs,
+      })
+    >;
 typedef $$TransactionLabelsTableCreateCompanionBuilder =
     TransactionLabelsCompanion Function({Value<int> id, required String name});
 typedef $$TransactionLabelsTableUpdateCompanionBuilder =
@@ -3258,17 +4162,345 @@ typedef $$TransactionLabelsTableProcessedTableManager =
         bool fixTransactionsRefs,
       })
     >;
+typedef $$FilesTableCreateCompanionBuilder =
+    FilesCompanion Function({Value<int> id, required String path});
+typedef $$FilesTableUpdateCompanionBuilder =
+    FilesCompanion Function({Value<int> id, Value<String> path});
+
+final class $$FilesTableReferences
+    extends BaseReferences<_$AppDatabase, $FilesTable, File> {
+  $$FilesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$VarTransactionsTable, List<VarTransaction>>
+  _varTransactionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.varTransactions,
+    aliasName: $_aliasNameGenerator(db.files.id, db.varTransactions.fileRefId),
+  );
+
+  $$VarTransactionsTableProcessedTableManager get varTransactionsRefs {
+    final manager = $$VarTransactionsTableTableManager(
+      $_db,
+      $_db.varTransactions,
+    ).filter((f) => f.fileRefId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _varTransactionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+
+  static MultiTypedResultKey<$FixTransactionsTable, List<FixTransaction>>
+  _fixTransactionsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.fixTransactions,
+    aliasName: $_aliasNameGenerator(db.files.id, db.fixTransactions.fileRefId),
+  );
+
+  $$FixTransactionsTableProcessedTableManager get fixTransactionsRefs {
+    final manager = $$FixTransactionsTableTableManager(
+      $_db,
+      $_db.fixTransactions,
+    ).filter((f) => f.fileRefId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _fixTransactionsRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$FilesTableFilterComposer extends Composer<_$AppDatabase, $FilesTable> {
+  $$FilesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> varTransactionsRefs(
+    Expression<bool> Function($$VarTransactionsTableFilterComposer f) f,
+  ) {
+    final $$VarTransactionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.varTransactions,
+      getReferencedColumn: (t) => t.fileRefId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VarTransactionsTableFilterComposer(
+            $db: $db,
+            $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> fixTransactionsRefs(
+    Expression<bool> Function($$FixTransactionsTableFilterComposer f) f,
+  ) {
+    final $$FixTransactionsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.fixTransactions,
+      getReferencedColumn: (t) => t.fileRefId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FixTransactionsTableFilterComposer(
+            $db: $db,
+            $table: $db.fixTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$FilesTableOrderingComposer
+    extends Composer<_$AppDatabase, $FilesTable> {
+  $$FilesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$FilesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $FilesTable> {
+  $$FilesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get path =>
+      $composableBuilder(column: $table.path, builder: (column) => column);
+
+  Expression<T> varTransactionsRefs<T extends Object>(
+    Expression<T> Function($$VarTransactionsTableAnnotationComposer a) f,
+  ) {
+    final $$VarTransactionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.varTransactions,
+      getReferencedColumn: (t) => t.fileRefId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$VarTransactionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<T> fixTransactionsRefs<T extends Object>(
+    Expression<T> Function($$FixTransactionsTableAnnotationComposer a) f,
+  ) {
+    final $$FixTransactionsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.fixTransactions,
+      getReferencedColumn: (t) => t.fileRefId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FixTransactionsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.fixTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$FilesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $FilesTable,
+          File,
+          $$FilesTableFilterComposer,
+          $$FilesTableOrderingComposer,
+          $$FilesTableAnnotationComposer,
+          $$FilesTableCreateCompanionBuilder,
+          $$FilesTableUpdateCompanionBuilder,
+          (File, $$FilesTableReferences),
+          File,
+          PrefetchHooks Function({
+            bool varTransactionsRefs,
+            bool fixTransactionsRefs,
+          })
+        > {
+  $$FilesTableTableManager(_$AppDatabase db, $FilesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$FilesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$FilesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$FilesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> path = const Value.absent(),
+              }) => FilesCompanion(id: id, path: path),
+          createCompanionCallback:
+              ({Value<int> id = const Value.absent(), required String path}) =>
+                  FilesCompanion.insert(id: id, path: path),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) =>
+                    (e.readTable(table), $$FilesTableReferences(db, table, e)),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({varTransactionsRefs = false, fixTransactionsRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (varTransactionsRefs) db.varTransactions,
+                    if (fixTransactionsRefs) db.fixTransactions,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (varTransactionsRefs)
+                        await $_getPrefetchedData<
+                          File,
+                          $FilesTable,
+                          VarTransaction
+                        >(
+                          currentTable: table,
+                          referencedTable: $$FilesTableReferences
+                              ._varTransactionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$FilesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).varTransactionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.fileRefId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (fixTransactionsRefs)
+                        await $_getPrefetchedData<
+                          File,
+                          $FilesTable,
+                          FixTransaction
+                        >(
+                          currentTable: table,
+                          referencedTable: $$FilesTableReferences
+                              ._fixTransactionsRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$FilesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).fixTransactionsRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.fileRefId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$FilesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $FilesTable,
+      File,
+      $$FilesTableFilterComposer,
+      $$FilesTableOrderingComposer,
+      $$FilesTableAnnotationComposer,
+      $$FilesTableCreateCompanionBuilder,
+      $$FilesTableUpdateCompanionBuilder,
+      (File, $$FilesTableReferences),
+      File,
+      PrefetchHooks Function({
+        bool varTransactionsRefs,
+        bool fixTransactionsRefs,
+      })
+    >;
 typedef $$VarTransactionsTableCreateCompanionBuilder =
     VarTransactionsCompanion Function({
       Value<int> id,
       required int topicId,
       required DateTime date,
       required int value,
+      required int userRefId,
       Value<String?> compensations,
       Value<int?> transactionLabelId,
       Value<String?> description,
       Value<int?> fixRefId,
       Value<int?> varRefId,
+      Value<int?> fileRefId,
     });
 typedef $$VarTransactionsTableUpdateCompanionBuilder =
     VarTransactionsCompanion Function({
@@ -3276,11 +4508,13 @@ typedef $$VarTransactionsTableUpdateCompanionBuilder =
       Value<int> topicId,
       Value<DateTime> date,
       Value<int> value,
+      Value<int> userRefId,
       Value<String?> compensations,
       Value<int?> transactionLabelId,
       Value<String?> description,
       Value<int?> fixRefId,
       Value<int?> varRefId,
+      Value<int?> fileRefId,
     });
 
 final class $$VarTransactionsTableReferences
@@ -3304,6 +4538,24 @@ final class $$VarTransactionsTableReferences
       $_db.topics,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_topicIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $UsersTable _userRefIdTable(_$AppDatabase db) => db.users.createAlias(
+    $_aliasNameGenerator(db.varTransactions.userRefId, db.users.id),
+  );
+
+  $$UsersTableProcessedTableManager get userRefId {
+    final $_column = $_itemColumn<int>('user_ref_id')!;
+
+    final manager = $$UsersTableTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userRefIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -3348,6 +4600,24 @@ final class $$VarTransactionsTableReferences
       $_db.varTransactions,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_varRefIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $FilesTable _fileRefIdTable(_$AppDatabase db) => db.files.createAlias(
+    $_aliasNameGenerator(db.varTransactions.fileRefId, db.files.id),
+  );
+
+  $$FilesTableProcessedTableManager? get fileRefId {
+    final $_column = $_itemColumn<int>('file_ref_id');
+    if ($_column == null) return null;
+    final manager = $$FilesTableTableManager(
+      $_db,
+      $_db.files,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_fileRefIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -3440,6 +4710,29 @@ class $$VarTransactionsTableFilterComposer
     return composer;
   }
 
+  $$UsersTableFilterComposer get userRefId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userRefId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $$TransactionLabelsTableFilterComposer get transactionLabelId {
     final $$TransactionLabelsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -3477,6 +4770,29 @@ class $$VarTransactionsTableFilterComposer
           }) => $$VarTransactionsTableFilterComposer(
             $db: $db,
             $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FilesTableFilterComposer get fileRefId {
+    final $$FilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fileRefId,
+      referencedTable: $db.files,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FilesTableFilterComposer(
+            $db: $db,
+            $table: $db.files,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3574,6 +4890,29 @@ class $$VarTransactionsTableOrderingComposer
     return composer;
   }
 
+  $$UsersTableOrderingComposer get userRefId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userRefId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $$TransactionLabelsTableOrderingComposer get transactionLabelId {
     final $$TransactionLabelsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -3611,6 +4950,29 @@ class $$VarTransactionsTableOrderingComposer
           }) => $$VarTransactionsTableOrderingComposer(
             $db: $db,
             $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FilesTableOrderingComposer get fileRefId {
+    final $$FilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fileRefId,
+      referencedTable: $db.files,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.files,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3675,6 +5037,29 @@ class $$VarTransactionsTableAnnotationComposer
     return composer;
   }
 
+  $$UsersTableAnnotationComposer get userRefId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userRefId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $$TransactionLabelsTableAnnotationComposer get transactionLabelId {
     final $$TransactionLabelsTableAnnotationComposer composer =
         $composerBuilder(
@@ -3713,6 +5098,29 @@ class $$VarTransactionsTableAnnotationComposer
           }) => $$VarTransactionsTableAnnotationComposer(
             $db: $db,
             $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FilesTableAnnotationComposer get fileRefId {
+    final $$FilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fileRefId,
+      referencedTable: $db.files,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.files,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -3763,8 +5171,10 @@ class $$VarTransactionsTableTableManager
           VarTransaction,
           PrefetchHooks Function({
             bool topicId,
+            bool userRefId,
             bool transactionLabelId,
             bool varRefId,
+            bool fileRefId,
             bool fixTransactionsRefs,
           })
         > {
@@ -3787,21 +5197,25 @@ class $$VarTransactionsTableTableManager
                 Value<int> topicId = const Value.absent(),
                 Value<DateTime> date = const Value.absent(),
                 Value<int> value = const Value.absent(),
+                Value<int> userRefId = const Value.absent(),
                 Value<String?> compensations = const Value.absent(),
                 Value<int?> transactionLabelId = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<int?> fixRefId = const Value.absent(),
                 Value<int?> varRefId = const Value.absent(),
+                Value<int?> fileRefId = const Value.absent(),
               }) => VarTransactionsCompanion(
                 id: id,
                 topicId: topicId,
                 date: date,
                 value: value,
+                userRefId: userRefId,
                 compensations: compensations,
                 transactionLabelId: transactionLabelId,
                 description: description,
                 fixRefId: fixRefId,
                 varRefId: varRefId,
+                fileRefId: fileRefId,
               ),
           createCompanionCallback:
               ({
@@ -3809,21 +5223,25 @@ class $$VarTransactionsTableTableManager
                 required int topicId,
                 required DateTime date,
                 required int value,
+                required int userRefId,
                 Value<String?> compensations = const Value.absent(),
                 Value<int?> transactionLabelId = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<int?> fixRefId = const Value.absent(),
                 Value<int?> varRefId = const Value.absent(),
+                Value<int?> fileRefId = const Value.absent(),
               }) => VarTransactionsCompanion.insert(
                 id: id,
                 topicId: topicId,
                 date: date,
                 value: value,
+                userRefId: userRefId,
                 compensations: compensations,
                 transactionLabelId: transactionLabelId,
                 description: description,
                 fixRefId: fixRefId,
                 varRefId: varRefId,
+                fileRefId: fileRefId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -3836,8 +5254,10 @@ class $$VarTransactionsTableTableManager
           prefetchHooksCallback:
               ({
                 topicId = false,
+                userRefId = false,
                 transactionLabelId = false,
                 varRefId = false,
+                fileRefId = false,
                 fixTransactionsRefs = false,
               }) {
                 return PrefetchHooks(
@@ -3876,6 +5296,21 @@ class $$VarTransactionsTableTableManager
                                   )
                                   as T;
                         }
+                        if (userRefId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.userRefId,
+                                    referencedTable:
+                                        $$VarTransactionsTableReferences
+                                            ._userRefIdTable(db),
+                                    referencedColumn:
+                                        $$VarTransactionsTableReferences
+                                            ._userRefIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
                         if (transactionLabelId) {
                           state =
                               state.withJoin(
@@ -3902,6 +5337,21 @@ class $$VarTransactionsTableTableManager
                                     referencedColumn:
                                         $$VarTransactionsTableReferences
                                             ._varRefIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
+                        if (fileRefId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.fileRefId,
+                                    referencedTable:
+                                        $$VarTransactionsTableReferences
+                                            ._fileRefIdTable(db),
+                                    referencedColumn:
+                                        $$VarTransactionsTableReferences
+                                            ._fileRefIdTable(db)
                                             .id,
                                   )
                                   as T;
@@ -3954,8 +5404,10 @@ typedef $$VarTransactionsTableProcessedTableManager =
       VarTransaction,
       PrefetchHooks Function({
         bool topicId,
+        bool userRefId,
         bool transactionLabelId,
         bool varRefId,
+        bool fileRefId,
         bool fixTransactionsRefs,
       })
     >;
@@ -3969,11 +5421,13 @@ typedef $$FixTransactionsTableCreateCompanionBuilder =
       required int intervalCount,
       required IntervalUnit intervalUnit,
       required int value,
+      required int userRefId,
       Value<String?> compensations,
       Value<int?> transactionLabelId,
       Value<String?> description,
       Value<DateTime?> latestDate,
       Value<int?> varRefId,
+      Value<int?> fileRefId,
     });
 typedef $$FixTransactionsTableUpdateCompanionBuilder =
     FixTransactionsCompanion Function({
@@ -3985,11 +5439,13 @@ typedef $$FixTransactionsTableUpdateCompanionBuilder =
       Value<int> intervalCount,
       Value<IntervalUnit> intervalUnit,
       Value<int> value,
+      Value<int> userRefId,
       Value<String?> compensations,
       Value<int?> transactionLabelId,
       Value<String?> description,
       Value<DateTime?> latestDate,
       Value<int?> varRefId,
+      Value<int?> fileRefId,
     });
 
 final class $$FixTransactionsTableReferences
@@ -4013,6 +5469,24 @@ final class $$FixTransactionsTableReferences
       $_db.topics,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_topicIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $UsersTable _userRefIdTable(_$AppDatabase db) => db.users.createAlias(
+    $_aliasNameGenerator(db.fixTransactions.userRefId, db.users.id),
+  );
+
+  $$UsersTableProcessedTableManager get userRefId {
+    final $_column = $_itemColumn<int>('user_ref_id')!;
+
+    final manager = $$UsersTableTableManager(
+      $_db,
+      $_db.users,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_userRefIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -4057,6 +5531,24 @@ final class $$FixTransactionsTableReferences
       $_db.varTransactions,
     ).filter((f) => f.id.sqlEquals($_column));
     final item = $_typedResult.readTableOrNull(_varRefIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static $FilesTable _fileRefIdTable(_$AppDatabase db) => db.files.createAlias(
+    $_aliasNameGenerator(db.fixTransactions.fileRefId, db.files.id),
+  );
+
+  $$FilesTableProcessedTableManager? get fileRefId {
+    final $_column = $_itemColumn<int>('file_ref_id');
+    if ($_column == null) return null;
+    final manager = $$FilesTableTableManager(
+      $_db,
+      $_db.files,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_fileRefIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -4148,6 +5640,29 @@ class $$FixTransactionsTableFilterComposer
     return composer;
   }
 
+  $$UsersTableFilterComposer get userRefId {
+    final $$UsersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userRefId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableFilterComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $$TransactionLabelsTableFilterComposer get transactionLabelId {
     final $$TransactionLabelsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -4185,6 +5700,29 @@ class $$FixTransactionsTableFilterComposer
           }) => $$VarTransactionsTableFilterComposer(
             $db: $db,
             $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FilesTableFilterComposer get fileRefId {
+    final $$FilesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fileRefId,
+      referencedTable: $db.files,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FilesTableFilterComposer(
+            $db: $db,
+            $table: $db.files,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4277,6 +5815,29 @@ class $$FixTransactionsTableOrderingComposer
     return composer;
   }
 
+  $$UsersTableOrderingComposer get userRefId {
+    final $$UsersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userRefId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableOrderingComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $$TransactionLabelsTableOrderingComposer get transactionLabelId {
     final $$TransactionLabelsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4314,6 +5875,29 @@ class $$FixTransactionsTableOrderingComposer
           }) => $$VarTransactionsTableOrderingComposer(
             $db: $db,
             $table: $db.varTransactions,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  $$FilesTableOrderingComposer get fileRefId {
+    final $$FilesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fileRefId,
+      referencedTable: $db.files,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FilesTableOrderingComposer(
+            $db: $db,
+            $table: $db.files,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -4397,6 +5981,29 @@ class $$FixTransactionsTableAnnotationComposer
     return composer;
   }
 
+  $$UsersTableAnnotationComposer get userRefId {
+    final $$UsersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.userRefId,
+      referencedTable: $db.users,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$UsersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.users,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
   $$TransactionLabelsTableAnnotationComposer get transactionLabelId {
     final $$TransactionLabelsTableAnnotationComposer composer =
         $composerBuilder(
@@ -4443,6 +6050,29 @@ class $$FixTransactionsTableAnnotationComposer
     );
     return composer;
   }
+
+  $$FilesTableAnnotationComposer get fileRefId {
+    final $$FilesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.fileRefId,
+      referencedTable: $db.files,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$FilesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.files,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
 }
 
 class $$FixTransactionsTableTableManager
@@ -4460,8 +6090,10 @@ class $$FixTransactionsTableTableManager
           FixTransaction,
           PrefetchHooks Function({
             bool topicId,
+            bool userRefId,
             bool transactionLabelId,
             bool varRefId,
+            bool fileRefId,
           })
         > {
   $$FixTransactionsTableTableManager(
@@ -4487,11 +6119,13 @@ class $$FixTransactionsTableTableManager
                 Value<int> intervalCount = const Value.absent(),
                 Value<IntervalUnit> intervalUnit = const Value.absent(),
                 Value<int> value = const Value.absent(),
+                Value<int> userRefId = const Value.absent(),
                 Value<String?> compensations = const Value.absent(),
                 Value<int?> transactionLabelId = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<DateTime?> latestDate = const Value.absent(),
                 Value<int?> varRefId = const Value.absent(),
+                Value<int?> fileRefId = const Value.absent(),
               }) => FixTransactionsCompanion(
                 id: id,
                 topicId: topicId,
@@ -4501,11 +6135,13 @@ class $$FixTransactionsTableTableManager
                 intervalCount: intervalCount,
                 intervalUnit: intervalUnit,
                 value: value,
+                userRefId: userRefId,
                 compensations: compensations,
                 transactionLabelId: transactionLabelId,
                 description: description,
                 latestDate: latestDate,
                 varRefId: varRefId,
+                fileRefId: fileRefId,
               ),
           createCompanionCallback:
               ({
@@ -4517,11 +6153,13 @@ class $$FixTransactionsTableTableManager
                 required int intervalCount,
                 required IntervalUnit intervalUnit,
                 required int value,
+                required int userRefId,
                 Value<String?> compensations = const Value.absent(),
                 Value<int?> transactionLabelId = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<DateTime?> latestDate = const Value.absent(),
                 Value<int?> varRefId = const Value.absent(),
+                Value<int?> fileRefId = const Value.absent(),
               }) => FixTransactionsCompanion.insert(
                 id: id,
                 topicId: topicId,
@@ -4531,11 +6169,13 @@ class $$FixTransactionsTableTableManager
                 intervalCount: intervalCount,
                 intervalUnit: intervalUnit,
                 value: value,
+                userRefId: userRefId,
                 compensations: compensations,
                 transactionLabelId: transactionLabelId,
                 description: description,
                 latestDate: latestDate,
                 varRefId: varRefId,
+                fileRefId: fileRefId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -4548,8 +6188,10 @@ class $$FixTransactionsTableTableManager
           prefetchHooksCallback:
               ({
                 topicId = false,
+                userRefId = false,
                 transactionLabelId = false,
                 varRefId = false,
+                fileRefId = false,
               }) {
                 return PrefetchHooks(
                   db: db,
@@ -4585,6 +6227,21 @@ class $$FixTransactionsTableTableManager
                                   )
                                   as T;
                         }
+                        if (userRefId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.userRefId,
+                                    referencedTable:
+                                        $$FixTransactionsTableReferences
+                                            ._userRefIdTable(db),
+                                    referencedColumn:
+                                        $$FixTransactionsTableReferences
+                                            ._userRefIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
                         if (transactionLabelId) {
                           state =
                               state.withJoin(
@@ -4615,6 +6272,21 @@ class $$FixTransactionsTableTableManager
                                   )
                                   as T;
                         }
+                        if (fileRefId) {
+                          state =
+                              state.withJoin(
+                                    currentTable: table,
+                                    currentColumn: table.fileRefId,
+                                    referencedTable:
+                                        $$FixTransactionsTableReferences
+                                            ._fileRefIdTable(db),
+                                    referencedColumn:
+                                        $$FixTransactionsTableReferences
+                                            ._fileRefIdTable(db)
+                                            .id,
+                                  )
+                                  as T;
+                        }
 
                         return state;
                       },
@@ -4641,8 +6313,10 @@ typedef $$FixTransactionsTableProcessedTableManager =
       FixTransaction,
       PrefetchHooks Function({
         bool topicId,
+        bool userRefId,
         bool transactionLabelId,
         bool varRefId,
+        bool fileRefId,
       })
     >;
 
@@ -4653,8 +6327,12 @@ class $AppDatabaseManager {
       $$CategoriesTableTableManager(_db, _db.categories);
   $$TopicsTableTableManager get topics =>
       $$TopicsTableTableManager(_db, _db.topics);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db, _db.users);
   $$TransactionLabelsTableTableManager get transactionLabels =>
       $$TransactionLabelsTableTableManager(_db, _db.transactionLabels);
+  $$FilesTableTableManager get files =>
+      $$FilesTableTableManager(_db, _db.files);
   $$VarTransactionsTableTableManager get varTransactions =>
       $$VarTransactionsTableTableManager(_db, _db.varTransactions);
   $$FixTransactionsTableTableManager get fixTransactions =>

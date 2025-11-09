@@ -18,21 +18,25 @@ class VarTransactionProvider with ChangeNotifier {
     int topicId,
     DateTime date,
     int value,
+    int userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     int? fixRefId,
     int? varRefId,
+    int? fileRefId,
   ) async {
     return await varTransactionService.addVarTransaction(
       topicId,
       date,
       value,
+      userRefId,
       compensations,
       transactionLabelId,
       description,
       fixRefId,
       varRefId,
+      fileRefId,
     );
   }
 
@@ -45,22 +49,26 @@ class VarTransactionProvider with ChangeNotifier {
     int? topicId,
     DateTime? date,
     int? value,
+    int? userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     int? fixRefId,
     int? varRefId,
+    int? fileRefId,
   ) async {
     await varTransactionService.updateVarTransaction(
       id,
       topicId,
       date,
       value,
+      userRefId,
       compensations,
       transactionLabelId,
       description,
       fixRefId,
       varRefId,
+      fileRefId,
     );
   }
 

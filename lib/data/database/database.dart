@@ -1,10 +1,12 @@
-import 'dart:io';
+import 'dart:io' as io;
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:organizer/data/database/tables/categories.dart';
+import 'package:organizer/data/database/tables/files.dart';
 import 'package:organizer/data/database/tables/fix_transactions.dart';
 import 'package:organizer/data/database/tables/topics.dart';
 import 'package:organizer/data/database/tables/transaction_labels.dart';
+import 'package:organizer/data/database/tables/users.dart';
 import 'package:organizer/data/database/tables/var_transactions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
@@ -21,6 +23,8 @@ part 'database.g.dart';
     FixTransactions,
     VarTransactions,
     TransactionLabels,
+    Users,
+    Files,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -52,6 +56,6 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final path = p.join(dir.path, 'organizer.db');
-    return NativeDatabase(File(path));
+    return NativeDatabase(io.File(path));
   });
 }

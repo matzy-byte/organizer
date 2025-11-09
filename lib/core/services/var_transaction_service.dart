@@ -20,20 +20,24 @@ class VarTransactionService {
     int topicId,
     DateTime date,
     int value,
+    int userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     int? fixRefId,
     int? varRefId,
+    int? fileRefId,
   ) => repository.addVarTransaction(
     topicId,
     date,
     value,
+    userRefId,
     compensations,
     transactionLabelId,
     description,
     fixRefId,
     varRefId,
+    fileRefId,
   );
   Future<void> removeVarTransaction(int id) =>
       repository.removeVarTransaction(id);
@@ -43,21 +47,25 @@ class VarTransactionService {
     int? topicId,
     DateTime? date,
     int? value,
+    int? userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     int? fixRefId,
     int? varRefId,
+    int? fileRefId,
   ) => repository.updateVarTransaction(
     id,
     topicId,
     date,
     value,
+    userRefId,
     compensations,
     transactionLabelId,
     description,
     fixRefId,
     varRefId,
+    fileRefId,
   );
 
   Future<void> setVarReference(int id, int refId) =>

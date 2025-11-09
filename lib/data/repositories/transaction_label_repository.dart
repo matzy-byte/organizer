@@ -16,7 +16,6 @@ class TransactionLabellRepositoryDrift extends TransactionLabelRepository {
 
   @override
   Future<List<TransactionLabel>> getAllTransactionLabels() async {
-    print(db.allTables);
     final rows = await (db.select(db.transactionLabels)).get();
     return rows.map((t) => TransactionLabel(t.id, t.name)).toList();
   }

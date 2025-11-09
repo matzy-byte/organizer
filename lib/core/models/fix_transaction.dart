@@ -11,11 +11,13 @@ class FixTransaction {
   final int intervalCount;
   final IntervalUnit intervalUnit;
   final int value;
+  final int userRefId;
   final Map<int, CompensationInfo>? compensations;
   final int? transactionLabelId;
   final String? description;
   final DateTime? latestDate;
   final int? varRefId;
+  final int? fileRefId;
 
   const FixTransaction({
     required this.id,
@@ -26,10 +28,12 @@ class FixTransaction {
     required this.intervalCount,
     required this.intervalUnit,
     required this.value,
+    required this.userRefId,
     this.compensations,
     this.transactionLabelId,
     this.description,
     this.latestDate,
     this.varRefId,
+    this.fileRefId,
   });
 }

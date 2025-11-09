@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:organizer/app/globals.dart' as globals;
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/interval_unit.dart';
@@ -487,6 +488,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                     intervalCount,
                     _selectedIntervalUnit!,
                     _isExpense ? -1 * value : value,
+                    globals.user.id,
                     _compensations.isEmpty ? null : compensationsMap,
                     _selectedTransactionLabel?.id,
                     _descriptionController.value.text.isEmpty
@@ -494,6 +496,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                         : _descriptionController.value.text,
                     null,
                     null,
+                    null
                   );
                   Navigator.pop(context, true);
                 }

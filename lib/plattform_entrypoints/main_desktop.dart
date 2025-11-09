@@ -2,28 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:organizer/app/routes.dart';
 import 'package:organizer/app/theme.dart';
 import 'package:organizer/core/services/category_service.dart';
+import 'package:organizer/core/services/file_service.dart';
 import 'package:organizer/core/services/fix_transaction_service.dart';
 import 'package:organizer/core/services/topic_service.dart';
 import 'package:organizer/core/services/transaction_label_service.dart';
+import 'package:organizer/core/services/user_service.dart';
 import 'package:organizer/core/services/var_transaction_service.dart';
 import 'package:organizer/data/providers/drift_provider.dart';
 import 'package:organizer/data/repositories/category_repository.dart';
+import 'package:organizer/data/repositories/file_repository.dart';
 import 'package:organizer/data/repositories/fix_transaction_repository.dart';
 import 'package:organizer/data/repositories/topic_repository.dart';
 import 'package:organizer/data/repositories/transaction_label_repository.dart';
+import 'package:organizer/data/repositories/user_repository.dart';
 import 'package:organizer/data/repositories/var_transaction_repository.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
+import 'package:organizer/presentation/state/file_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
+import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:provider/provider.dart';
 
 Future<void> runDesktop() async {
   final db = await DriftProvider.instance;
-
-  final row = await db.customSelect('PRAGMA user_version;').getSingle();
-  print("DB schema version = ${row.data.values.first}");
 
   final categoryService = CategoryService(CategoryRepositoryDrift(db));
   final topicService = TopicService(TopicRepositoryDrift(db));
@@ -36,6 +39,8 @@ Future<void> runDesktop() async {
   final transactionLabelService = TransactionLabelService(
     TransactionLabellRepositoryDrift(db),
   );
+  final userService = UserService(UserRepositoryDrift(db));
+  final fileService = FileService(FileRepositoryDrift(db));
 
   runApp(
     MultiProvider(
@@ -64,14 +69,17 @@ Future<void> runDesktop() async {
             transactionLabelService: transactionLabelService,
           )..loadAllTransactionLabels(),
         ),
+        ChangeNotifierProvider(create: (_) => UserProvider(userService: userService)..loadAllUsers(),),
+        ChangeNotifierProvider(create: (_) => FileProvider(fileService: fileService)),
       ],
-      child: const DesktopApp(),
+      child: DesktopApp(isSetup: (await userService.getAllUsers()).isEmpty,),
     ),
   );
 }
 
 class DesktopApp extends StatelessWidget {
-  const DesktopApp({super.key});
+  final bool isSetup;
+  const DesktopApp({super.key, required this.isSetup});
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +87,7 @@ class DesktopApp extends StatelessWidget {
       title: 'Organizer',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      initialRoute: AppRoutes.dashboard,
+      initialRoute: isSetup ? AppRoutes.setup : AppRoutes.start,
       routes: AppRoutes.routes,
     );
   }

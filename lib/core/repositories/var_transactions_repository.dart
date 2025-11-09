@@ -7,11 +7,13 @@ abstract class VarTransactionRepository {
     int topicId,
     DateTime date,
     int value,
+    int userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     int? fixRefId,
     int? varRefId,
+    int? fileRefId,
   );
   Future<void> removeVarTransaction(int id);
   Future<void> updateVarTransaction(
@@ -19,11 +21,13 @@ abstract class VarTransactionRepository {
     int? topicId,
     DateTime? date,
     int? value,
+    int? userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     int? fixRefId,
     int? varRefId,
+    int? fileRefId,
   );
   Future<void> setVarReference(int id, int varRefId);
   Future<VarTransaction> get(int id);

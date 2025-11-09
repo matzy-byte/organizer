@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:organizer/app/globals.dart' as globals;
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/topic.dart';
@@ -368,9 +369,11 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                           c.topic!.id,
                           _date!,
                           _isExpense ? -1 * value : value,
+                          globals.user.id,
                           null,
                           _selectedTransactionLabel?.id,
                           "Compensation: ${_descriptionController.text}",
+                          null,
                           null,
                           null,
                         );
@@ -388,9 +391,11 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                         _selectedTopic!.id,
                         _date!,
                         _isExpense ? -1 * value : value,
+                        globals.user.id,
                         compensationsMap.isEmpty ? null : compensationsMap,
                         _selectedTransactionLabel?.id,
                         _descriptionController.value.text.isEmpty ? null : _descriptionController.value.text,
+                        null,
                         null,
                         null,
                       );

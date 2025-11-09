@@ -12,6 +12,7 @@
 - ✓ Add edit fix transaction dialogs
 - ✓ Show compensations dialog
 - ✓ Properly set up TransactionLabels in add loggig and settings to control.
+- ✓ Added users and file references for future safety.
 -  Overview ui element
 -  Split overview_elemnt into multiple classes
 -  Var transaction table needs media control

@@ -20,11 +20,13 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
     int intervalCount,
     IntervalUnit intervalUnit,
     int value,
+    int userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     DateTime? latestDate,
     int? varRefId,
+    int? fileRefId,
   ) async {
     await db
         .into(db.fixTransactions)
@@ -37,6 +39,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             intervalCount: intervalCount,
             intervalUnit: intervalUnit,
             value: value,
+            userRefId: userRefId,
             compensations: compensations == null
                 ? Value(null)
                 : Value(JsonUtil.compensation2String(compensations)),
@@ -44,6 +47,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             description: Value(description),
             latestDate: Value(latestDate),
             varRefId: Value(varRefId),
+            fileRefId: Value(fileRefId),
           ),
         );
   }
@@ -66,11 +70,13 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             intervalCount: f.intervalCount,
             intervalUnit: f.intervalUnit,
             value: f.value,
+            userRefId: f.userRefId,
             compensations: JsonUtil.string2CompensationInfo(f.compensations),
             transactionLabelId: f.transactionLabelId,
             description: f.description,
             latestDate: f.latestDate,
             varRefId: f.varRefId,
+            fileRefId: f.fileRefId,
           ),
         )
         .toList();
@@ -91,11 +97,13 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
     int? intervalCount,
     IntervalUnit? intervalUnit,
     int? value,
+    int? userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     DateTime? latestDate,
     int? varRefId,
+    int? fileRefId,
   ) async {
     final row = await (db.select(
       db.fixTransactions,
@@ -114,6 +122,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             ? Value(row.intervalUnit)
             : Value(intervalUnit),
         value: value == null ? Value(row.value) : Value(value),
+        userRefId: userRefId == null ? Value(row.userRefId) : Value(userRefId),
         compensations: compensations == null
             ? Value(row.compensations)
             : Value(JsonUtil.compensation2String(compensations)),
@@ -127,6 +136,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             ? Value(row.latestDate)
             : Value(latestDate),
         varRefId: varRefId == null ? Value(row.varRefId) : Value(varRefId),
+        fileRefId: fileRefId == null ? Value(row.fileRefId) : Value(fileRefId),
       ),
     );
   }

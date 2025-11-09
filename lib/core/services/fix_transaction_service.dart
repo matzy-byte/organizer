@@ -26,11 +26,13 @@ class FixTransactionService {
     int intervalCount,
     IntervalUnit intervalUnit,
     int value,
+    int userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     DateTime? latestDate,
     int? varRefId,
+    int? fileRefId,
   ) => repository.addFixTransaction(
     topicId,
     status,
@@ -39,11 +41,13 @@ class FixTransactionService {
     intervalCount,
     intervalUnit,
     value,
+    userRefId,
     compensations,
     transactionLabelId,
     description,
     latestDate,
     varRefId,
+    fileRefId,
   );
   Future<void> removeFixTransaction(int id) =>
       repository.removeFixTransaction(id);
@@ -56,11 +60,13 @@ class FixTransactionService {
     int? intervalCount,
     IntervalUnit? intervalUnit,
     int? value,
+    int? userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     DateTime? latestDate,
     int? varRefId,
+    int? fileRefId,
   ) => repository.updateFixTransaction(
     id,
     topicId,
@@ -70,10 +76,12 @@ class FixTransactionService {
     intervalCount,
     intervalUnit,
     value,
+    userRefId,
     compensations,
     transactionLabelId,
     description,
     latestDate,
     varRefId,
+    fileRefId,
   );
 }

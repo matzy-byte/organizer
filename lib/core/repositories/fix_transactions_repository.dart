@@ -13,11 +13,13 @@ abstract class FixTransactionRepository {
     int intervalCount,
     IntervalUnit intervalUnit,
     int value,
+    int userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     DateTime? latestDate,
     int? varRefId,
+    int? fileRefId,
   );
   Future<void> removeFixTransaction(int id);
   Future<void> updateFixTransaction(
@@ -29,10 +31,12 @@ abstract class FixTransactionRepository {
     int? intervalCount,
     IntervalUnit? intervalUnit,
     int? value,
+    int? userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     DateTime? latestDate,
     int? varRefId,
+    int? fileRefId,
   );
 }

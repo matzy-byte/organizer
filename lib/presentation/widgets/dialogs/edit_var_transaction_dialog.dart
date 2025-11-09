@@ -404,8 +404,10 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                         null,
                         _isExpense ? -1 * value : value,
                         null,
+                        null,
                         _selectedTransactionLabel?.id,
                         "Compensation: ${_descriptionController.text}",
+                        null,
                         null,
                         null,
                       );
@@ -421,9 +423,11 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                             c.topic!.id,
                             _date!,
                             _isExpense ? -1 * value : value,
+                            widget.varTransaction.userRefId,
                             null,
                             _selectedTransactionLabel?.id,
                             "Compensation: ${_descriptionController.text}",
+                            null,
                             null,
                             null,
                           );
@@ -442,11 +446,13 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                     _selectedTopic!.id,
                     _date,
                     _isExpense ? -1 * value : value,
+                    null,
                     compensationsMap.isEmpty ? null : compensationsMap,
                     _selectedTransactionLabel?.id,
                     _descriptionController.value.text.isEmpty
                         ? null
                         : _descriptionController.value.text,
+                    null,
                     null,
                     null,
                   );

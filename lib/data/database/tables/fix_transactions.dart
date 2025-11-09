@@ -1,8 +1,10 @@
 import 'package:drift/drift.dart';
 import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/status.dart';
+import 'package:organizer/data/database/tables/files.dart';
 import 'package:organizer/data/database/tables/topics.dart';
 import 'package:organizer/data/database/tables/transaction_labels.dart';
+import 'package:organizer/data/database/tables/users.dart';
 import 'package:organizer/data/database/tables/var_transactions.dart';
 
 class FixTransactions extends Table {
@@ -14,6 +16,7 @@ class FixTransactions extends Table {
   IntColumn get intervalCount => integer()();
   TextColumn get intervalUnit => textEnum<IntervalUnit>()();
   IntColumn get value => integer()();
+  IntColumn get userRefId => integer().references(Users, #id)();
   TextColumn get compensations => text().nullable()();
   IntColumn get transactionLabelId =>
       integer().references(TransactionLabels, #id).nullable()();
@@ -21,4 +24,5 @@ class FixTransactions extends Table {
   DateTimeColumn get latestDate => dateTime().nullable()();
   IntColumn get varRefId =>
       integer().references(VarTransactions, #id).nullable()();
+  IntColumn get fileRefId => integer().references(Files, #id).nullable()();
 }

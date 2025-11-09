@@ -24,11 +24,13 @@ class FixTransactionProvider with ChangeNotifier {
     int intervalCount,
     IntervalUnit intervalUnit,
     int value,
+    int userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     DateTime? latestDate,
     int? varRefId,
+    int? fileRefId,
   ) async {
     await fixTransactionService.addFixTransaction(
       topicId,
@@ -38,11 +40,13 @@ class FixTransactionProvider with ChangeNotifier {
       intervalCount,
       intervalUnit,
       value,
+      userRefId,
       compensations,
       transactionLabelId,
       description,
       latestDate,
       varRefId,
+      fileRefId,
     );
   }
 
@@ -59,11 +63,13 @@ class FixTransactionProvider with ChangeNotifier {
     int? intervalCount,
     IntervalUnit? intervalUnit,
     int? value,
+    int? userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
     DateTime? latestDate,
     int? varRefId,
+    int? fileRefId,
   ) async {
     await fixTransactionService.updateFixTransaction(
       id,
@@ -74,11 +80,13 @@ class FixTransactionProvider with ChangeNotifier {
       intervalCount,
       intervalUnit,
       value,
+      userRefId,
       compensations,
       transactionLabelId,
       description,
       latestDate,
       varRefId,
+      fileRefId,
     );
   }
 }
