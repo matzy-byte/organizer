@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/routes.dart';
-import 'package:organizer/app/themes/setup_theme_extension.dart';
+import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:organizer/presentation/widgets/elements/setup/structure_setup.dart';
 import 'package:organizer/presentation/widgets/elements/setup/user_setup.dart';

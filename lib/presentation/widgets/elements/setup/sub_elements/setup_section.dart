@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:organizer/app/themes/setup_theme_extension.dart';
+import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 
 class SetupSection extends StatelessWidget {
   final String title;

@@ -6,12 +6,16 @@ class SetupTheme extends ThemeExtension<SetupTheme> {
   final double itemSpacing;
   final double cardMaxWidth;
   final EdgeInsets cardPadding;
+  final double userAvatarSize;
+  final double userAvatarSpacing;
 
   const SetupTheme({
     required this.sectionSpacing,
     required this.itemSpacing,
     required this.cardMaxWidth,
     required this.cardPadding,
+    required this.userAvatarSize,
+    required this.userAvatarSpacing,
   });
 
   @override
@@ -20,12 +24,16 @@ class SetupTheme extends ThemeExtension<SetupTheme> {
     double? itemSpacing,
     double? cardMaxWidth,
     EdgeInsets? cardPadding,
+    double? userAvatarSize,
+    double? userAvatarSpacing,
   }) {
     return SetupTheme(
       sectionSpacing: sectionSpacing ?? this.sectionSpacing,
       itemSpacing: itemSpacing ?? this.itemSpacing,
       cardMaxWidth: cardMaxWidth ?? this.cardMaxWidth,
       cardPadding: cardPadding ?? this.cardPadding,
+      userAvatarSize: userAvatarSize ?? this.userAvatarSize,
+      userAvatarSpacing: userAvatarSpacing ?? this.userAvatarSpacing,
     );
   }
 
@@ -37,6 +45,12 @@ class SetupTheme extends ThemeExtension<SetupTheme> {
       itemSpacing: lerpDouble(itemSpacing, other.itemSpacing, t)!,
       cardMaxWidth: lerpDouble(cardMaxWidth, other.cardMaxWidth, t)!,
       cardPadding: EdgeInsets.lerp(cardPadding, other.cardPadding, t)!,
+      userAvatarSize: lerpDouble(userAvatarSize, other.userAvatarSize, t)!,
+      userAvatarSpacing: lerpDouble(
+        userAvatarSpacing,
+        other.userAvatarSpacing,
+        t,
+      )!,
     );
   }
 }

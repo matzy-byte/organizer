@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/themes/app_colors.dart';
 import 'package:organizer/app/themes/app_text_styles.dart';
-import 'package:organizer/app/themes/setup_theme_extension.dart';
+import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 
 class AppTheme {
   static ThemeData get light => ThemeData(
@@ -66,6 +66,8 @@ class AppTheme {
         itemSpacing: 8,
         cardMaxWidth: 600,
         cardPadding: EdgeInsets.all(24),
+        userAvatarSize: 90,
+        userAvatarSpacing: 16,
       ),
     ],
   );
