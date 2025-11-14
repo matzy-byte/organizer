@@ -69,4 +69,10 @@ class VarTransactionService {
     DateTime from,
     DateTime to,
   ) => repository.getByDateForTopicId(topicId, from, to);
+
+  Future<List<VarTransaction>> getByDateForCategoryId(
+    int categoryId,
+    DateTime from,
+    DateTime to,
+  ) => repository.getByDateForCategoryId(categoryId, from, to);
 }

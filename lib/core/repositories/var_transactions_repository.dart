@@ -35,4 +35,9 @@ abstract class VarTransactionRepository {
     DateTime from,
     DateTime to,
   );
+  Future<List<VarTransaction>> getByDateForCategoryId(
+    int categoryId,
+    DateTime from,
+    DateTime to,
+  );
 }

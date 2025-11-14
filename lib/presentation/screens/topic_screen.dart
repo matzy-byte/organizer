@@ -38,7 +38,7 @@ class _TopicScreenState extends State<TopicScreen> {
     if (topic != lastTopic) {
       lastTopic = topic;
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<VarTransactionProvider>().load(
+        context.read<VarTransactionProvider>().loadByTopic(
           topicId: topic.id,
           from: from,
           to: to,
@@ -68,7 +68,7 @@ class _TopicScreenState extends State<TopicScreen> {
                     from = newFrom;
                     to = newTo;
                   });
-                  context.read<VarTransactionProvider>().load(
+                  context.read<VarTransactionProvider>().loadByTopic(
                     topicId: topic.id,
                     from: from,
                     to: to,

@@ -13,10 +13,12 @@
 - ✓ Show compensations dialog
 - ✓ Properly set up TransactionLabels in add loggig and settings to control.
 - ✓ Added users and file references for future safety.
--  Overview ui element
--  Split overview_elemnt into multiple classes
+- ✓ Overview ui element
+- ✓ Split overview_elemnt into multiple classes
+- ✓ Overview for category
+-  Overview Dashboard
 -  Var transaction table needs media control
--  Options element needs styling and filter logic for backend
+- ✓ Options element needs styling and filter logic for backend
 
 - UI:  
 Topic: Details, Overview month (+, -, rest, awaited to pay), FixTransaction cards (active and inactive), VarTransaction table with filter options  
