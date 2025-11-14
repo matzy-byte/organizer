@@ -1,46 +1,96 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-import 'package:organizer/core/models/var_transaction.dart';
 
 class OverviewPie extends StatelessWidget {
-  final List<VarTransaction> varTransactions;
-  const OverviewPie({super.key, required this.varTransactions});
+  final String title;
+  final Map<String, int> data;
+  final List<Color>? colorPalette;
+
+  const OverviewPie({
+    super.key,
+    required this.title,
+    required this.data,
+    this.colorPalette,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final sum = varTransactions.fold(0, (sum, c) => sum + c.value.abs());
-    final List<PieChartSectionData> sections = varTransactions.map((t) {
-      final value = t.compensations == null
-          ? t.value
-          : t.value -
-                t.compensations!.values.fold(
-                  0,
-                  (compSum, c) => compSum + c.value,
-                );
-      return PieChartSectionData(
-        color: value >= 0 ? Colors.green : Colors.red,
-        value: value / sum,
-        title: t.description,
-        radius: 60,
-        titleStyle: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      );
-    }).toList();
+    final theme = Theme.of(context);
+    final total = data.values.fold<int>(0, (sum, v) => sum + v);
+    final colors =
+        colorPalette ??
+        [Colors.blue, Colors.orange, Colors.purple, Colors.cyan];
 
-    return SizedBox(
-      height: 200,
-      width: double.maxFinite,
-      child: PieChart(
-        PieChartData(
-          sections: sections,
-          centerSpaceRadius: 40,
-          sectionsSpace: 2,
-          pieTouchData: PieTouchData(enabled: false),
+    return Card(
+      elevation: 3,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 180,
+              child: PieChart(
+                PieChartData(
+                  sections: data.entries.mapIndexed((i, e) {
+                    final percentage = total == 0
+                        ? 0
+                        : (e.value / total * 100).toStringAsFixed(1);
+                    return PieChartSectionData(
+                      color: colors[i % colors.length],
+                      value: e.value.toDouble(),
+                      title: '$percentage%',
+                      radius: 60,
+                      titleStyle: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    );
+                  }).toList(),
+                  centerSpaceRadius: 40,
+                  sectionsSpace: 2,
+                ),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              children: data.entries.mapIndexed((i, e) {
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 12,
+                      height: 12,
+                      color: colors[i % colors.length],
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${e.key} (${e.value})',
+                      style: theme.textTheme.bodySmall,
+                    ),
+                  ],
+                );
+              }).toList(),
+            ),
+          ],
         ),
       ),
     );
+  }
+}
+
+extension MapIndexed<E> on Iterable<E> {
+  Iterable<T> mapIndexed<T>(T Function(int index, E e) f) {
+    var i = 0;
+    return map((e) => f(i++, e));
   }
 }

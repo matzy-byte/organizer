@@ -9,13 +9,27 @@ class OverviewElement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = context.watch<VarTransactionProvider>().varTransactions;
+    final theme = Theme.of(context);
 
     return Card(
-      child: Column(
-        children: [
-          const Text("Overview"),
-          OverviewGeneral(varTransactions: items),
-        ],
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Overview',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            OverviewGeneral(varTransactions: items),
+          ],
+        ),
       ),
     );
   }
