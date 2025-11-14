@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/routes.dart';
-import 'package:organizer/app/theme.dart';
+import 'package:organizer/app/themes/app_theme.dart';
 import 'package:organizer/core/services/category_service.dart';
 import 'package:organizer/core/services/fix_transaction_service.dart';
 import 'package:organizer/core/services/topic_service.dart';
@@ -60,7 +60,7 @@ class MobileApp extends StatelessWidget {
     return MaterialApp(
       title: 'Organizer',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.light,
       initialRoute: AppRoutes.dashboard,
       routes: AppRoutes.routes,
     );

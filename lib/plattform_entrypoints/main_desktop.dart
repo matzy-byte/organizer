@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/routes.dart';
-import 'package:organizer/app/theme.dart';
+import 'package:organizer/app/themes/app_theme.dart';
 import 'package:organizer/core/services/category_service.dart';
 import 'package:organizer/core/services/file_service.dart';
 import 'package:organizer/core/services/fix_transaction_service.dart';
@@ -86,7 +86,7 @@ class DesktopApp extends StatelessWidget {
     return MaterialApp(
       title: 'Organizer',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
+      theme: AppTheme.light,
       initialRoute: isSetup ? AppRoutes.setup : AppRoutes.start,
       routes: AppRoutes.routes,
     );
