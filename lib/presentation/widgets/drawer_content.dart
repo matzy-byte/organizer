@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/routes.dart';
 import 'package:organizer/core/models/category.dart';
+import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
+import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:provider/provider.dart';
 
 class DrawerContent extends StatelessWidget {
@@ -9,40 +11,148 @@ class DrawerContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<CategoryProvider>();
+    final theme = Theme.of(context);
+    final categoryProvider = context.watch<CategoryProvider>();
+    final topicProvider = context.watch<TopicProvider>();
 
-    return ListView(
-      padding: EdgeInsets.zero,
-      children: [
-        DrawerHeader(
-          decoration: BoxDecoration(color: Colors.blueAccent),
-          child: Text(
-            'Categories',
-            style: TextStyle(color: Colors.white, fontSize: 20),
+    return Container(
+      color: theme.colorScheme.surface,
+      child: ListView(
+        padding: EdgeInsets.zero,
+        children: [
+          _buildHeader(context, theme),
+
+          ListTile(
+            leading: Icon(Icons.dashboard, color: theme.colorScheme.primary),
+            title: Text('Dashboard', style: theme.textTheme.titleMedium),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.pushNamed(context, AppRoutes.dashboard);
+            },
           ),
-        ),
-        ListTile(
-          leading: Icon(Icons.dashboard),
-          title: Text('Dashboard'),
-          onTap: () => selectDashboard(context),
-        ),
-        ...List.generate(provider.categories.length, (index) {
-          final cat = provider.categories[index];
-          return ListTile(
-            leading: Icon(Icons.access_alarm),
-            title: Text(cat.name),
-            onTap: () => selectCategory(context, cat),
-          );
-        }),
-      ],
+          const Divider(height: 1),
+
+          ...categoryProvider.categories.map((category) {
+            final topics = topicProvider.topics
+                .where((t) => t.categoryId == category.id)
+                .toList();
+
+            return _CustomExpandableCategoryTile(
+              category: category,
+              topics: topics,
+            );
+          }),
+        ],
+      ),
     );
   }
 
-  void selectDashboard(BuildContext context) {
-    Navigator.pushNamed(context, AppRoutes.dashboard);
+  Widget _buildHeader(BuildContext context, ThemeData theme) {
+    return DrawerHeader(
+      decoration: BoxDecoration(color: theme.colorScheme.primaryContainer),
+      child: Align(
+        alignment: Alignment.bottomLeft,
+        child: Text(
+          'Navigation',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            color: theme.colorScheme.onPrimaryContainer,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
   }
+}
 
-  void selectCategory(BuildContext context, Category cat) {
-    Navigator.pushNamed(context, AppRoutes.category, arguments: cat);
+class _CustomExpandableCategoryTile extends StatefulWidget {
+  final Category category;
+  final List<Topic> topics;
+
+  const _CustomExpandableCategoryTile({
+    required this.category,
+    required this.topics,
+  });
+
+  @override
+  State<_CustomExpandableCategoryTile> createState() =>
+      _CustomExpandableCategoryTileState();
+}
+
+class _CustomExpandableCategoryTileState
+    extends State<_CustomExpandableCategoryTile> {
+  bool expanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    final hasTopics = widget.topics.isNotEmpty;
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: ListTile(
+                leading: Icon(Icons.folder, color: theme.colorScheme.primary),
+                title: Text(
+                  widget.category.name,
+                  style: theme.textTheme.titleMedium,
+                ),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(
+                    context,
+                    AppRoutes.category,
+                    arguments: widget.category,
+                  );
+                },
+              ),
+            ),
+
+            if (hasTopics)
+              IconButton(
+                splashRadius: 20,
+                icon: AnimatedRotation(
+                  duration: const Duration(milliseconds: 200),
+                  turns: expanded ? 0.25 : 0,
+                  child: const Icon(Icons.arrow_right),
+                ),
+                onPressed: () {
+                  setState(() => expanded = !expanded);
+                },
+              ),
+          ],
+        ),
+
+        if (expanded)
+          Padding(
+            padding: const EdgeInsets.only(left: 32),
+            child: Column(
+              children: widget.topics
+                  .map(
+                    (topic) => ListTile(
+                      dense: true,
+                      leading: Icon(
+                        Icons.circle,
+                        size: 10,
+                        color: theme.colorScheme.primary,
+                      ),
+                      title: Text(topic.name, style: theme.textTheme.bodyLarge),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.topic,
+                          arguments: topic,
+                        );
+                      },
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+      ],
+    );
   }
 }
