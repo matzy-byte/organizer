@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
@@ -9,11 +8,12 @@ import 'package:organizer/presentation/widgets/dialogs/add_topic_dialog.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_var_transaction_dialog.dart';
 import 'package:provider/provider.dart';
 
-class MultiFunctionFloatingButton extends StatelessWidget {
+class MultiFunctionFloatingButton extends StatefulWidget {
   final Category? category;
   final Topic? topic;
   final VoidCallback? addedFixTransaction;
   final VoidCallback? addedVarTransaction;
+
   const MultiFunctionFloatingButton({
     super.key,
     this.category,
@@ -23,83 +23,180 @@ class MultiFunctionFloatingButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final categoryProvider = context.read<CategoryProvider>();
-    return SpeedDial(
-      icon: Icons.add,
-      activeIcon: Icons.close,
-      overlayColor: Colors.black,
-      overlayOpacity: 0.5,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      children: [
-        SpeedDialChild(
-          child: Icon(Icons.description),
-          label: 'Add Category',
-          onTap: () => showDialog(
-            context: context,
-            builder: (context) => AddCategoryDialog(),
+  State<MultiFunctionFloatingButton> createState() =>
+      _MultiFunctionFloatingButtonState();
+}
+
+class _MultiFunctionFloatingButtonState
+    extends State<MultiFunctionFloatingButton>
+    with SingleTickerProviderStateMixin {
+  bool _open = false;
+  late final AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 250),
+      vsync: this,
+    );
+  }
+
+  void _toggle() {
+    setState(() {
+      _open = !_open;
+      if (_open) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  Widget _buildActionButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Material(
+        color: theme.colorScheme.surfaceVariant,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          onTap: () {
+            onTap();
+            _toggle();
+          },
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(icon, color: theme.colorScheme.primary),
+                const SizedBox(width: 8),
+                Text(label, style: theme.textTheme.bodyMedium),
+              ],
+            ),
           ),
         ),
-        SpeedDialChild(
-          child: Icon(Icons.table_chart),
-          label: 'Add Topic',
-          onTap: () async {
-            showDialog(
-              context: context,
-              builder: (context) => AddTopicDialog(
-                category:
-                    category ??
-                    categoryProvider.categories
-                        .where((c) => c.id == topic?.categoryId)
-                        .cast<Category?>()
-                        .firstOrNull,
-              ),
-            );
-          },
-        ),
-        SpeedDialChild(
-          child: Icon(Icons.slideshow),
-          label: 'Add Fix Transaction',
-          onTap: () async {
-            final updated = await showDialog(
-              context: context,
-              builder: (context) => AddFixTransactionDialog(
-                category:
-                    category ??
-                    categoryProvider.categories
-                        .where((c) => c.id == topic?.categoryId)
-                        .cast<Category?>()
-                        .firstOrNull,
-                topic: topic,
-              ),
-            );
+      ),
+    );
+  }
 
-            if (updated == true) {
-              addedFixTransaction?.call();
-            }
-          },
+  @override
+  Widget build(BuildContext context) {
+    final categoryProvider = context.read<CategoryProvider>();
+    final actions = <Widget>[
+      _buildActionButton(
+        icon: Icons.description,
+        label: 'Add Category',
+        onTap: () => showDialog(
+          context: context,
+          builder: (_) => const AddCategoryDialog(),
         ),
-        SpeedDialChild(
-          child: Icon(Icons.slideshow),
-          label: 'Add Var Transaction',
-          onTap: () async {
-            final updated = await showDialog<bool>(
-              context: context,
-              builder: (context) => AddVarTransactionDialog(
-                category:
-                    category ??
-                    categoryProvider.categories
-                        .where((c) => c.id == topic?.categoryId)
-                        .cast<Category?>()
-                        .firstOrNull,
-                topic: topic,
-              ),
-            );
+      ),
+      _buildActionButton(
+        icon: Icons.table_chart,
+        label: 'Add Topic',
+        onTap: () => showDialog(
+          context: context,
+          builder: (_) => AddTopicDialog(
+            category:
+                widget.category ??
+                categoryProvider.categories.firstWhere(
+                  (c) => c.id == widget.topic?.categoryId,
+                  orElse: () => categoryProvider.categories.first,
+                ),
+          ),
+        ),
+      ),
+      _buildActionButton(
+        icon: Icons.slideshow,
+        label: 'Add Fix Transaction',
+        onTap: () async {
+          final updated = await showDialog(
+            context: context,
+            builder: (_) => AddFixTransactionDialog(
+              category:
+                  widget.category ??
+                  categoryProvider.categories.firstWhere(
+                    (c) => c.id == widget.topic?.categoryId,
+                    orElse: () => categoryProvider.categories.first,
+                  ),
+              topic: widget.topic,
+            ),
+          );
+          if (updated == true) widget.addedFixTransaction?.call();
+        },
+      ),
+      _buildActionButton(
+        icon: Icons.slideshow,
+        label: 'Add Var Transaction',
+        onTap: () async {
+          final updated = await showDialog<bool>(
+            context: context,
+            builder: (_) => AddVarTransactionDialog(
+              category:
+                  widget.category ??
+                  categoryProvider.categories.firstWhere(
+                    (c) => c.id == widget.topic?.categoryId,
+                    orElse: () => categoryProvider.categories.first,
+                  ),
+              topic: widget.topic,
+            ),
+          );
+          if (updated == true) widget.addedVarTransaction?.call();
+        },
+      ),
+    ];
 
-            if (updated == true) {
-              addedVarTransaction?.call();
-            }
-          },
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        // Expanded action panel
+        Positioned(
+          bottom: 70,
+          right: 16,
+          child: FadeTransition(
+            opacity: _controller,
+            child: ScaleTransition(
+              scale: _controller,
+              alignment: Alignment.bottomRight,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: actions,
+              ),
+            ),
+          ),
+        ),
+
+        // Floating main button
+        Positioned(
+          bottom: 16,
+          right: 16,
+          child: FloatingActionButton(
+            onPressed: _toggle,
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            foregroundColor: Colors.white,
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 250),
+              transitionBuilder: (child, anim) =>
+                  RotationTransition(turns: anim, child: child),
+              child: _open
+                  ? const Icon(Icons.close, key: ValueKey('close'))
+                  : const Icon(Icons.add, key: ValueKey('add')),
+            ),
+          ),
         ),
       ],
     );
