@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/topic.dart';
-import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_category_dialog.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_fix_transaction_dialog.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_topic_dialog.dart';
+import 'package:organizer/presentation/widgets/dialogs/add_user_dialog.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_var_transaction_dialog.dart';
-import 'package:provider/provider.dart';
+import 'package:organizer/presentation/widgets/dialogs/manage_transaction_labels_dialog.dart';
 
 class MultiFunctionFloatingButton extends StatefulWidget {
   final Category? category;
@@ -68,7 +68,7 @@ class _MultiFunctionFloatingButtonState
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Material(
-        color: theme.colorScheme.surfaceVariant,
+        color: theme.colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           onTap: () {
@@ -94,8 +94,21 @@ class _MultiFunctionFloatingButtonState
 
   @override
   Widget build(BuildContext context) {
-    final categoryProvider = context.read<CategoryProvider>();
     final actions = <Widget>[
+      _buildActionButton(
+        icon: Icons.person,
+        label: 'Add User',
+        onTap: () =>
+            showDialog(context: context, builder: (_) => AddUserDialog()),
+      ),
+      _buildActionButton(
+        icon: Icons.label,
+        label: 'Manage Transaction Label',
+        onTap: () => showDialog(
+          context: context,
+          builder: (_) => ManageTransactionLabelsDialog(),
+        ),
+      ),
       _buildActionButton(
         icon: Icons.description,
         label: 'Add Category',
@@ -109,29 +122,17 @@ class _MultiFunctionFloatingButtonState
         label: 'Add Topic',
         onTap: () => showDialog(
           context: context,
-          builder: (_) => AddTopicDialog(
-            category:
-                widget.category ??
-                categoryProvider.categories.firstWhere(
-                  (c) => c.id == widget.topic?.categoryId,
-                  orElse: () => categoryProvider.categories.first,
-                ),
-          ),
+          builder: (_) => AddTopicDialog(category: widget.category),
         ),
       ),
       _buildActionButton(
-        icon: Icons.slideshow,
+        icon: Icons.schedule,
         label: 'Add Fix Transaction',
         onTap: () async {
           final updated = await showDialog(
             context: context,
             builder: (_) => AddFixTransactionDialog(
-              category:
-                  widget.category ??
-                  categoryProvider.categories.firstWhere(
-                    (c) => c.id == widget.topic?.categoryId,
-                    orElse: () => categoryProvider.categories.first,
-                  ),
+              category: widget.category,
               topic: widget.topic,
             ),
           );
@@ -139,18 +140,13 @@ class _MultiFunctionFloatingButtonState
         },
       ),
       _buildActionButton(
-        icon: Icons.slideshow,
+        icon: Icons.event,
         label: 'Add Var Transaction',
         onTap: () async {
           final updated = await showDialog<bool>(
             context: context,
             builder: (_) => AddVarTransactionDialog(
-              category:
-                  widget.category ??
-                  categoryProvider.categories.firstWhere(
-                    (c) => c.id == widget.topic?.categoryId,
-                    orElse: () => categoryProvider.categories.first,
-                  ),
+              category: widget.category,
               topic: widget.topic,
             ),
           );

@@ -6,11 +6,12 @@ import 'package:organizer/presentation/widgets/dialogs/edit_var_transaction_dial
 import 'package:provider/provider.dart';
 
 class ShowCompensationsDialog extends StatefulWidget {
-  final VarTransaction varTransation;
-  const ShowCompensationsDialog({super.key, required this.varTransation});
+  final VarTransaction varTransaction;
+  const ShowCompensationsDialog({super.key, required this.varTransaction});
 
   @override
-  State<StatefulWidget> createState() => _ShowCompensationsDialogState();
+  State<ShowCompensationsDialog> createState() =>
+      _ShowCompensationsDialogState();
 }
 
 class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
@@ -20,24 +21,27 @@ class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
   @override
   void initState() {
     super.initState();
-
-    loadVarTransactions();
+    _loadVarTransactions();
   }
 
-  Future<void> loadVarTransactions() async {
-    if (widget.varTransation.compensations!.isEmpty) {
+  Future<void> _loadVarTransactions() async {
+    if (widget.varTransaction.compensations == null ||
+        widget.varTransaction.compensations!.isEmpty) {
       if (!mounted) return;
       setState(() => _isLoading = false);
       return;
     }
-    ;
+
     if (!mounted) return;
     setState(() => _isLoading = true);
+
     final varTransactionProvider = context.read<VarTransactionProvider>();
     final List<VarTransaction> varTransactions = [];
-    for (final id in widget.varTransation.compensations!.keys) {
+
+    for (final id in widget.varTransaction.compensations!.keys) {
       varTransactions.add(await varTransactionProvider.get(id));
     }
+
     if (!mounted) return;
     setState(() {
       _varTransactions = varTransactions;
@@ -45,157 +49,193 @@ class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
     });
   }
 
-  Future<void> removeVarTransaction(int id) async {
+  Future<void> _removeVarTransaction(int id) async {
     if (!mounted) return;
     setState(() => _isLoading = true);
+
     final varTransactionProvider = context.read<VarTransactionProvider>();
     await varTransactionProvider.removeVarTransaction(id);
-    widget.varTransation.compensations?.remove(id);
+
+    widget.varTransaction.compensations?.remove(id);
     _varTransactions.removeWhere((v) => v.id == id);
-    loadVarTransactions();
+
+    _loadVarTransactions();
   }
 
-  Future<void> updateVarTransaction(int id) async {
+  Future<void> _updateVarTransaction(int id) async {
     final updated = await showDialog<bool>(
       context: context,
-      builder: (context) => EditVarTransactionDialog(
+      builder: (_) => EditVarTransactionDialog(
         varTransaction: _varTransactions.firstWhere((v) => v.id == id),
       ),
     );
     if (!mounted) return;
     if (updated == true) {
-      loadVarTransactions();
+      _loadVarTransactions();
     }
+  }
+
+  int _getFinalValue(VarTransaction t) {
+    final compensationSum =
+        t.compensations?.values.fold<int>(0, (sum, c) => sum + c.value) ?? 0;
+    return t.value - compensationSum;
   }
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Compensations'),
-      content: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _varTransactions.isEmpty
-          ? const Center(
-              heightFactor: double.minPositive,
-              child: Text('No compensations set'),
-            )
-          : SizedBox(
-              width: double.maxFinite,
-              child: SingleChildScrollView(
-                child: Column(
+    final theme = Theme.of(context);
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: _isLoading
+              ? const SizedBox(
+                  height: 200,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: _varTransactions.map((t) {
-                    final value = getFinalValue(t);
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            width: 80,
-                            child: Text(
-                              NumberFormat.currency(
-                                symbol: "€",
-                              ).format(value / 100),
-                              style: TextStyle(
-                                color: value > 0
-                                    ? const Color(0xFF006400)
-                                    : const Color(0xFF8B0000),
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-
-                          if (t.compensations != null)
-                            SizedBox(
-                              width: 120,
-                              child: Row(
-                                children: [
-                                  Text(
-                                    '(${NumberFormat.currency(symbol: "€").format(t.compensations!.values.fold<int>(0, (sum, c) => sum + c.value) / 100)})',
-                                    style: TextStyle(
-                                      color: t.value > 0
-                                          ? const Color(0xFF006400)
-                                          : const Color(0xFF8B0000),
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  IconButton(
-                                    onPressed: () async {
-                                      await showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            ShowCompensationsDialog(
-                                              varTransation: t,
-                                            ),
-                                      );
-                                    },
-                                    icon: Icon(
-                                      Icons.info,
-                                      color: Colors.blueGrey,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-
-                          Expanded(
-                            flex: 2,
-                            child: Text(
-                              'Topic: ${widget.varTransation.compensations![t.id]!.topicName}',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-
-                          SizedBox(
-                            width: 100,
-                            child: Text(DateFormat.yMd().format(t.date)),
-                          ),
-
-                          Row(
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.delete, size: 20),
-                                onPressed: () async =>
-                                    await removeVarTransaction(t.id),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.edit, size: 20),
-                                onPressed: () async =>
-                                    await updateVarTransaction(t.id),
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                              ),
-                            ],
-                          ),
-                        ],
+                  children: [
+                    Text(
+                      'Compensations',
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
-                    );
-                  }).toList(),
-                ),
-              ),
-            ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
-        ),
-      ],
-    );
-  }
+                    ),
+                    const SizedBox(height: 12),
+                    if (_varTransactions.isEmpty)
+                      const SizedBox(
+                        height: 100,
+                        child: Center(child: Text('No compensations set')),
+                      )
+                    else
+                      Flexible(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: _varTransactions.map((t) {
+                              final value = _getFinalValue(t);
+                              final color = value > 0
+                                  ? Colors.green[800]
+                                  : Colors.red[800];
+                              final compSum =
+                                  t.compensations?.values.fold<int>(
+                                    0,
+                                    (sum, c) => sum + c.value,
+                                  ) ??
+                                  0;
 
-  int getFinalValue(VarTransaction varTransaction) {
-    final compensations = varTransaction.compensations;
-    if (compensations == null) {
-      return varTransaction.value;
-    }
-    final compensationSum = compensations.values.fold<int>(
-      0,
-      (sum, c) => sum + c.value,
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 6.0,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(
+                                      width: 80,
+                                      child: Text(
+                                        NumberFormat.currency(
+                                          symbol: "€",
+                                        ).format(value / 100),
+                                        style: TextStyle(color: color),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                    if (t.compensations != null)
+                                      SizedBox(
+                                        width: 120,
+                                        child: Row(
+                                          children: [
+                                            Text(
+                                              '(${NumberFormat.currency(symbol: "€").format(compSum / 100)})',
+                                              style: TextStyle(color: color),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(
+                                                Icons.info,
+                                                size: 18,
+                                                color: Colors.blueGrey,
+                                              ),
+                                              onPressed: () async {
+                                                await showDialog(
+                                                  context: context,
+                                                  builder: (_) =>
+                                                      ShowCompensationsDialog(
+                                                        varTransaction: t,
+                                                      ),
+                                                );
+                                              },
+                                              padding: EdgeInsets.zero,
+                                              constraints:
+                                                  const BoxConstraints(),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Text(
+                                        'Topic: ${widget.varTransaction.compensations![t.id]!.topicName}',
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 100,
+                                      child: Text(
+                                        DateFormat.yMd().format(t.date),
+                                      ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.delete,
+                                            size: 20,
+                                          ),
+                                          onPressed: () =>
+                                              _removeVarTransaction(t.id),
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(
+                                            Icons.edit,
+                                            size: 20,
+                                          ),
+                                          onPressed: () =>
+                                              _updateVarTransaction(t.id),
+                                          padding: EdgeInsets.zero,
+                                          constraints: const BoxConstraints(),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 16),
+
+                    // --- CLOSE BUTTON ---
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+        ),
+      ),
     );
-    return varTransaction.value - compensationSum;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/globals.dart' as globals;
+import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/interval_unit.dart';
@@ -16,6 +17,7 @@ import 'package:provider/provider.dart';
 class AddFixTransactionDialog extends StatefulWidget {
   final Category? category;
   final Topic? topic;
+
   const AddFixTransactionDialog({super.key, this.category, this.topic});
 
   @override
@@ -132,378 +134,465 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final setupTheme = theme.extension<SetupTheme>()!;
     final transactionLabelProvider = context.read<TransactionLabelProvider>();
     final topicProvider = context.read<TopicProvider>();
     final fixTransactionProvider = context.read<FixTransactionProvider>();
 
-    return AlertDialog(
-      title: const Text('Add Fix Transaction'),
-      content: _categories.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    DropdownButtonFormField<Category>(
-                      initialValue: _selectedCategory,
-                      decoration: const InputDecoration(labelText: 'Category'),
-                      items: _categories
-                          .map(
-                            (c) =>
-                                DropdownMenuItem(value: c, child: Text(c.name)),
-                          )
-                          .toList(),
-                      onChanged: (value) async {
-                        final topics = await topicProvider.loadTopicsByCategory(
-                          value!.id,
-                        );
-                        setState(() {
-                          _selectedCategory = value;
-                          _topics = topics;
-                          _selectedTopic = null;
-                        });
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          _validateForm();
-                        });
-                      },
-                      validator: (value) =>
-                          value == null ? 'Please select a category' : null,
-                    ),
-                    if (_selectedCategory != null)
-                      DropdownButtonFormField<Topic>(
-                        initialValue: _selectedTopic,
-                        decoration: const InputDecoration(labelText: 'Topic'),
-                        items: _topics
-                            .map(
-                              (t) => DropdownMenuItem(
-                                value: t,
-                                child: Text(t.name),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          setState(() => _selectedTopic = value);
-                          _validateForm();
-                        },
-                        validator: (value) =>
-                            value == null ? 'Please select a topic' : null,
-                      ),
-                    const SizedBox(height: 12),
-                    SegmentedButton<Status>(
-                      segments: const [
-                        ButtonSegment(
-                          value: Status.active,
-                          label: Text('Active'),
-                        ),
-                        ButtonSegment(
-                          value: Status.inactive,
-                          label: Text('Inactive'),
-                        ),
-                      ],
-                      selected: <Status>{_status},
-                      onSelectionChanged: (newSelection) {
-                        setState(() {
-                          _status = newSelection.first;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-                    SegmentedButton<bool>(
-                      segments: const [
-                        ButtonSegment(value: true, label: Text('Negative')),
-                        ButtonSegment(value: false, label: Text('Positive')),
-                      ],
-                      selected: <bool>{_isExpense},
-                      onSelectionChanged: (newSelection) {
-                        setState(() {
-                          _isExpense = newSelection.first;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 12),
-
-                    TextFormField(
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: 'Start Date',
-                        suffixIcon: const Icon(Icons.calendar_today),
-                      ),
-                      controller: TextEditingController(
-                        text: _startDate == null
-                            ? ''
-                            : "${_startDate!.toLocal()}".split(' ')[0],
-                      ),
-                      onTap: () => _pickDate(context, true),
-                      validator: (value) => (value == null || value.isEmpty)
-                          ? 'Please select a start date'
-                          : null,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    TextFormField(
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: 'End Date',
-                        suffixIcon: const Icon(Icons.calendar_today),
-                      ),
-                      controller: TextEditingController(
-                        text: _endDate == null
-                            ? ''
-                            : "${_endDate!.toLocal()}".split(' ')[0],
-                      ),
-                      onTap: () => _pickDate(context, false),
-                      validator: (value) => (value == null || value.isEmpty)
-                          ? 'Please select an end date'
-                          : null,
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    Column(
+    return Dialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 500),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: _categories.isEmpty
+              ? const SizedBox(
+                  height: 200,
+                  child: Center(child: CircularProgressIndicator()),
+                )
+              : SingleChildScrollView(
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        TextFormField(
-                          controller: _intervalCountController,
+                        // --- TITLE ---
+                        Text(
+                          'Add Fix Transaction',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        // --- CATEGORY ---
+                        DropdownButtonFormField<Category>(
+                          initialValue: _selectedCategory,
                           decoration: const InputDecoration(
-                            labelText: 'Interval Count',
+                            labelText: 'Category',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: _categories
+                              .map(
+                                (c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text(c.name),
+                                ),
+                              )
+                              .toList(),
+                          onChanged: (value) async {
+                            final topics = await topicProvider
+                                .loadTopicsByCategory(value!.id);
+                            setState(() {
+                              _selectedCategory = value;
+                              _topics = topics;
+                              _selectedTopic = null;
+                            });
+                            WidgetsBinding.instance.addPostFrameCallback(
+                              (_) => _validateForm(),
+                            );
+                          },
+                          validator: (v) =>
+                              v == null ? 'Please select a category' : null,
+                        ),
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        // --- TOPIC ---
+                        if (_selectedCategory != null)
+                          DropdownButtonFormField<Topic>(
+                            initialValue: _selectedTopic,
+                            decoration: const InputDecoration(
+                              labelText: 'Topic',
+                              border: OutlineInputBorder(),
+                            ),
+                            items: _topics
+                                .map(
+                                  (t) => DropdownMenuItem(
+                                    value: t,
+                                    child: Text(t.name),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (value) {
+                              setState(() => _selectedTopic = value);
+                              _validateForm();
+                            },
+                            validator: (v) =>
+                                v == null ? 'Please select a topic' : null,
+                          ),
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        // --- SEGMENTED STATUS ---
+                        SegmentedButton<Status>(
+                          segments: const [
+                            ButtonSegment(
+                              value: Status.active,
+                              label: Text('Active'),
+                            ),
+                            ButtonSegment(
+                              value: Status.inactive,
+                              label: Text('Inactive'),
+                            ),
+                          ],
+                          selected: {_status},
+                          onSelectionChanged: (s) =>
+                              setState(() => _status = s.first),
+                        ),
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        // --- SEGMENTED EXPENSE ---
+                        SegmentedButton<bool>(
+                          segments: const [
+                            ButtonSegment(value: true, label: Text('Negative')),
+                            ButtonSegment(
+                              value: false,
+                              label: Text('Positive'),
+                            ),
+                          ],
+                          selected: {_isExpense},
+                          onSelectionChanged: (s) =>
+                              setState(() => _isExpense = s.first),
+                        ),
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        // --- DATES ---
+                        TextFormField(
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            labelText: 'Start Date',
+                            suffixIcon: const Icon(Icons.calendar_today),
+                          ),
+                          controller: TextEditingController(
+                            text: _startDate == null
+                                ? ''
+                                : "${_startDate!.toLocal()}".split(' ')[0],
+                          ),
+                          onTap: () => _pickDate(context, true),
+                          validator: (v) => (v == null || v.isEmpty)
+                              ? 'Please select a start date'
+                              : null,
+                        ),
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        TextFormField(
+                          readOnly: true,
+                          decoration: InputDecoration(
+                            labelText: 'End Date',
+                            suffixIcon: const Icon(Icons.calendar_today),
+                          ),
+                          controller: TextEditingController(
+                            text: _endDate == null
+                                ? ''
+                                : "${_endDate!.toLocal()}".split(' ')[0],
+                          ),
+                          onTap: () => _pickDate(context, false),
+                          validator: (v) => (v == null || v.isEmpty)
+                              ? 'Please select an end date'
+                              : null,
+                        ),
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        // --- INTERVAL ---
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: TextFormField(
+                                controller: _intervalCountController,
+                                decoration: const InputDecoration(
+                                  labelText: 'Interval Count',
+                                  border: OutlineInputBorder(),
+                                ),
+                                keyboardType: TextInputType.number,
+                                onChanged: (_) => _validateForm(),
+                                validator: (v) {
+                                  if (v == null || v.isEmpty) {
+                                    return 'Enter interval';
+                                  }
+                                  final n = int.tryParse(v);
+                                  if (n == null || n <= 0) {
+                                    return 'Enter positive number';
+                                  }
+                                  return null;
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              flex: 3,
+                              child: DropdownButtonFormField<IntervalUnit>(
+                                initialValue: _selectedIntervalUnit,
+                                decoration: const InputDecoration(
+                                  labelText: 'Interval Unit',
+                                  border: OutlineInputBorder(),
+                                ),
+                                items: IntervalUnit.values
+                                    .map(
+                                      (i) => DropdownMenuItem(
+                                        value: i,
+                                        child: Text(i.name),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (v) {
+                                  setState(() => _selectedIntervalUnit = v);
+                                  _validateForm();
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        // --- COMPENSATIONS ---
+                        ExpansionTile(
+                          title: const Text('Compensations'),
+                          children: [
+                            ..._compensations.asMap().entries.map((entry) {
+                              final index = entry.key;
+                              final comp = entry.value;
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 4,
+                                  horizontal: 8,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      flex: 3,
+                                      child: DropdownButtonFormField<Topic>(
+                                        initialValue: comp.topic,
+                                        decoration: const InputDecoration(
+                                          labelText: 'Topic',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        items: _allTopics
+                                            .map(
+                                              (t) => DropdownMenuItem(
+                                                value: t,
+                                                child: Text(
+                                                  "${_categories.firstWhere((c) => c.id == t.categoryId).name}/${t.name}",
+                                                ),
+                                              ),
+                                            )
+                                            .toList(),
+                                        onChanged: (v) {
+                                          setState(() => comp.topic = v);
+                                          _validateForm();
+                                        },
+                                        validator: (v) =>
+                                            v == null ? 'Select topic' : null,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      flex: 2,
+                                      child: TextFormField(
+                                        controller: comp.valueController,
+                                        decoration: const InputDecoration(
+                                          labelText: 'Value',
+                                          border: OutlineInputBorder(),
+                                        ),
+                                        keyboardType: TextInputType.number,
+                                        onChanged: (_) => _validateForm(),
+                                        validator: (v) {
+                                          if (v == null || v.isEmpty) {
+                                            return 'Enter value';
+                                          }
+                                          if (num.tryParse(v) == null) {
+                                            return 'Invalid number';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.delete),
+                                      onPressed: () {
+                                        setState(
+                                          () => _compensations.removeAt(index),
+                                        );
+                                        _validateForm();
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }),
+                            Align(
+                              alignment: Alignment.center,
+                              child: TextButton.icon(
+                                onPressed: () {
+                                  setState(
+                                    () => _compensations.add(
+                                      _CompensationEntry(),
+                                    ),
+                                  );
+                                  WidgetsBinding.instance.addPostFrameCallback(
+                                    (_) => _validateForm(),
+                                  );
+                                },
+                                icon: const Icon(Icons.add),
+                                label: const Text('Add Compensation'),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        // --- TRANSACTION LABEL ---
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<TransactionLabel>(
+                                initialValue: _selectedTransactionLabel,
+                                decoration: const InputDecoration(
+                                  labelText: 'Label',
+                                  border: OutlineInputBorder(),
+                                ),
+                                hint: const Text('None'),
+                                items: transactionLabelProvider
+                                    .transactionLabels
+                                    .map(
+                                      (l) => DropdownMenuItem(
+                                        value: l,
+                                        child: Text(l.name),
+                                      ),
+                                    )
+                                    .toList(),
+                                onChanged: (value) {
+                                  if (value != null) {
+                                    setState(
+                                      () => _selectedTransactionLabel = value,
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Tooltip(
+                              message: 'Manage Labels',
+                              child: IconButton(
+                                icon: const Icon(Icons.edit),
+                                onPressed: () async {
+                                  await showDialog(
+                                    context: context,
+                                    builder: (_) =>
+                                        ManageTransactionLabelsDialog(),
+                                  );
+                                  setState(
+                                    () => _selectedTransactionLabel = null,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        // --- VALUE ---
+                        TextFormField(
+                          controller: _valueController,
+                          decoration: const InputDecoration(
+                            labelText: 'Value',
+                            border: OutlineInputBorder(),
                           ),
                           keyboardType: TextInputType.number,
-                          onChanged: (value) => _validateForm(),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter interval';
-                            }
-                            final n = int.tryParse(value);
-                            if (n == null || n <= 0) {
-                              return 'Enter valid positive number';
+                          onChanged: (_) => _validateForm(),
+                          validator: (v) {
+                            if (v == null || v.isEmpty) return 'Enter value';
+                            if (num.tryParse(v) == null) {
+                              return 'Invalid number';
                             }
                             return null;
                           },
                         ),
-                        DropdownButtonFormField<IntervalUnit>(
-                          initialValue: _selectedIntervalUnit,
+                        SizedBox(height: setupTheme.sectionSpacing),
+
+                        // --- DESCRIPTION ---
+                        TextFormField(
+                          controller: _descriptionController,
                           decoration: const InputDecoration(
-                            labelText: 'Interval Unit',
+                            labelText: 'Description',
                           ),
-                          items: IntervalUnit.values
-                              .map(
-                                (i) => DropdownMenuItem(
-                                  value: i,
-                                  child: Text(i.name),
-                                ),
-                              )
-                              .toList(),
-                          onChanged: (value) {
-                            setState(() => _selectedIntervalUnit = value);
-                            _validateForm();
-                          },
+                          maxLines: 2,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // --- ACTIONS ---
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context),
+                              child: const Text('Cancel'),
+                            ),
+                            const SizedBox(width: 12),
+                            ElevatedButton(
+                              onPressed: _isFormValid
+                                  ? () async {
+                                      final Map<int, CompensationInfo>
+                                      compensationsMap = {};
+                                      for (
+                                        int i = 0;
+                                        i < _compensations.length;
+                                        i++
+                                      ) {
+                                        final c = _compensations[i];
+                                        final value = int.parse(
+                                          c.valueController.text,
+                                        );
+                                        compensationsMap[i] = CompensationInfo(
+                                          topicId: c.topic!.id,
+                                          topicName: c.topic!.name,
+                                          value: _isExpense
+                                              ? -1 * value
+                                              : value,
+                                        );
+                                      }
+
+                                      final intervalCount = int.parse(
+                                        _intervalCountController.text,
+                                      );
+                                      final value = int.parse(
+                                        _valueController.text,
+                                      );
+
+                                      await fixTransactionProvider
+                                          .addFixTransaction(
+                                            _selectedTopic!.id,
+                                            _status,
+                                            _startDate!,
+                                            _endDate!,
+                                            intervalCount,
+                                            _selectedIntervalUnit!,
+                                            _isExpense ? -1 * value : value,
+                                            globals.user.id,
+                                            _compensations.isEmpty
+                                                ? null
+                                                : compensationsMap,
+                                            _selectedTransactionLabel?.id,
+                                            _descriptionController.text.isEmpty
+                                                ? null
+                                                : _descriptionController.text,
+                                            null,
+                                            null,
+                                            null,
+                                          );
+                                      Navigator.pop(context, true);
+                                    }
+                                  : null,
+                              child: const Text('Add'),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 12),
-
-                    ExpansionTile(
-                      title: const Text('Compensations'),
-                      children: [
-                        ..._compensations.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final comp = entry.value;
-
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 4,
-                              horizontal: 8,
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: DropdownButtonFormField<Topic>(
-                                    initialValue: comp.topic,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Topic',
-                                    ),
-                                    items: _allTopics
-                                        .map(
-                                          (t) => DropdownMenuItem(
-                                            value: t,
-                                            child: Text(
-                                              "${_categories.firstWhere((c) => c.id == t.categoryId).name}/${t.name}",
-                                            ),
-                                          ),
-                                        )
-                                        .toList(),
-                                    onChanged: (value) {
-                                      setState(() => comp.topic = value);
-                                      _validateForm();
-                                    },
-                                    validator: (value) =>
-                                        value == null ? 'Select a topic' : null,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  flex: 2,
-                                  child: TextFormField(
-                                    controller: comp.valueController,
-                                    keyboardType: TextInputType.number,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Value',
-                                    ),
-                                    onChanged: (value) => _validateForm(),
-                                    validator: (v) {
-                                      if (v == null || v.isEmpty) {
-                                        return 'Enter value';
-                                      }
-                                      if (num.tryParse(v) == null) {
-                                        return 'Invalid number';
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete),
-                                  onPressed: () {
-                                    setState(() {
-                                      _compensations.removeAt(index);
-                                    });
-                                    _validateForm();
-                                  },
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: TextButton.icon(
-                            onPressed: () {
-                              setState(() {
-                                _compensations.add(_CompensationEntry());
-                              });
-                            },
-                            icon: const Icon(Icons.add),
-                            label: const Text('Add Compensation'),
-                          ),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    DropdownButtonFormField<TransactionLabel>(
-                      decoration: const InputDecoration(
-                        labelText: 'Label',
-                        border: OutlineInputBorder(),
-                      ),
-                      initialValue: _selectedTransactionLabel,
-                      hint: const Text('None'),
-                      items: transactionLabelProvider.transactionLabels.map((
-                        l,
-                      ) {
-                        return DropdownMenuItem<TransactionLabel>(
-                          value: l,
-                          child: Text(l.name),
-                        );
-                      }).toList(),
-                      onChanged: (value) async {
-                        if (value!.id == -1) {
-                          setState(() => _selectedTransactionLabel = null);
-
-                          await showDialog(
-                            context: context,
-                            builder: (_) => ManageTransactionLabelsDialog(),
-                          );
-                        } else {
-                          setState(() {
-                            _selectedTransactionLabel = value;
-                          });
-                        }
-                      },
-                    ),
-
-                    TextFormField(
-                      controller: _valueController,
-                      decoration: const InputDecoration(labelText: 'Value'),
-                      keyboardType: TextInputType.number,
-                      onChanged: (value) => _validateForm(),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter value';
-                        }
-                        final n = num.tryParse(value);
-                        if (n == null) {
-                          return 'Enter valid number';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    const SizedBox(height: 12),
-
-                    TextFormField(
-                      controller: _descriptionController,
-                      decoration: const InputDecoration(
-                        labelText: 'Description',
-                      ),
-                      maxLines: 2,
-                    ),
-                  ],
+                  ),
                 ),
-              ),
-            ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
         ),
-        ElevatedButton(
-          onPressed: _isFormValid
-              ? () async {
-                  final Map<int, CompensationInfo> compensationsMap = {};
-                  for (int i = 0; i < _compensations.length; i++) {
-                    final c = _compensations[i];
-                    final value = int.parse(c.valueController.text);
-                    compensationsMap[i] = CompensationInfo(
-                      topicId: c.topic!.id,
-                      topicName: c.topic!.name,
-                      value: _isExpense ? -1 * value : value,
-                    );
-                  }
-
-                  final intervalCount = int.parse(
-                    _intervalCountController.text,
-                  );
-                  final value = int.parse(_valueController.text);
-                  await fixTransactionProvider.addFixTransaction(
-                    _selectedTopic!.id,
-                    _status,
-                    _startDate!,
-                    _endDate!,
-                    intervalCount,
-                    _selectedIntervalUnit!,
-                    _isExpense ? -1 * value : value,
-                    globals.user.id,
-                    _compensations.isEmpty ? null : compensationsMap,
-                    _selectedTransactionLabel?.id,
-                    _descriptionController.value.text.isEmpty
-                        ? null
-                        : _descriptionController.value.text,
-                    null,
-                    null,
-                    null
-                  );
-                  Navigator.pop(context, true);
-                }
-              : null,
-          child: const Text('Add'),
-        ),
-      ],
+      ),
     );
   }
 }
@@ -511,6 +600,4 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 class _CompensationEntry {
   Topic? topic;
   TextEditingController valueController = TextEditingController();
-
-  _CompensationEntry();
 }

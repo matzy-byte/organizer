@@ -80,7 +80,7 @@ class _CustomExpandableCategoryTile extends StatefulWidget {
 
 class _CustomExpandableCategoryTileState
     extends State<_CustomExpandableCategoryTile> {
-  bool expanded = false;
+  bool expanded = true;
 
   @override
   Widget build(BuildContext context) {

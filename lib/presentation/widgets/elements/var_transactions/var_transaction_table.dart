@@ -73,7 +73,7 @@ class VarTransactionTable extends StatelessWidget {
                           await showDialog(
                             context: context,
                             builder: (context) =>
-                                ShowCompensationsDialog(varTransation: t),
+                                ShowCompensationsDialog(varTransaction: t,),
                           );
                         },
                         icon: Icon(Icons.info, color: Colors.blueGrey),
