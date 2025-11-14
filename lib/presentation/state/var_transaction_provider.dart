@@ -6,12 +6,40 @@ import 'package:organizer/core/services/var_transaction_service.dart';
 class VarTransactionProvider with ChangeNotifier {
   final VarTransactionService varTransactionService;
 
+  int? _topicId;
+  DateTime? _from;
+  DateTime? _to;
+
+  List<VarTransaction> _varTransactions = [];
+  List<VarTransaction> get varTransactions => _varTransactions;
+
   VarTransactionProvider({required this.varTransactionService});
 
-  Future<List<VarTransaction>> getAllVarTransactionsByTopicId(
-    int topicId,
-  ) async {
-    return await varTransactionService.getAllVarTransactionsByTopicId(topicId);
+  Future<void> load({
+    required int topicId,
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    _topicId = topicId;
+    _from = from;
+    _to = to;
+
+    _varTransactions = await varTransactionService.getByDateForTopicId(
+      topicId,
+      from,
+      to,
+    );
+    notifyListeners();
+  }
+
+  Future<void> reload() async {
+    if (_topicId == null) return;
+    _varTransactions = await varTransactionService.getByDateForTopicId(
+      _topicId!,
+      _from!,
+      _to!,
+    );
+    notifyListeners();
   }
 
   Future<int> addVarTransaction(
@@ -26,7 +54,7 @@ class VarTransactionProvider with ChangeNotifier {
     int? varRefId,
     int? fileRefId,
   ) async {
-    return await varTransactionService.addVarTransaction(
+    final newId = await varTransactionService.addVarTransaction(
       topicId,
       date,
       value,
@@ -38,10 +66,13 @@ class VarTransactionProvider with ChangeNotifier {
       varRefId,
       fileRefId,
     );
+    await reload();
+    return newId;
   }
 
   Future<void> removeVarTransaction(int id) async {
     await varTransactionService.removeVarTransaction(id);
+    await reload();
   }
 
   Future<void> updateVarTransaction(
@@ -70,10 +101,12 @@ class VarTransactionProvider with ChangeNotifier {
       varRefId,
       fileRefId,
     );
+    await reload();
   }
 
   Future<void> setVarReference(int id, int refId) async {
     await varTransactionService.setVarReference(id, refId);
+    await reload();
   }
 
   Future<VarTransaction> get(int id) async {

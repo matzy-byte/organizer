@@ -46,6 +46,14 @@ Future<void> runDesktop() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (_) => TransactionLabelProvider(
+            transactionLabelService: transactionLabelService,
+          )..loadAllTransactionLabels(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserProvider(userService: userService)..loadAllUsers(),
+        ),
+        ChangeNotifierProvider(
           create: (_) =>
               CategoryProvider(categoryService: categoryService)
                 ..loadCategories(),
@@ -64,15 +72,12 @@ Future<void> runDesktop() async {
             varTransactionService: varTransactionService,
           ),
         ),
+
         ChangeNotifierProvider(
-          create: (_) => TransactionLabelProvider(
-            transactionLabelService: transactionLabelService,
-          )..loadAllTransactionLabels(),
+          create: (_) => FileProvider(fileService: fileService),
         ),
-        ChangeNotifierProvider(create: (_) => UserProvider(userService: userService)..loadAllUsers(),),
-        ChangeNotifierProvider(create: (_) => FileProvider(fileService: fileService)),
       ],
-      child: DesktopApp(isSetup: (await userService.getAllUsers()).isEmpty,),
+      child: DesktopApp(isSetup: (await userService.getAllUsers()).isEmpty),
     ),
   );
 }

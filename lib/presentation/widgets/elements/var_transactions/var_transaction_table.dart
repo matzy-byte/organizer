@@ -24,7 +24,7 @@ class VarTransactionTable extends StatelessWidget {
       return const Center(child: Text('No variable transactions'));
     }
 
-    final transactionLabelProvider = context.read<TransactionLabelProvider>();
+    final transactionLabelProvider = context.watch<TransactionLabelProvider>();
 
     return ListView.separated(
       padding: const EdgeInsets.all(16),
@@ -73,7 +73,7 @@ class VarTransactionTable extends StatelessWidget {
                           await showDialog(
                             context: context,
                             builder: (context) =>
-                                ShowCompensationsDialog(varTransaction: t,),
+                                ShowCompensationsDialog(varTransaction: t),
                           );
                         },
                         icon: Icon(Icons.info, color: Colors.blueGrey),
@@ -86,8 +86,10 @@ class VarTransactionTable extends StatelessWidget {
                 Chip(
                   label: Text(
                     transactionLabelProvider.transactionLabels
-                        .firstWhere((l) => l.id == t.transactionLabelId)
-                        .name,
+                            .where((l) => l.id == t.transactionLabelId)
+                            .firstOrNull
+                            ?.name ??
+                        'Loading ...',
                   ),
                 ),
 

@@ -44,12 +44,17 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
   }
 
   @override
-  Future<List<VarTransaction>> getAllVarTransactionsByTopicId(
+  Future<List<VarTransaction>> getByDateForTopicId(
     int topicId,
+    DateTime from,
+    DateTime to,
   ) async {
-    final rows = await (db.select(
-      db.varTransactions,
-    )..where((v) => v.topicId.equals(topicId))).get();
+    final rows =
+        await (db.select(db.varTransactions)..where(
+              (v) =>
+                  v.topicId.equals(topicId) & v.date.isBetweenValues(from, to),
+            ))
+            .get();
     return rows
         .map(
           (v) => VarTransaction(

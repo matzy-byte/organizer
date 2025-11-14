@@ -7,15 +7,6 @@ class VarTransactionService {
 
   VarTransactionService(this.repository);
 
-  Future<List<VarTransaction>> getAllVarTransactionsByTopicId(
-    int topicId,
-  ) async {
-    final transactions = await repository.getAllVarTransactionsByTopicId(
-      topicId,
-    );
-    return transactions;
-  }
-
   Future<int> addVarTransaction(
     int topicId,
     DateTime date,
@@ -70,6 +61,12 @@ class VarTransactionService {
 
   Future<void> setVarReference(int id, int refId) =>
       repository.setVarReference(id, refId);
-  
+
   Future<VarTransaction> get(int id) => repository.get(id);
+
+  Future<List<VarTransaction>> getByDateForTopicId(
+    int topicId,
+    DateTime from,
+    DateTime to,
+  ) => repository.getByDateForTopicId(topicId, from, to);
 }
