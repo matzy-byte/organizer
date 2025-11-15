@@ -16,9 +16,12 @@
 - ✓ Overview ui element
 - ✓ Split overview_elemnt into multiple classes
 - ✓ Overview for category
--  Overview Dashboard
+- ✓ Overview Dashboard
 -  Var transaction table needs media control
 - ✓ Options element needs styling and filter logic for backend
+-  Properly include FixTransactionelement
+-  Implement automatic fixtransaction execution on app startup and checking on loading topic (check latest date)
+-  Check properly deleting any of the database tables (remove references, or cascade deletion)
 
 - UI:  
 Topic: Details, Overview month (+, -, rest, awaited to pay), FixTransaction cards (active and inactive), VarTransaction table with filter options  
