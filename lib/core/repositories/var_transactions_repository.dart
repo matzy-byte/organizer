@@ -40,4 +40,8 @@ abstract class VarTransactionRepository {
     DateTime from,
     DateTime to,
   );
+  Future<List<VarTransaction>> getByDate(
+    DateTime from,
+    DateTime to,
+  );
 }

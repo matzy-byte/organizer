@@ -8,13 +8,25 @@ import 'package:provider/provider.dart';
 
 class OverviewGeneral extends StatelessWidget {
   final List<VarTransaction> varTransactions;
-  const OverviewGeneral({super.key, required this.varTransactions});
+  final isDashboard;
+  const OverviewGeneral({
+    super.key,
+    required this.varTransactions,
+    this.isDashboard = false,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final filteredTransactions = isDashboard
+        ? varTransactions.where((t) => t.varRefId == null).toList()
+        : varTransactions;
+
     final transactionLabelProvider = context.read<TransactionLabelProvider>();
-    final totalValue = varTransactions.fold<int>(0, (sum, t) => sum + t.value);
-    final totalCompensations = varTransactions.fold<int>(0, (sum, t) {
+    final totalValue = filteredTransactions.fold<int>(
+      0,
+      (sum, t) => sum + t.value,
+    );
+    final totalCompensations = filteredTransactions.fold<int>(0, (sum, t) {
       if (t.compensations == null) return sum;
       return sum +
           t.compensations!.values.fold<int>(
@@ -23,23 +35,27 @@ class OverviewGeneral extends StatelessWidget {
           );
     });
 
-    final transactionLabelCounts = <String, int>{};
-    for (var t in varTransactions) {
-      if (t.transactionLabelId == null) {
-        continue;
-      }
-      final label = transactionLabelProvider.transactionLabels.firstWhere((l) => l.id == t.transactionLabelId).name;
-      transactionLabelCounts[label] =
-          (transactionLabelCounts[label] ?? 0) + 1;
+    Map<int, (String, int)> transactions = {};
+    for (var t in filteredTransactions) {
+      if (t.transactionLabelId == null) continue;
+      final labelObj = transactionLabelProvider.transactionLabels
+          .firstWhere((l) => l.id == t.transactionLabelId);
+      final id = labelObj.id;
+      final name = labelObj.name;
+      final currentValue = transactions[id]?.$2 ?? 0;
+      final newValue = currentValue + (t.value < 0 ? t.value : 0);
+      transactions[id] = (name, newValue);
     }
 
-    final compensationTopics = <String, int>{};
-    for (var t in varTransactions) {
-      if (t.compensations != null) {
-        for (var c in t.compensations!.values) {
-          compensationTopics[c.topicName] =
-              (compensationTopics[c.topicName] ?? 0) + 1;
-        }
+    Map<int, (String, int)> compensationTopics = {};
+    for (var t in filteredTransactions) {
+      if (t.compensations == null) continue;
+      for (var c in t.compensations!.values) {
+        final id = c.topicId;
+        final name = c.topicName;
+        final currentValue = compensationTopics[id]?.$2 ?? 0;
+        final newValue = currentValue + (c.value < 0 ? c.value : 0);
+        compensationTopics[id] = (name, newValue);
       }
     }
 
@@ -66,25 +82,24 @@ class OverviewGeneral extends StatelessWidget {
                     totalCompensations: totalCompensations,
                   ),
                 ),
-                SizedBox(
-                  width: cardWidth,
-                  child: OverviewPie(
-                    title: 'Transaction Description',
-                    data: transactionLabelCounts,
+                if (transactions.isNotEmpty)
+                  SizedBox(
+                    width: cardWidth,
+                    child: OverviewPie(title: 'Expenses', data: transactions),
                   ),
-                ),
-                SizedBox(
-                  width: cardWidth,
-                  child: OverviewPie(
-                    title: 'Compensation Topics',
-                    data: compensationTopics,
-                    colorPalette: [
-                      Colors.green,
-                      Colors.teal,
-                      Colors.lightGreen,
-                    ],
+                if (compensationTopics.isNotEmpty)
+                  SizedBox(
+                    width: cardWidth,
+                    child: OverviewPie(
+                      title: 'Compensations',
+                      data: compensationTopics,
+                      colorPalette: [
+                        Colors.green,
+                        Colors.teal,
+                        Colors.lightGreen,
+                      ],
+                    ),
                   ),
-                ),
               ],
             ),
           ),

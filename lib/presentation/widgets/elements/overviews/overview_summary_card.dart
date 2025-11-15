@@ -23,12 +23,19 @@ class OverviewSummaryCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            Text('Summary',
-                style: theme.textTheme.titleMedium
-                    ?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              'Summary',
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: 12),
             _SummaryRow(label: 'Total Transaction Value', value: totalValue),
-            _SummaryRow(label: 'Total Compensations', value: -totalCompensations),
+            _SummaryRow(
+              label: 'Total Compensations',
+              value: -totalCompensations,
+            ),
+            const SizedBox(height: 100),
             const Divider(height: 20),
             _SummaryRow(label: 'Net Total', value: netTotal, isBold: true),
           ],
@@ -59,9 +66,12 @@ class _SummaryRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: theme.textTheme.bodyMedium
-                  ?.copyWith(fontWeight: isBold ? FontWeight.bold : FontWeight.normal)),
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
           Text(
             NumberFormat.currency(symbol: '€').format(value / 100),
             style: theme.textTheme.bodyMedium?.copyWith(

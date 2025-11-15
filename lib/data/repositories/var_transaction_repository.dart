@@ -44,12 +44,38 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
   }
 
   @override
+  Future<List<VarTransaction>> getByDate(DateTime from, DateTime to) async {
+    final rows = await (db.select(
+      db.varTransactions,
+    )..where((v) => v.date.isBetweenValues(from, to))).get();
+    return rows
+        .map(
+          (v) => VarTransaction(
+            id: v.id,
+            topicId: v.topicId,
+            date: v.date,
+            value: v.value,
+            userRefId: v.userRefId,
+            compensations: JsonUtil.string2CompensationInfo(v.compensations),
+            transactionLabelId: v.transactionLabelId,
+            description: v.description,
+            fixRefId: v.fixRefId,
+            varRefId: v.varRefId,
+            fileRefId: v.fileRefId,
+          ),
+        )
+        .toList();
+  }
+
+  @override
   Future<List<VarTransaction>> getByDateForCategoryId(
     int categoryId,
     DateTime from,
     DateTime to,
   ) async {
-    final topics = await (db.select(db.topics)..where((t) => t.categoryId.equals(categoryId))).get();
+    final topics = await (db.select(
+      db.topics,
+    )..where((t) => t.categoryId.equals(categoryId))).get();
     final topicIds = topics.map((t) => t.id).toList();
     final rows =
         await (db.select(db.varTransactions)..where(

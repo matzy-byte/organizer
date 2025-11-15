@@ -4,7 +4,8 @@ import 'package:organizer/presentation/widgets/elements/overviews/overview_gener
 import 'package:provider/provider.dart';
 
 class OverviewElement extends StatelessWidget {
-  const OverviewElement({super.key});
+  final isDashboard;
+  const OverviewElement({super.key, this.isDashboard = false});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,7 @@ class OverviewElement extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            OverviewGeneral(varTransactions: items),
+            OverviewGeneral(varTransactions: items, isDashboard: isDashboard),
           ],
         ),
       ),

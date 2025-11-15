@@ -15,6 +15,20 @@ class VarTransactionProvider with ChangeNotifier {
 
   VarTransactionProvider({required this.varTransactionService});
 
+  Future<void> load({
+    required DateTime from,
+    required DateTime to,
+  }) async {
+    _from = from;
+    _to = to;
+
+    _varTransactions = await varTransactionService.getByDate(
+      from,
+      to,
+    );
+    notifyListeners();
+  }
+
   Future<void> loadByCategory({
     required int categoryId,
     required DateTime from,

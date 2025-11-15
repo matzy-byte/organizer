@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 class OverviewPie extends StatelessWidget {
   final String title;
-  final Map<String, int> data;
+  final Map<int, (String, int)> data;
   final List<Color>? colorPalette;
 
   const OverviewPie({
@@ -16,7 +16,9 @@ class OverviewPie extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final total = data.values.fold<int>(0, (sum, v) => sum + v);
+
+    final total = data.values.fold<int>(0, (sum, v) => sum + v.$2.abs());
+
     final colors =
         colorPalette ??
         [Colors.blue, Colors.orange, Colors.purple, Colors.cyan];
@@ -35,17 +37,21 @@ class OverviewPie extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
+
             SizedBox(
               height: 180,
               child: PieChart(
                 PieChartData(
                   sections: data.entries.mapIndexed((i, e) {
+                    final value = e.value.$2.abs();
+
                     final percentage = total == 0
-                        ? 0
-                        : (e.value / total * 100).toStringAsFixed(1);
+                        ? "0.0"
+                        : (value / total * 100).toStringAsFixed(1);
+
                     return PieChartSectionData(
                       color: colors[i % colors.length],
-                      value: e.value.toDouble(),
+                      value: value.toDouble(),
                       title: '$percentage%',
                       radius: 60,
                       titleStyle: theme.textTheme.bodySmall?.copyWith(
@@ -59,11 +65,16 @@ class OverviewPie extends StatelessWidget {
                 ),
               ),
             ),
+
             const SizedBox(height: 12),
+
             Wrap(
               spacing: 6,
               runSpacing: 4,
               children: data.entries.mapIndexed((i, e) {
+                final name = e.value.$1;
+                final value = e.value.$2;
+
                 return Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -73,10 +84,7 @@ class OverviewPie extends StatelessWidget {
                       color: colors[i % colors.length],
                     ),
                     const SizedBox(width: 4),
-                    Text(
-                      '${e.key} (${e.value})',
-                      style: theme.textTheme.bodySmall,
-                    ),
+                    Text('$name ($value)', style: theme.textTheme.bodySmall),
                   ],
                 );
               }).toList(),
