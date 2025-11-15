@@ -5,9 +5,9 @@ import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/drawer_content.dart';
 import 'package:organizer/presentation/widgets/elements/options/options_element.dart';
 import 'package:organizer/presentation/widgets/elements/overviews/overview_element.dart';
+import 'package:organizer/presentation/widgets/elements/topics/topic_element.dart';
 import 'package:organizer/presentation/widgets/header.dart';
 import 'package:organizer/presentation/widgets/multi_function_floating_button.dart';
-import 'package:organizer/presentation/widgets/topic_card.dart';
 import 'package:provider/provider.dart';
 
 class CategoryScreen extends StatefulWidget {
@@ -52,10 +52,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     final category = ModalRoute.of(context)!.settings.arguments as Category;
-    final topicProvider = context.watch<TopicProvider>();
-    final topics = topicProvider.topics
-        .where((t) => t.categoryId == category.id)
-        .toList();
 
     return Scaffold(
       drawer: const Drawer(child: DrawerContent()),
@@ -84,20 +80,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               const SizedBox(height: 12),
               OverviewElement(),
               const SizedBox(height: 12),
-              topics.isEmpty
-                  ? Center(child: Text('No Topics found'))
-                  : Column(
-                      children: topics
-                          .map(
-                            (t) => TopicCard(
-                              topic: t,
-                              onDeleted: () async {
-                                await topicProvider.removeTopic(t.id);
-                              },
-                            ),
-                          )
-                          .toList(),
-                    ),
+              TopicElement(categoryId: category.id,),
             ],
           ),
         ),
