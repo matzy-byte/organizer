@@ -2,91 +2,119 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/main.dart';
+import 'package:organizer/presentation/state/transaction_label_provider.dart';
+import 'package:provider/provider.dart';
 
 class FixTransactionInactiveTable extends StatelessWidget {
   final List<FixTransaction> fixTransactions;
   final IntCallback edit;
+
   const FixTransactionInactiveTable({
     super.key,
     required this.fixTransactions,
     required this.edit,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    return fixTransactions.isEmpty
-        ? const Center(child: Text('No inactive fix transactions'))
-        : ListView.separated(
-            shrinkWrap: true,
-            itemCount: fixTransactions.length,
-            separatorBuilder: (_, _) => const Divider(
-              height: 1,
-              color: Color.fromARGB(255, 214, 214, 214),
-              indent: 5.0,
-              endIndent: 5.0,
-            ),
-            itemBuilder: (context, index) {
-              final t = fixTransactions[index];
-              final finalValue = getFinalValue(t);
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 8.0,
-                  horizontal: 6.0,
-                ),
-                child: Row(
-                  children: [
-                    const Icon(
-                      Icons.pause_circle_filled,
-                      color: Colors.grey,
-                      size: 20,
-                    ),
-
-                    const SizedBox(width: 8),
-
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        NumberFormat.currency(
-                          symbol: "€",
-                        ).format(finalValue / 100),
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-
-                    Expanded(
-                      flex: 4,
-                      child: Text(
-                        t.description ?? '-',
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(color: Colors.black87),
-                      ),
-                    ),
-
-                    IconButton(
-                      onPressed: () => edit.call(t.id),
-                      icon: const Icon(Icons.edit, color: Colors.blueGrey),
-                      tooltip: 'Edit transaction',
-                    ),
-                  ],
-                ),
-              );
-            },
-          );
+  int _finalValue(FixTransaction t) {
+    if (t.compensations == null) return t.value;
+    final sum = t.compensations!.values.fold<int>(0, (s, c) => s + c.value);
+    return t.value - sum;
   }
 
-  int getFinalValue(FixTransaction fixTransaction) {
-    final compensations = fixTransaction.compensations;
-    if (compensations == null) {
-      return fixTransaction.value;
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    if (fixTransactions.isEmpty) {
+      return Center(
+        child: Text(
+          'No inactive fix transactions',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.outline,
+          ),
+        ),
+      );
     }
-    final compensationSum = compensations.values.fold<int>(
-      0,
-      (sum, c) => sum + c.value,
+
+    final labelProvider = context.read<TransactionLabelProvider>();
+    final labelMap = {for (var l in labelProvider.transactionLabels) l.id: l};
+
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: fixTransactions.length,
+      separatorBuilder: (_, __) => Divider(
+        height: 1,
+        thickness: 1,
+        color: theme.colorScheme.outlineVariant,
+        indent: 6,
+        endIndent: 6,
+      ),
+      itemBuilder: (context, index) {
+        final t = fixTransactions[index];
+        final finalValue = _finalValue(t);
+
+        final label = t.transactionLabelId != null
+            ? labelMap[t.transactionLabelId]
+            : null;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+          child: Row(
+            children: [
+              Icon(
+                Icons.pause_circle_filled,
+                size: 20,
+                color: theme.colorScheme.outline,
+              ),
+
+              const SizedBox(width: 10),
+              SizedBox(
+                width: 50,
+                child: Text(
+                  NumberFormat.currency(symbol: "€").format(finalValue / 100),
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.outline,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+
+              if (label != null) ...[
+                const SizedBox(width: 12),
+                Chip(
+                  label: Text(
+                    label.name,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  t.description ?? '',
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ),
+
+              IconButton(
+                onPressed: () => edit(t.id),
+                icon: Icon(Icons.edit, color: theme.colorScheme.secondary),
+                tooltip: 'Edit transaction',
+              ),
+            ],
+          ),
+        );
+      },
     );
-    return fixTransaction.value - compensationSum;
   }
 }

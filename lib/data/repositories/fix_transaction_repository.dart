@@ -12,7 +12,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
   FixTransactionRepositoryDrift(this.db);
 
   @override
-  Future<void> addFixTransaction(
+  Future<int> addFixTransaction(
     int topicId,
     Status status,
     DateTime start,
@@ -28,7 +28,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
     int? varRefId,
     int? fileRefId,
   ) async {
-    await db
+    return await db
         .into(db.fixTransactions)
         .insert(
           FixTransactionsCompanion.insert(

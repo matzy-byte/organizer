@@ -8,15 +8,30 @@ import 'package:organizer/core/services/fix_transaction_service.dart';
 class FixTransactionProvider with ChangeNotifier {
   final FixTransactionService fixTransactionService;
 
+  int? _topicId;
+  List<FixTransaction> _fixTransactions = [];
+  List<FixTransaction> get fixTransactions => _fixTransactions;
+
   FixTransactionProvider({required this.fixTransactionService});
 
-  Future<List<FixTransaction>> getAllFixTransactionsByTopicId(
-    int topicId,
-  ) async {
-    return await fixTransactionService.getAllFixTransactionsByTopicId(topicId);
+  Future<void> loadByTopic(int topicId) async {
+    _topicId = topicId;
+    _fixTransactions = await fixTransactionService
+        .getAllFixTransactionsByTopicId(topicId);
+
+    notifyListeners();
   }
 
-  Future<void> addFixTransaction(
+  Future<void> reload() async {
+    if (_topicId == null) return;
+
+    _fixTransactions = await fixTransactionService
+        .getAllFixTransactionsByTopicId(_topicId!);
+
+    notifyListeners();
+  }
+
+  Future<int> addFixTransaction(
     int topicId,
     Status status,
     DateTime start,
@@ -32,7 +47,7 @@ class FixTransactionProvider with ChangeNotifier {
     int? varRefId,
     int? fileRefId,
   ) async {
-    await fixTransactionService.addFixTransaction(
+    final id = await fixTransactionService.addFixTransaction(
       topicId,
       status,
       start,
@@ -48,10 +63,14 @@ class FixTransactionProvider with ChangeNotifier {
       varRefId,
       fileRefId,
     );
+
+    await reload();
+    return id;
   }
 
   Future<void> removeFixTransaction(int id) async {
     await fixTransactionService.removeFixTransaction(id);
+    await reload();
   }
 
   Future<void> updateFixTransaction(
@@ -88,5 +107,7 @@ class FixTransactionProvider with ChangeNotifier {
       varRefId,
       fileRefId,
     );
+
+    await reload();
   }
 }

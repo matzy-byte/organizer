@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/topic.dart';
+import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/drawer_content.dart';
+import 'package:organizer/presentation/widgets/elements/fix_transactions/fix_transaction_element.dart';
 import 'package:organizer/presentation/widgets/elements/options/options_element.dart';
 import 'package:organizer/presentation/widgets/elements/overviews/overview_element.dart';
 import 'package:organizer/presentation/widgets/elements/var_transactions/var_transaction_element.dart';
@@ -43,6 +45,7 @@ class _TopicScreenState extends State<TopicScreen> {
           from: from,
           to: to,
         );
+        context.read<FixTransactionProvider>().loadByTopic(topic.id);
       });
     }
   }
@@ -77,6 +80,8 @@ class _TopicScreenState extends State<TopicScreen> {
               ),
               const SizedBox(height: 12),
               OverviewElement(),
+              const SizedBox(height: 12),
+              FixTransactionElement(),
               const SizedBox(height: 12),
               VarTransactionElement(),
             ],

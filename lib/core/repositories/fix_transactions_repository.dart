@@ -5,7 +5,7 @@ import 'package:organizer/core/models/status.dart';
 
 abstract class FixTransactionRepository {
   Future<List<FixTransaction>> getAllFixTransactionsByTopicId(int id);
-  Future<void> addFixTransaction(
+  Future<int> addFixTransaction(
     int topicId,
     Status status,
     DateTime start,

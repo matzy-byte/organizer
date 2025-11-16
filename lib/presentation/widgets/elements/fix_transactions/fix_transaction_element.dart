@@ -1,195 +1,178 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:organizer/app/defaults.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/core/models/status.dart';
-import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/edit_fix_transaction_dialog.dart';
 import 'package:organizer/presentation/widgets/elements/fix_transactions/fix_transaction_active_card.dart';
 import 'package:organizer/presentation/widgets/elements/fix_transactions/fix_transaction_inactive_table.dart';
 import 'package:provider/provider.dart';
 
-class FixTransactionElement extends StatefulWidget {
+class FixTransactionElement extends StatelessWidget {
   const FixTransactionElement({super.key});
 
   @override
-  State<FixTransactionElement> createState() => FixTransactionElementState();
-}
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
 
-class FixTransactionElementState extends State<FixTransactionElement> {
-  Topic? _topic;
-  List<FixTransaction> _fixTransactions = [];
-  bool _isLoading = true;
+    final provider = context.watch<FixTransactionProvider>();
+    final items = provider.fixTransactions;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final topic = ModalRoute.of(context)!.settings.arguments as Topic;
-    if (_topic != topic) {
-      _topic = topic;
-      loadFixTransactions();
-    }
-  }
+    final active = items.where((f) => f.status == Status.active).toList();
+    final inactive = items.where((f) => f.status == Status.inactive).toList();
 
-  Future<void> loadFixTransactions() async {
-    if (_topic == null) return;
-    if (!mounted) return;
-    setState(() => _isLoading = true);
-    final fixTransactionProvider = context.read<FixTransactionProvider>();
-    final fixTransactions = await fixTransactionProvider
-        .getAllFixTransactionsByTopicId(_topic!.id);
-    if (!mounted) return;
-    setState(() {
-      _fixTransactions = fixTransactions;
-      _isLoading = false;
-    });
-  }
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Fix Transactions',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
 
-  Future<void> updateFixTransaction(int id) async {
-    final updated = await showDialog<bool>(
-      context: context,
-      builder: (context) => EditFixTransactionDialog(
-        fixTransaction: _fixTransactions.firstWhere((v) => v.id == id),
+                const SizedBox(height: 16),
+
+                _ActiveSection(active: active),
+
+                if (inactive.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  _InactiveSection(inactive: inactive),
+                ],
+              ],
+            );
+          },
+        ),
       ),
     );
-    if (!mounted) return;
-    if (updated == true) {
-      loadFixTransactions();
-    }
   }
+}
+
+class _ActiveSection extends StatelessWidget {
+  final List<FixTransaction> active;
+
+  const _ActiveSection({required this.active});
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _fixTransactions.isEmpty
-          ? const Center(child: Text('There are no fix transactions'))
-          : LayoutBuilder(
-              builder: (context, constraints) {
-                final width = constraints.maxWidth;
-                final isMobile = width <= Defaults.maxMobileWidth;
-
-                final activeTransactions = _fixTransactions
-                    .where((f) => f.status == Status.active)
-                    .toList();
-
-                final inactiveTransactions = _fixTransactions
-                    .where((f) => f.status == Status.inactive)
-                    .toList();
-
-                if (isMobile) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(bottom: 12.0),
-                        child: Text(
-                          'Fix Transactions',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                      _buildActiveCards(activeTransactions),
-                      const SizedBox(height: 16),
-                      _buildInactiveTable(
-                        inactiveTransactions,
-                        maxWidth: double.infinity,
-                      ),
-                    ],
-                  );
-                } else {
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Padding(
-                              padding: EdgeInsets.only(bottom: 12.0),
-                              child: Text(
-                                'Fix Transactions',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 18,
-                                ),
-                              ),
-                            ),
-                            _buildActiveCards(activeTransactions),
-                          ],
-                        ),
-                      ),
-
-                      ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 300),
-                        child: Container(
-                          margin: const EdgeInsets.only(left: 8),
-                          decoration: BoxDecoration(
-                            border: Border(
-                              left: BorderSide(
-                                color: Colors.grey.shade300,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                          padding: const EdgeInsets.only(left: 6),
-                          child: _buildInactiveTable(inactiveTransactions),
-                        ),
-                      ),
-                    ],
-                  );
-                }
-              },
-            ),
-    );
-  }
-
-  Widget _buildActiveCards(List<FixTransaction> active) {
-    if (active.isEmpty) return const Center(child: Text('There are no active fix transactions'));
+    if (active.isEmpty) {
+      return Center(
+        child: Text(
+          'No active fix transactions',
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      );
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double maxCardWidth = 240;
-        final double spacing = 4;
-        final double availableWidth = constraints.maxWidth;
+        const spacing = 8.0;
+        const maxWidth = 260.0;
 
-        int cardsPerRow = (availableWidth / (maxCardWidth + spacing))
+        final perRow = (constraints.maxWidth / (maxWidth + spacing))
             .floor()
             .clamp(1, active.length);
 
-        final double cardWidth =
-            (availableWidth - (spacing * (cardsPerRow - 1))) / cardsPerRow;
+        final cardWidth =
+            (constraints.maxWidth - (spacing * (perRow - 1))) / perRow;
 
         return Wrap(
           spacing: spacing,
           runSpacing: spacing,
-          children: active.map((f) {
-            return SizedBox(
-              width: cardWidth,
-              child: FixTransactionActiveCard(
-                fixTransaction: f,
-                edit: (id) => updateFixTransaction(id),
-              ),
-            );
-          }).toList(),
+          children: active
+              .map(
+                (f) => SizedBox(
+                  width: cardWidth,
+                  child: FixTransactionActiveCard(
+                    fixTransaction: f,
+                    edit: (id) async {
+                      final f = active.firstWhereOrNull((f) => f.id == id);
+                      if (f == null) return;
+
+                      await showDialog(
+                        context: context,
+                        builder: (context) =>
+                            EditFixTransactionDialog(fixTransaction: f),
+                      );
+                    },
+                  ),
+                ),
+              )
+              .toList(),
         );
       },
     );
   }
+}
 
-  Widget _buildInactiveTable(
-    List<FixTransaction> inactive, {
-    double? maxWidth,
-  }) {
-    return SizedBox(
-      width: maxWidth ?? double.infinity,
-      child: FixTransactionInactiveTable(
-        fixTransactions: inactive,
-        edit: (id) => updateFixTransaction(id),
-      ),
+class _InactiveSection extends StatefulWidget {
+  final List<FixTransaction> inactive;
+
+  const _InactiveSection({required this.inactive});
+
+  @override
+  State<_InactiveSection> createState() => _InactiveSectionState();
+}
+
+class _InactiveSectionState extends State<_InactiveSection> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: () => setState(() => _isExpanded = !_isExpanded),
+          child: Padding(
+            padding: EdgeInsetsGeometry.all(8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Inactive Transactions',
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Icon(
+                  _isExpanded
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  color: theme.colorScheme.primary,
+                ),
+              ],
+            ),
+          ),
+        ),
+        if (_isExpanded) ...[
+          const SizedBox(height: 8),
+          FixTransactionInactiveTable(
+            fixTransactions: widget.inactive,
+            edit: (id) async {
+              final f = widget.inactive.firstWhereOrNull((f) => f.id == id);
+              if (f == null) return;
+
+              await showDialog(
+                context: context,
+                builder: (context) =>
+                    EditFixTransactionDialog(fixTransaction: f),
+              );
+            },
+          ),
+        ],
+      ],
     );
   }
 }

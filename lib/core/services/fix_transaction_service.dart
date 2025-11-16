@@ -18,7 +18,7 @@ class FixTransactionService {
     return transactions;
   }
 
-  Future<void> addFixTransaction(
+  Future<int> addFixTransaction(
     int topicId,
     Status status,
     DateTime start,
