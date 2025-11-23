@@ -3,7 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
+import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/show_compensations_dialog.dart';
+import 'package:organizer/presentation/widgets/elements/users/user_icon.dart';
 import 'package:provider/provider.dart';
 
 class VarTransactionTable extends StatelessWidget {
@@ -24,6 +26,7 @@ class VarTransactionTable extends StatelessWidget {
       return const Center(child: Text('No variable transactions'));
     }
 
+    final userProvider = context.read<UserProvider>();
     final transactionLabelProvider = context.read<TransactionLabelProvider>();
 
     return ListView.separated(
@@ -35,6 +38,7 @@ class VarTransactionTable extends StatelessWidget {
           Divider(color: Colors.grey.shade300, height: 1),
       itemBuilder: (context, index) {
         final t = varTransactions[index];
+        final u = userProvider.users.firstWhere((u) => u.id == t.userRefId);
         final value = getFinalValue(t);
         return Padding(
           padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -96,7 +100,7 @@ class VarTransactionTable extends StatelessWidget {
               Expanded(
                 flex: 2,
                 child: Text(
-                  t.description ?? '-',
+                  t.description ?? '',
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -122,6 +126,8 @@ class VarTransactionTable extends StatelessWidget {
                   ),
                 ],
               ),
+
+              SizedBox(width: 75, child: UserIcon(user: u, size: 18)),
             ],
           ),
         );

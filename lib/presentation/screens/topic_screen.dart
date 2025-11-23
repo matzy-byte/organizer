@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:organizer/app/globals.dart' as globals;
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
@@ -26,10 +27,9 @@ class _TopicScreenState extends State<TopicScreen> {
   @override
   void initState() {
     super.initState();
-    final now = DateTime.now();
-    to = DateTime(now.year, now.month, now.day, 23, 59, 59);
-    final monthAgo = DateTime(now.year, now.month - 1, now.day);
-    from = DateTime(monthAgo.year, monthAgo.month, monthAgo.day, 0, 0, 0);
+    
+    from = globals.from;
+    to = globals.to;
   }
 
   @override
@@ -67,6 +67,8 @@ class _TopicScreenState extends State<TopicScreen> {
                 fromDate: from,
                 toDate: to,
                 onFilterChanged: (newFrom, newTo) {
+                  globals.from = newFrom;
+                  globals.to = newTo;
                   setState(() {
                     from = newFrom;
                     to = newTo;

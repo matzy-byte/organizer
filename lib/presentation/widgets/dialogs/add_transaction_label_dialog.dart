@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 import 'package:organizer/core/models/transaction_label.dart';
+import 'package:organizer/core/utils/color_util.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/widgets/color_wheel.dart';
 import 'package:provider/provider.dart';
@@ -31,18 +30,9 @@ class _AddTransactionLabelDialogState extends State<AddTransactionLabelDialog> {
     _isNew = widget.transactionLabel == null;
 
     _nameController.text = _isNew ? '' : widget.transactionLabel!.name;
-    final random = Random();
     _selectedColor = _isNew
-        ? Color.fromARGB(
-            255,
-            random.nextInt(256),
-            random.nextInt(256),
-            random.nextInt(256),
-          )
-        : Color(
-            int.parse(widget.transactionLabel!.color.substring(1), radix: 16) +
-                0xFF000000,
-          );
+        ? ColorUtil.randomColor()
+        : ColorUtil.colorFromHexCode(widget.transactionLabel!.color);
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:organizer/app/globals.dart' as globals;
 import 'package:organizer/app/routes.dart';
 import 'package:organizer/app/themes/app_theme.dart';
 import 'package:organizer/core/services/category_service.dart';
@@ -8,6 +9,7 @@ import 'package:organizer/core/services/topic_service.dart';
 import 'package:organizer/core/services/transaction_label_service.dart';
 import 'package:organizer/core/services/user_service.dart';
 import 'package:organizer/core/services/var_transaction_service.dart';
+import 'package:organizer/core/utils/date_util.dart';
 import 'package:organizer/data/providers/drift_provider.dart';
 import 'package:organizer/data/repositories/category_repository.dart';
 import 'package:organizer/data/repositories/file_repository.dart';
@@ -43,6 +45,9 @@ Future<void> runDesktop() async {
   final fileService = FileService(FileRepositoryDrift(db));
 
   await fixTransactionService.runDueFixTransactions();
+
+  globals.from = DateUtil.getFromCurrentMonth();
+  globals.to = DateUtil.getToCurrentMonth();
 
   runApp(
     MultiProvider(

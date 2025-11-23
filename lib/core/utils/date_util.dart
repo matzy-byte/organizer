@@ -1,6 +1,17 @@
 import 'package:organizer/core/models/interval_unit.dart';
 
 class DateUtil {
+  static DateTime getFromCurrentMonth() {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, 1, 0, 0, 0);
+  }
+
+  static DateTime getToCurrentMonth() {
+    final now = DateTime.now();
+    final lastDay = DateTime(now.year, now.month + 1, 0).day;
+    return DateTime(now.year, now.month, lastDay, 23, 59, 59);
+  }
+
   static DateTime addInterval(DateTime base, int count, IntervalUnit unit) {
     switch (unit) {
       case IntervalUnit.day:

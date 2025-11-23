@@ -5,6 +5,8 @@ import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/transaction_label.dart';
 import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
+import 'package:organizer/presentation/state/user_provider.dart';
+import 'package:organizer/presentation/widgets/elements/users/user_icon.dart';
 import 'package:provider/provider.dart';
 
 class FixTransactionActiveCard extends StatelessWidget {
@@ -60,8 +62,13 @@ class FixTransactionActiveCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    final user = context.read<UserProvider>().users.firstWhere(
+      (u) => u.id == fixTransaction.userRefId,
+    );
     final daysLeft = _daysUntilNext();
-    TransactionLabel? label = null;
+
+    TransactionLabel? label;
     if (fixTransaction.transactionLabelId != null) {
       label = context
           .read<TransactionLabelProvider>()
@@ -80,68 +87,78 @@ class FixTransactionActiveCard extends StatelessWidget {
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(14),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-              formattedValue,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: valueColor,
-              ),
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: 6),
-            if (label != null) ...[
-              Chip(
-                label: Text(
-                  label.name,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.primary,
-                    fontWeight: FontWeight.w600,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(14),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text(
+                    formattedValue,
+                    style: theme.textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: valueColor,
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 6),
-            ],
-            if (fixTransaction.description != null) ...[
-              Text(
-                fixTransaction.description!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 6),
-            ],
-            Text(
-              daysLeft == null
-                  ? "No upcoming payment"
-                  : "Next in $daysLeft day${daysLeft == 1 ? '' : 's'}",
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.outline,
-              ),
-            ),
+                  const SizedBox(height: 6),
 
-            const SizedBox(height: 8),
-            Text(
-              "${fixTransaction.intervalCount} ${fixTransaction.intervalUnit.name}"
-              "${fixTransaction.intervalCount > 1 ? 's' : ''}",
-              style: theme.textTheme.bodySmall,
-            ),
+                  if (label != null) ...[
+                    Chip(
+                      label: Text(
+                        label.name,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                  ],
 
-            const SizedBox(height: 12),
-            IconButton(
-              icon: Icon(Icons.edit, color: theme.colorScheme.secondary),
-              onPressed: () => edit(fixTransaction.id),
-              tooltip: "Edit transaction",
+                  if (fixTransaction.description != null) ...[
+                    Text(
+                      fixTransaction.description!,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 6),
+                  ],
+
+                  Text(
+                    daysLeft == null
+                        ? "No upcoming payment"
+                        : "Next in $daysLeft day${daysLeft == 1 ? '' : 's'}",
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.outline,
+                    ),
+                  ),
+
+                  const SizedBox(height: 8),
+                  Text(
+                    "${fixTransaction.intervalCount} ${fixTransaction.intervalUnit.name}"
+                    "${fixTransaction.intervalCount > 1 ? 's' : ''}",
+                    style: theme.textTheme.bodySmall,
+                  ),
+
+                  const SizedBox(height: 12),
+                  IconButton(
+                    icon: Icon(Icons.edit, color: theme.colorScheme.secondary),
+                    onPressed: () => edit(fixTransaction.id),
+                    tooltip: "Edit transaction",
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          ),
+
+          Positioned(top: 10, left: 10, child: UserIcon(user: user, size: 18)),
+        ],
       ),
     );
   }

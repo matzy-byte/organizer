@@ -21,20 +21,30 @@ class OverviewGeneral extends StatelessWidget {
     final filteredTransactions = isDashboard
         ? varTransactions.where((t) => t.varRefId == null).toList()
         : varTransactions;
-
     final transactionLabelProvider = context.read<TransactionLabelProvider>();
-    final totalValue = filteredTransactions.fold<int>(
-      0,
-      (sum, t) => sum + t.value,
-    );
-    final totalCompensations = filteredTransactions.fold<int>(0, (sum, t) {
-      if (t.compensations == null) return sum;
-      return sum +
+
+    final totalValueIncome = filteredTransactions
+    .where((t) => t.value >= 0)
+    .fold<int>(0, (sum, t) => sum + t.value);
+    final totalValueExpenses = filteredTransactions
+    .where((t) => t.value < 0)
+    .fold<int>(0, (sum, t) => sum + t.value);
+
+    final totalCompensationsIncome = filteredTransactions
+    .where((t) => t.compensations != null && t.value >= 0)
+    .fold<int>(0, (sum, t) => sum +
           t.compensations!.values.fold<int>(
             0,
             (compSum, c) => compSum + c.value,
-          );
-    });
+          ));
+    
+    final totalCompensationsExpense = filteredTransactions
+    .where((t) => t.compensations != null && t.value < 0)
+    .fold<int>(0, (sum, t) => sum +
+          t.compensations!.values.fold<int>(
+            0,
+            (compSum, c) => compSum + c.value,
+          ));
 
     Map<int, (String, int)> transactions = {};
     for (var t in filteredTransactions) {
@@ -80,8 +90,10 @@ class OverviewGeneral extends StatelessWidget {
                 SizedBox(
                   width: cardWidth,
                   child: OverviewSummaryCard(
-                    totalValue: totalValue,
-                    totalCompensations: totalCompensations,
+                    totalValueExpenses: totalValueExpenses,
+                    totalValueIncome: totalValueIncome,
+                    totalCompensationsExpenses: totalCompensationsExpense,
+                    totalCompensationsIncome: totalCompensationsIncome,
                   ),
                 ),
                 if (transactions.isNotEmpty)

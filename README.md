@@ -24,10 +24,10 @@
 - ✓ Check properly deleting any of the database tables (remove references, or cascade deletion)
 - ✓ User needs color property
 - ✓ Transactionlabel needs color property
--  Visualize user in VarTransaction and FixTransaction
+- ✓ Visualize user in VarTransaction and FixTransaction
 -  Redention user in overview
--  Summary card split in expenses and additions
--  Global date selection (from and to filtering)
+- ✓ Summary card split in expenses and additions
+- ✓ Global date selection (from and to filtering)
 
 - UI:  
 Topic: Details, Overview month (+, -, rest, awaited to pay), FixTransaction cards (active and inactive), VarTransaction table with filter options  

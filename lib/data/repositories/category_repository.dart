@@ -37,20 +37,43 @@ class CategoryRepositoryDrift implements CategoryRepository {
         db.topics,
       )..where((t) => t.categoryId.equals(categoryId))).get();
       final topicIds = topics.map((t) => t.id).toList();
-      
+
       final varTransactions = await (db.select(
         db.varTransactions,
       )..where((v) => v.topicId.isIn(topicIds))).get();
 
-      for (final v in varTransactions) {
-        if (v.compensations != null) {
+      for (final varTransaction in varTransactions) {
+        if (varTransaction.compensations != null) {
           final compensations = JsonUtil.string2CompensationInfo(
-            v.compensations,
+            varTransaction.compensations,
           )!;
           for (final cId in compensations.keys) {
             await (db.delete(
               db.varTransactions,
             )..where((vT) => vT.id.equals(cId))).go();
+          }
+        }
+
+        if (varTransaction.varRefId != null) {
+          final parent =
+              await (db.select(db.varTransactions)
+                    ..where((v) => v.id.equals(varTransaction.varRefId!)))
+                  .getSingleOrNull();
+          if (parent != null && parent.compensations != null) {
+            final parentComps = JsonUtil.string2CompensationInfo(
+              parent.compensations,
+            )!;
+            parentComps.remove(varTransaction.id);
+            final updatedComps = parentComps.isEmpty ? null : parentComps;
+            await (db.update(
+              db.varTransactions,
+            )..where((v) => v.id.equals(parent.id))).write(
+              VarTransactionsCompanion(
+                compensations: Value(
+                  JsonUtil.compensation2String(updatedComps),
+                ),
+              ),
+            );
           }
         }
       }

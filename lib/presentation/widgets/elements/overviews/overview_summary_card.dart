@@ -2,19 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class OverviewSummaryCard extends StatelessWidget {
-  final int totalValue;
-  final int totalCompensations;
+  final int totalValueIncome;
+  final int totalValueExpenses;
+
+  final int totalCompensationsIncome;
+  final int totalCompensationsExpenses;
 
   const OverviewSummaryCard({
     super.key,
-    required this.totalValue,
-    required this.totalCompensations,
+    required this.totalValueIncome,
+    required this.totalValueExpenses,
+    required this.totalCompensationsIncome,
+    required this.totalCompensationsExpenses,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final netTotal = totalValue - totalCompensations;
+
+    final netValue = totalValueIncome + totalValueExpenses;
+    final netCompensations =
+        totalCompensationsIncome + totalCompensationsExpenses;
+    final netTotal = netValue - netCompensations;
 
     return Card(
       elevation: 3,
@@ -30,13 +39,27 @@ class OverviewSummaryCard extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 12),
-            _SummaryRow(label: 'Total Transaction Value', value: totalValue),
+
+            // ----- TRANSACTION VALUES -----
+            _SummaryRow(label: 'Income', value: totalValueIncome),
+            _SummaryRow(label: 'Expenses', value: totalValueExpenses),
+
+            const SizedBox(height: 12),
+
+            // ----- COMPENSATIONS -----
             _SummaryRow(
-              label: 'Total Compensations',
-              value: -totalCompensations,
+              label: 'Compensation Income',
+              value: -totalCompensationsIncome,
             ),
+            _SummaryRow(
+              label: 'Compensation Expenses',
+              value: -totalCompensationsExpenses,
+            ),
+
             const SizedBox(height: 100),
             const Divider(height: 20),
+
+            // ----- NET -----
             _SummaryRow(label: 'Net Total', value: netTotal, isBold: true),
           ],
         ),

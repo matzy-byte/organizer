@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
+import 'package:organizer/core/utils/color_util.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -22,14 +21,8 @@ class _AddUserDialogState extends State<AddUserDialog> {
   @override
   void initState() {
     super.initState();
-    final random = Random();
 
-    _selectedColor = Color.fromARGB(
-      255,
-      random.nextInt(256),
-      random.nextInt(256),
-      random.nextInt(256),
-    );
+    _selectedColor = ColorUtil.randomColor();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
   }
