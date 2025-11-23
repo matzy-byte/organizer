@@ -36,8 +36,7 @@ class AppDatabase extends _$AppDatabase {
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) async => m.createAll(),
-    onUpgrade: (m, from, to) async {
-    },
+    onUpgrade: (m, from, to) async {},
   );
 
   Future<void> deleteAllData() {
@@ -53,6 +52,9 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
     final path = p.join(dir.path, 'organizer.db');
-    return NativeDatabase(io.File(path));
+    return NativeDatabase(
+      io.File(path),
+      setup: (database) => database.execute('PRAGMA foreign_keys = ON'),
+    );
   });
 }

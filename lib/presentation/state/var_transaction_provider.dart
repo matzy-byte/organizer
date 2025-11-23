@@ -6,6 +6,7 @@ import 'package:organizer/core/services/var_transaction_service.dart';
 class VarTransactionProvider with ChangeNotifier {
   final VarTransactionService varTransactionService;
 
+  int? _categoryId;
   int? _topicId;
   DateTime? _from;
   DateTime? _to;
@@ -15,17 +16,11 @@ class VarTransactionProvider with ChangeNotifier {
 
   VarTransactionProvider({required this.varTransactionService});
 
-  Future<void> load({
-    required DateTime from,
-    required DateTime to,
-  }) async {
+  Future<void> load({required DateTime from, required DateTime to}) async {
     _from = from;
     _to = to;
 
-    _varTransactions = await varTransactionService.getByDate(
-      from,
-      to,
-    );
+    _varTransactions = await varTransactionService.getByDate(from, to);
     notifyListeners();
   }
 
@@ -34,6 +29,8 @@ class VarTransactionProvider with ChangeNotifier {
     required DateTime from,
     required DateTime to,
   }) async {
+    _categoryId = categoryId;
+    _topicId = null;
     _from = from;
     _to = to;
 
@@ -51,6 +48,7 @@ class VarTransactionProvider with ChangeNotifier {
     required DateTime to,
   }) async {
     _topicId = topicId;
+    _categoryId = null;
     _from = from;
     _to = to;
 
@@ -63,7 +61,18 @@ class VarTransactionProvider with ChangeNotifier {
   }
 
   Future<void> reload() async {
-    if (_topicId == null) return;
+    if (_topicId == null && _categoryId == null) return;
+
+    if (_categoryId != null) {
+      _varTransactions = await varTransactionService.getByDateForCategoryId(
+        _categoryId!,
+        _from!,
+        _to!,
+      );
+      notifyListeners();
+      return;
+    }
+
     _varTransactions = await varTransactionService.getByDateForTopicId(
       _topicId!,
       _from!,

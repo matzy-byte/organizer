@@ -15,7 +15,7 @@ class TopicCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final varTransactionProvider = context.watch<VarTransactionProvider>();
+    final varTransactionProvider = context.read<VarTransactionProvider>();
 
     final topicTransactions = varTransactionProvider.varTransactions.where(
       (t) => t.topicId == topic.id,
@@ -51,6 +51,7 @@ class TopicCard extends StatelessWidget {
                   icon: const Icon(Icons.delete),
                   onPressed: () async {
                     await context.read<TopicProvider>().removeTopic(topic.id);
+                    await context.read<VarTransactionProvider>().reload();
                     onDeleted?.call();
                   },
                 ),

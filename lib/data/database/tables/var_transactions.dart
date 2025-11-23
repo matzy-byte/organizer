@@ -7,17 +7,17 @@ import 'package:organizer/data/database/tables/users.dart';
 
 class VarTransactions extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get topicId => integer().references(Topics, #id)();
+  IntColumn get topicId => integer().references(Topics, #id, onDelete: KeyAction.cascade)();
   DateTimeColumn get date => dateTime()();
   IntColumn get value => integer()();
   IntColumn get userRefId => integer().references(Users, #id)();
   TextColumn get compensations => text().nullable()();
   IntColumn get transactionLabelId =>
-      integer().references(TransactionLabels, #id).nullable()();
+      integer().references(TransactionLabels, #id, onDelete: KeyAction.setNull).nullable()();
   TextColumn get description => text().nullable()();
   IntColumn get fixRefId =>
-      integer().references(FixTransactions, #id).nullable()();
+      integer().references(FixTransactions, #id, onDelete: KeyAction.setNull).nullable()();
   IntColumn get varRefId =>
-      integer().references(VarTransactions, #id).nullable()();
-  IntColumn get fileRefId => integer().references(Files, #id).nullable()();
+      integer().references(VarTransactions, #id, onDelete: KeyAction.setNull).nullable()();
+  IntColumn get fileRefId => integer().references(Files, #id, onDelete: KeyAction.setNull).nullable()();
 }

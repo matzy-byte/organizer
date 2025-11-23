@@ -9,7 +9,7 @@ import 'package:organizer/data/database/tables/var_transactions.dart';
 
 class FixTransactions extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get topicId => integer().references(Topics, #id)();
+  IntColumn get topicId => integer().references(Topics, #id, onDelete: KeyAction.cascade)();
   TextColumn get status => textEnum<Status>()();
   DateTimeColumn get start => dateTime()();
   DateTimeColumn get end => dateTime()();
@@ -19,10 +19,10 @@ class FixTransactions extends Table {
   IntColumn get userRefId => integer().references(Users, #id)();
   TextColumn get compensations => text().nullable()();
   IntColumn get transactionLabelId =>
-      integer().references(TransactionLabels, #id).nullable()();
+      integer().references(TransactionLabels, #id, onDelete: KeyAction.setNull).nullable()();
   TextColumn get description => text().nullable()();
   DateTimeColumn get latestDate => dateTime().nullable()();
   IntColumn get varRefId =>
-      integer().references(VarTransactions, #id).nullable()();
-  IntColumn get fileRefId => integer().references(Files, #id).nullable()();
+      integer().references(VarTransactions, #id, onDelete: KeyAction.setNull).nullable()();
+  IntColumn get fileRefId => integer().references(Files, #id, onDelete: KeyAction.setNull).nullable()();
 }

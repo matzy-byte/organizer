@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/repositories/topic_repository.dart';
+import 'package:organizer/core/utils/json_util.dart';
 import 'package:organizer/data/database/database.dart' hide Topic;
 
 class TopicRepositoryDrift implements TopicRepository {
@@ -43,7 +44,26 @@ class TopicRepositoryDrift implements TopicRepository {
 
   @override
   Future<void> removeTopic(int id) async {
-    await (db.delete(db.topics)..where((t) => t.id.equals(id))).go();
+    await db.transaction(() async {
+      final varTransactions = await (db.select(
+        db.varTransactions,
+      )..where((v) => v.topicId.equals(id))).get();
+
+      for (final v in varTransactions) {
+        if (v.compensations != null) {
+          final compensations = JsonUtil.string2CompensationInfo(
+            v.compensations,
+          )!;
+          for (final cId in compensations.keys) {
+            await (db.delete(
+              db.varTransactions,
+            )..where((vT) => vT.id.equals(cId))).go();
+          }
+        }
+      }
+
+      await (db.delete(db.topics)..where((t) => t.id.equals(id))).go();
+    });
   }
 
   @override

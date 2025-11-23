@@ -21,7 +21,7 @@
 - ✓ Options element needs styling and filter logic for backend
 - ✓ Properly include FixTransactionelement
 - ✓ Implement automatic fixtransaction execution on app startup and checking on loading topic (check latest date)
--  Check properly deleting any of the database tables (remove references, or cascade deletion)
+- ✓ Check properly deleting any of the database tables (remove references, or cascade deletion)
 - ✓ User needs color property
 - ✓ Transactionlabel needs color property
 -  Visualize user in VarTransaction and FixTransaction

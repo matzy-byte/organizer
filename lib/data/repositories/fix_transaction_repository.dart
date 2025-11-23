@@ -110,7 +110,30 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
 
   @override
   Future<void> removeFixTransaction(int id) async {
-    await (db.delete(db.fixTransactions)..where((f) => f.id.equals(id))).go();
+    await db.transaction(() async {
+      final varTransactions = await (db.select(
+        db.varTransactions,
+      )..where((v) => v.fixRefId.equals(id))).get();
+
+      for (final v in varTransactions) {
+        if (v.compensations != null) {
+          final compensations = JsonUtil.string2CompensationInfo(
+            v.compensations,
+          )!;
+          for (final cId in compensations.keys) {
+            await (db.delete(
+              db.varTransactions,
+            )..where((vT) => vT.id.equals(cId))).go();
+          }
+        }
+
+        await (db.delete(
+          db.varTransactions,
+        )..where((vItem) => vItem.id.equals(v.id))).go();
+      }
+
+      await (db.delete(db.fixTransactions)..where((f) => f.id.equals(id))).go();
+    });
   }
 
   @override

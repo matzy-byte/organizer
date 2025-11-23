@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:organizer/app/defaults.dart';
 import 'package:organizer/core/models/var_transaction.dart';
@@ -39,7 +40,8 @@ class OverviewGeneral extends StatelessWidget {
     for (var t in filteredTransactions) {
       if (t.transactionLabelId == null) continue;
       final labelObj = transactionLabelProvider.transactionLabels
-          .firstWhere((l) => l.id == t.transactionLabelId);
+          .firstWhereOrNull((l) => l.id == t.transactionLabelId);
+      if (labelObj == null) continue;
       final id = labelObj.id;
       final name = labelObj.name;
       final currentValue = transactions[id]?.$2 ?? 0;

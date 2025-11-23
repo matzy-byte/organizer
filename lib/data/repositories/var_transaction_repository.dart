@@ -135,37 +135,40 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
 
   @override
   Future<void> removeVarTransaction(int id) async {
-    final row = await (db.select(
-      db.varTransactions,
-    )..where((v) => v.id.equals(id))).getSingle();
-    if (row.varRefId != null) {
-      final ref = await (db.select(
+    await db.transaction(() async {
+      final row = await (db.select(
         db.varTransactions,
-      )..where((v) => v.id.equals(row.varRefId!))).getSingle();
-      final compensations = JsonUtil.string2CompensationInfo(ref.compensations);
-      if (compensations != null) {
-        compensations.removeWhere((key, value) => key == row.id);
-        final comps = compensations.isEmpty ? null : compensations;
-        await (db.update(
+      )..where((v) => v.id.equals(id))).getSingle();
+
+      if (row.varRefId != null) {
+        final parent = await (db.select(
           db.varTransactions,
-        )..where((v) => v.id.equals(ref.id))).write(
-          VarTransactionsCompanion(
-            compensations: Value(JsonUtil.compensation2String(comps)),
-          ),
-        );
-      }
-    }
-    if (row.compensations != null) {
-      final compensations = JsonUtil.string2CompensationInfo(row.compensations);
-      if (compensations != null) {
-        for (final compId in compensations.keys) {
-          await (db.delete(
+        )..where((v) => v.id.equals(row.varRefId!))).getSingleOrNull();
+        if (parent != null && parent.compensations != null) {
+          final parentComps = JsonUtil.string2CompensationInfo(
+            parent.compensations,
+          )!;
+          parentComps.remove(id);
+          final updatedComps = parentComps.isEmpty ? null : parentComps;
+          await (db.update(
             db.varTransactions,
-          )..where((v) => v.id.equals(compId))).go();
+          )..where((v) => v.id.equals(parent.id))).write(
+            VarTransactionsCompanion(
+              compensations: Value(JsonUtil.compensation2String(updatedComps)),
+            ),
+          );
         }
       }
-    }
-    await (db.delete(db.varTransactions)..where((v) => v.id.equals(id))).go();
+
+      if (row.compensations != null) {
+        final children = JsonUtil.string2CompensationInfo(row.compensations)!;
+        for (final childId in children.keys) {
+          await removeVarTransaction(childId);
+        }
+      }
+
+      await (db.delete(db.varTransactions)..where((v) => v.id.equals(id))).go();
+    });
   }
 
   @override

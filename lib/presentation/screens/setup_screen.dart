@@ -43,7 +43,7 @@ class SetupScreen extends StatelessWidget {
                             if (context.read<UserProvider>().users.isEmpty) {
                               return;
                             }
-                            Navigator.pushNamed(context, AppRoutes.dashboard);
+                            Navigator.pushNamed(context, AppRoutes.start);
                           },
                           child: const Text('Finish Setup'),
                         ),

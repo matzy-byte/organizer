@@ -24,7 +24,7 @@ class VarTransactionTable extends StatelessWidget {
       return const Center(child: Text('No variable transactions'));
     }
 
-    final transactionLabelProvider = context.watch<TransactionLabelProvider>();
+    final transactionLabelProvider = context.read<TransactionLabelProvider>();
 
     return ListView.separated(
       padding: const EdgeInsets.all(16),

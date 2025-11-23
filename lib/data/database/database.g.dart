@@ -290,7 +290,7 @@ class $TopicsTable extends Topics with TableInfo<$TopicsTable, Topic> {
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES categories (id)',
+      'REFERENCES categories (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _nameMeta = const VerificationMeta('name');
@@ -1276,7 +1276,7 @@ class $VarTransactionsTable extends VarTransactions
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES topics (id)',
+      'REFERENCES topics (id) ON DELETE CASCADE',
     ),
   );
   static const VerificationMeta _dateMeta = const VerificationMeta('date');
@@ -1332,7 +1332,7 @@ class $VarTransactionsTable extends VarTransactions
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES transaction_labels (id)',
+      'REFERENCES transaction_labels (id) ON DELETE SET NULL',
     ),
   );
   static const VerificationMeta _descriptionMeta = const VerificationMeta(
@@ -1368,7 +1368,7 @@ class $VarTransactionsTable extends VarTransactions
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES var_transactions (id)',
+      'REFERENCES var_transactions (id) ON DELETE SET NULL',
     ),
   );
   static const VerificationMeta _fileRefIdMeta = const VerificationMeta(
@@ -1382,7 +1382,7 @@ class $VarTransactionsTable extends VarTransactions
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES files (id)',
+      'REFERENCES files (id) ON DELETE SET NULL',
     ),
   );
   @override
@@ -1958,7 +1958,7 @@ class $FixTransactionsTable extends FixTransactions
     type: DriftSqlType.int,
     requiredDuringInsert: true,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES topics (id)',
+      'REFERENCES topics (id) ON DELETE CASCADE',
     ),
   );
   @override
@@ -2052,7 +2052,7 @@ class $FixTransactionsTable extends FixTransactions
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES transaction_labels (id)',
+      'REFERENCES transaction_labels (id) ON DELETE SET NULL',
     ),
   );
   static const VerificationMeta _descriptionMeta = const VerificationMeta(
@@ -2088,7 +2088,7 @@ class $FixTransactionsTable extends FixTransactions
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES var_transactions (id)',
+      'REFERENCES var_transactions (id) ON DELETE SET NULL',
     ),
   );
   static const VerificationMeta _fileRefIdMeta = const VerificationMeta(
@@ -2102,7 +2102,7 @@ class $FixTransactionsTable extends FixTransactions
     type: DriftSqlType.int,
     requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES files (id)',
+      'REFERENCES files (id) ON DELETE SET NULL',
     ),
   );
   @override
@@ -2848,6 +2848,72 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     varTransactions,
     fixTransactions,
   ];
+  @override
+  StreamQueryUpdateRules get streamUpdateRules => const StreamQueryUpdateRules([
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'categories',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('topics', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'topics',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('var_transactions', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'transaction_labels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('var_transactions', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'var_transactions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('var_transactions', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'files',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('var_transactions', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'topics',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('fix_transactions', kind: UpdateKind.delete)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'transaction_labels',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('fix_transactions', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'var_transactions',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('fix_transactions', kind: UpdateKind.update)],
+    ),
+    WritePropagation(
+      on: TableUpdateQuery.onTableName(
+        'files',
+        limitUpdateKind: UpdateKind.delete,
+      ),
+      result: [TableUpdate('fix_transactions', kind: UpdateKind.update)],
+    ),
+  ]);
 }
 
 typedef $$CategoriesTableCreateCompanionBuilder =
