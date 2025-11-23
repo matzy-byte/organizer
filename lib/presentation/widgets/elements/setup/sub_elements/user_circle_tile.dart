@@ -27,12 +27,13 @@ class UserCircleTile extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Circle avatar
               Container(
                 width: setupTheme.userAvatarSize,
                 height: setupTheme.userAvatarSize,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.15),
+                  color: Color(
+                    int.parse(user.color.substring(1), radix: 16) + 0xFF000000,
+                  ),
                   shape: BoxShape.circle,
                 ),
                 child: Center(
@@ -49,7 +50,6 @@ class UserCircleTile extends StatelessWidget {
 
               SizedBox(height: setupTheme.itemSpacing),
 
-              // Username text (clickable because it's inside InkWell)
               Text(user.name, style: theme.textTheme.bodyLarge),
             ],
           ),

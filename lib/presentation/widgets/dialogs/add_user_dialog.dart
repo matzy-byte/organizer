@@ -1,4 +1,7 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -13,13 +16,21 @@ class AddUserDialog extends StatefulWidget {
 class _AddUserDialogState extends State<AddUserDialog> {
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
-
   final _nameController = TextEditingController();
+  Color _selectedColor = Colors.blue;
 
   @override
   void initState() {
     super.initState();
-    
+    final random = Random();
+
+    _selectedColor = Color.fromARGB(
+      255,
+      random.nextInt(256),
+      random.nextInt(256),
+      random.nextInt(256),
+    );
+
     WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
   }
 
@@ -35,6 +46,9 @@ class _AddUserDialogState extends State<AddUserDialog> {
     _nameController.dispose();
     super.dispose();
   }
+
+  String get hexColor =>
+      '#${_selectedColor.value.toRadixString(16).substring(2).toUpperCase()}';
 
   @override
   Widget build(BuildContext context) {
@@ -53,30 +67,70 @@ class _AddUserDialogState extends State<AddUserDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // --- TITLE ---
-                Text(
-                  'Add User',
-                  style: theme.textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: setupTheme.sectionSpacing),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'User Name',
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => _validateForm(),
+                        validator: (value) =>
+                            (value == null || value.trim().isEmpty)
+                            ? 'Please enter a user name'
+                            : null,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () async {
+                        final pickedColor = await showDialog<Color>(
+                          context: context,
+                          builder: (_) => Dialog(
+                            insetPadding: EdgeInsets.all(16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsetsGeometry.all(12),
+                              child: SizedBox(
+                                width: 500,
+                                height: 250,
+                                child: HueRingPicker(
+                                  pickerColor: _selectedColor,
+                                  onColorChanged: (color) =>
+                                      setState(() => _selectedColor = color),
+                                  enableAlpha: true,
+                                  pickerAreaBorderRadius: BorderRadius.circular(
+                                    12,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
 
-                // --- NAME FIELD ---
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'User Name',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (_) => _validateForm(),
-                  validator: (value) => (value == null || value.trim().isEmpty)
-                      ? 'Please enter a user name'
-                      : null,
+                        if (pickedColor != null) {
+                          setState(() => _selectedColor = pickedColor);
+                        }
+                      },
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: _selectedColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.black26),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: setupTheme.sectionSpacing),
 
-                // --- ACTION BUTTONS ---
+                const SizedBox(height: 16),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -88,7 +142,10 @@ class _AddUserDialogState extends State<AddUserDialog> {
                     ElevatedButton(
                       onPressed: _isFormValid
                           ? () {
-                              userProvider.addUser(_nameController.text.trim());
+                              userProvider.addUser(
+                                _nameController.text.trim(),
+                                hexColor,
+                              );
                               Navigator.pop(context, true);
                             }
                           : null,

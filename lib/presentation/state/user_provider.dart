@@ -17,16 +17,16 @@ class UserProvider with ChangeNotifier {
   Future<List<User>> getAllUsers() async {
     return await userService.getAllUsers();
   }
-  Future<void> addUser(String name) async {
-    await userService.addUser(name);
+  Future<void> addUser(String name, String color) async {
+    await userService.addUser(name, color);
     await loadAllUsers();
   }
   Future<void> removeUser(int id) async {
     await userService.removeUser(id);
     await loadAllUsers();
   }
-  Future<void> updateUser(int id, String name) async {
-    await userService.updateUser(id, name);
+  Future<void> updateUser(int id, String name, String color) async {
+    await userService.updateUser(id, name, color);
     await loadAllUsers();
   }
 }

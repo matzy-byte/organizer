@@ -17,16 +17,16 @@ class TransactionLabelProvider with ChangeNotifier {
   Future<List<TransactionLabel>> getAllTransactionLabels() async {
     return await transactionLabelService.getAllTransactionLabels();
   }
-  Future<void> addTransactionLabel(String name) async {
-    await transactionLabelService.addTransactionLabel(name);
+  Future<void> addTransactionLabel(String name, String color) async {
+    await transactionLabelService.addTransactionLabel(name, color);
     await loadAllTransactionLabels();
   }
   Future<void> removeTransactionLabel(int id) async {
     await transactionLabelService.removeTransactionLabel(id);
     await loadAllTransactionLabels();
   }
-  Future<void> updateTransactionLabel(int id, String name) async {
-    await transactionLabelService.updateTransactionLabel(id, name);
+  Future<void> updateTransactionLabel(int id, String name, String color) async {
+    await transactionLabelService.updateTransactionLabel(id, name, color);
     await loadAllTransactionLabels();
   }
 }

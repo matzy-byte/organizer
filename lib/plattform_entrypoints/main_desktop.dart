@@ -30,17 +30,19 @@ Future<void> runDesktop() async {
 
   final categoryService = CategoryService(CategoryRepositoryDrift(db));
   final topicService = TopicService(TopicRepositoryDrift(db));
+  final varTransactionRepository = VarTransactionRepositoryDrift(db);
   final fixTransactionService = FixTransactionService(
     FixTransactionRepositoryDrift(db),
+    varTransactionRepository,
   );
-  final varTransactionService = VarTransactionService(
-    VarTransactionRepositoryDrift(db),
-  );
+  final varTransactionService = VarTransactionService(varTransactionRepository);
   final transactionLabelService = TransactionLabelService(
     TransactionLabellRepositoryDrift(db),
   );
   final userService = UserService(UserRepositoryDrift(db));
   final fileService = FileService(FileRepositoryDrift(db));
+
+  await fixTransactionService.runDueFixTransactions();
 
   runApp(
     MultiProvider(

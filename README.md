@@ -20,13 +20,14 @@
 -  Var transaction table needs media control
 - ✓ Options element needs styling and filter logic for backend
 - ✓ Properly include FixTransactionelement
--  Implement automatic fixtransaction execution on app startup and checking on loading topic (check latest date)
+- ✓ Implement automatic fixtransaction execution on app startup and checking on loading topic (check latest date)
 -  Check properly deleting any of the database tables (remove references, or cascade deletion)
--  User needs color property
--  Transactionlabel needs color property
+- ✓ User needs color property
+- ✓ Transactionlabel needs color property
 -  Visualize user in VarTransaction and FixTransaction
 -  Redention user in overview
 -  Summary card split in expenses and additions
+-  Global date selection (from and to filtering)
 
 - UI:  
 Topic: Details, Overview month (+, -, rest, awaited to pay), FixTransaction cards (active and inactive), VarTransaction table with filter options  

@@ -4,6 +4,7 @@ import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/status.dart';
 
 abstract class FixTransactionRepository {
+  Future <List<FixTransaction>> getAllFixTransactions();
   Future<List<FixTransaction>> getAllFixTransactionsByTopicId(int id);
   Future<int> addFixTransaction(
     int topicId,

@@ -21,20 +21,24 @@ Future<void> runMobile() async {
 
   final categoryService = CategoryService(CategoryRepositoryDrift(db));
   final topicService = TopicService(TopicRepositoryDrift(db));
+  final varTransactionRepository = VarTransactionRepositoryDrift(db);
   final fixTransactionService = FixTransactionService(
     FixTransactionRepositoryDrift(db),
+    varTransactionRepository,
   );
-  final varTransactionService = VarTransactionService(VarTransactionRepositoryDrift(db));
+  final varTransactionService = VarTransactionService(varTransactionRepository);
 
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
           create: (_) =>
-              CategoryProvider(categoryService: categoryService)..loadCategories(),
+              CategoryProvider(categoryService: categoryService)
+                ..loadCategories(),
         ),
         ChangeNotifierProvider(
-          create: (_) => TopicProvider(topicService: topicService)..loadAllTopics(),
+          create: (_) =>
+              TopicProvider(topicService: topicService)..loadAllTopics(),
         ),
         ChangeNotifierProvider(
           create: (_) => FixTransactionProvider(
@@ -45,7 +49,7 @@ Future<void> runMobile() async {
           create: (_) => VarTransactionProvider(
             varTransactionService: varTransactionService,
           ),
-        )
+        ),
       ],
       child: const MobileApp(),
     ),

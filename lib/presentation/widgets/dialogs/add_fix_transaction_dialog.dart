@@ -580,6 +580,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                                             null,
                                             null,
                                           );
+                                      await fixTransactionProvider.fixTransactionService.runDueFixTransactions();
                                       Navigator.pop(context, true);
                                     }
                                   : null,

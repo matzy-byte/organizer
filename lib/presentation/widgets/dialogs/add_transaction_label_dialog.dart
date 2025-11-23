@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 import 'package:organizer/core/models/transaction_label.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
+import 'package:organizer/presentation/widgets/color_wheel.dart';
 import 'package:provider/provider.dart';
 
 class AddTransactionLabelDialog extends StatefulWidget {
@@ -20,23 +23,33 @@ class _AddTransactionLabelDialogState extends State<AddTransactionLabelDialog> {
   late bool _isNew;
 
   final _nameController = TextEditingController();
+  Color _selectedColor = Colors.blue;
 
   @override
   void initState() {
     super.initState();
     _isNew = widget.transactionLabel == null;
-    _nameController.text = _isNew ? '' : widget.transactionLabel!.name;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _validateForm();
-    });
+    _nameController.text = _isNew ? '' : widget.transactionLabel!.name;
+    final random = Random();
+    _selectedColor = _isNew
+        ? Color.fromARGB(
+            255,
+            random.nextInt(256),
+            random.nextInt(256),
+            random.nextInt(256),
+          )
+        : Color(
+            int.parse(widget.transactionLabel!.color.substring(1), radix: 16) +
+                0xFF000000,
+          );
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
   }
 
   void _validateForm() {
-    final isValid = _formKey.currentState?.validate() ?? false;
-    if (isValid != _isFormValid) {
-      setState(() => _isFormValid = isValid);
-    }
+    final valid = _formKey.currentState?.validate() ?? false;
+    if (valid != _isFormValid) setState(() => _isFormValid = valid);
   }
 
   @override
@@ -45,9 +58,12 @@ class _AddTransactionLabelDialogState extends State<AddTransactionLabelDialog> {
     super.dispose();
   }
 
+  String get hexColor =>
+      '#${_selectedColor.value.toRadixString(16).substring(2).toUpperCase()}';
+
   @override
   Widget build(BuildContext context) {
-    final transactionLabelProvider = context.read<TransactionLabelProvider>();
+    final provider = context.read<TransactionLabelProvider>();
     final theme = Theme.of(context);
     final setupTheme = theme.extension<SetupTheme>()!;
 
@@ -62,29 +78,64 @@ class _AddTransactionLabelDialogState extends State<AddTransactionLabelDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // --- TITLE ---
                 Text(
                   _isNew ? 'Add Transaction Label' : 'Edit Transaction Label',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                SizedBox(height: setupTheme.sectionSpacing),
 
-                // --- NAME FIELD ---
-                TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Name',
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (_) => _validateForm(),
-                  validator: (value) =>
-                      (value == null || value.isEmpty) ? 'Enter a name' : null,
+                SizedBox(height: setupTheme.sectionSpacing),
+                Row(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: TextFormField(
+                        controller: _nameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Name',
+                          border: OutlineInputBorder(),
+                        ),
+                        onChanged: (_) => _validateForm(),
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Enter a name'
+                            : null,
+                      ),
+                    ),
+
+                    const SizedBox(width: 12),
+                    GestureDetector(
+                      onTap: () async {
+                        final pickedColor = await showDialog<Color>(
+                          context: context,
+                          builder: (_) => SizedBox(
+                            width: 250,
+                            height: 250,
+                            child: ColorWheelDialog(color: _selectedColor),
+                          ),
+                        );
+
+                        if (pickedColor != null) {
+                          setState(() => _selectedColor = pickedColor);
+                        }
+                      },
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: BoxDecoration(
+                          color: _selectedColor,
+                          shape: BoxShape.circle,
+                          border: Border.all(
+                            color: theme.colorScheme.outline,
+                            width: 1,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: setupTheme.sectionSpacing),
 
-                // --- ACTION BUTTONS ---
+                SizedBox(height: setupTheme.sectionSpacing * 1.5),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -97,13 +148,15 @@ class _AddTransactionLabelDialogState extends State<AddTransactionLabelDialog> {
                       onPressed: _isFormValid
                           ? () async {
                               if (_isNew) {
-                                transactionLabelProvider.addTransactionLabel(
+                                provider.addTransactionLabel(
                                   _nameController.text.trim(),
+                                  hexColor,
                                 );
                               } else {
-                                transactionLabelProvider.updateTransactionLabel(
+                                provider.updateTransactionLabel(
                                   widget.transactionLabel!.id,
                                   _nameController.text.trim(),
+                                  hexColor,
                                 );
                               }
                               Navigator.pop(context, true);

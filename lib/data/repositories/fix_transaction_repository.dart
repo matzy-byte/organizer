@@ -53,6 +53,32 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
   }
 
   @override
+  Future<List<FixTransaction>> getAllFixTransactions() async {
+    final rows = await (db.select(db.fixTransactions)).get();
+    return rows
+        .map(
+          (f) => FixTransaction(
+            id: f.id,
+            topicId: f.topicId,
+            status: f.status,
+            start: f.start,
+            end: f.end,
+            intervalCount: f.intervalCount,
+            intervalUnit: f.intervalUnit,
+            value: f.value,
+            userRefId: f.userRefId,
+            compensations: JsonUtil.string2CompensationInfo(f.compensations),
+            transactionLabelId: f.transactionLabelId,
+            description: f.description,
+            latestDate: f.latestDate,
+            varRefId: f.varRefId,
+            fileRefId: f.fileRefId,
+          ),
+        )
+        .toList();
+  }
+
+  @override
   Future<List<FixTransaction>> getAllFixTransactionsByTopicId(
     int topicId,
   ) async {

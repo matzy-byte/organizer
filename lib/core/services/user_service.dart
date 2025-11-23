@@ -10,15 +10,15 @@ class UserService {
     return await repository.getAllUsers();
   }
 
-  Future<void> addUser(String name) async {
-    await repository.addUser(name);
+  Future<void> addUser(String name, String color) async {
+    await repository.addUser(name, color);
   }
 
   Future<void> removeUser(int id) async {
     await repository.removeUser(id);
   }
 
-  Future<void> updateUser(int id, String name) async {
-    await repository.updateUser(id, name);
+  Future<void> updateUser(int id, String name, String color) async {
+    await repository.updateUser(id, name, color);
   }
 }

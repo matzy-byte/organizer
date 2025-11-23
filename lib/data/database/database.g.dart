@@ -600,8 +600,17 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
   @override
-  List<GeneratedColumn> get $columns => [id, name];
+  late final GeneratedColumn<String> color = GeneratedColumn<String>(
+    'color',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, color];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -625,6 +634,14 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('color')) {
+      context.handle(
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_colorMeta);
+    }
     return context;
   }
 
@@ -642,6 +659,10 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      color: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}color'],
+      )!,
     );
   }
 
@@ -654,17 +675,23 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
 class User extends DataClass implements Insertable<User> {
   final int id;
   final String name;
-  const User({required this.id, required this.name});
+  final String color;
+  const User({required this.id, required this.name, required this.color});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    map['color'] = Variable<String>(color);
     return map;
   }
 
   UsersCompanion toCompanion(bool nullToAbsent) {
-    return UsersCompanion(id: Value(id), name: Value(name));
+    return UsersCompanion(
+      id: Value(id),
+      name: Value(name),
+      color: Value(color),
+    );
   }
 
   factory User.fromJson(
@@ -675,6 +702,7 @@ class User extends DataClass implements Insertable<User> {
     return User(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      color: serializer.fromJson<String>(json['color']),
     );
   }
   @override
@@ -683,15 +711,20 @@ class User extends DataClass implements Insertable<User> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'color': serializer.toJson<String>(color),
     };
   }
 
-  User copyWith({int? id, String? name}) =>
-      User(id: id ?? this.id, name: name ?? this.name);
+  User copyWith({int? id, String? name, String? color}) => User(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    color: color ?? this.color,
+  );
   User copyWithCompanion(UsersCompanion data) {
     return User(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
+      color: data.color.present ? data.color.value : this.color,
     );
   }
 
@@ -699,40 +732,60 @@ class User extends DataClass implements Insertable<User> {
   String toString() {
     return (StringBuffer('User(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('color: $color')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, color);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is User && other.id == this.id && other.name == this.name);
+      (other is User &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.color == this.color);
 }
 
 class UsersCompanion extends UpdateCompanion<User> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String> color;
   const UsersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.color = const Value.absent(),
   });
-  UsersCompanion.insert({this.id = const Value.absent(), required String name})
-    : name = Value(name);
+  UsersCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required String color,
+  }) : name = Value(name),
+       color = Value(color);
   static Insertable<User> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? color,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (color != null) 'color': color,
     });
   }
 
-  UsersCompanion copyWith({Value<int>? id, Value<String>? name}) {
-    return UsersCompanion(id: id ?? this.id, name: name ?? this.name);
+  UsersCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String>? color,
+  }) {
+    return UsersCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      color: color ?? this.color,
+    );
   }
 
   @override
@@ -744,6 +797,9 @@ class UsersCompanion extends UpdateCompanion<User> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
+    }
     return map;
   }
 
@@ -751,7 +807,8 @@ class UsersCompanion extends UpdateCompanion<User> {
   String toString() {
     return (StringBuffer('UsersCompanion(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('color: $color')
           ..write(')'))
         .toString();
   }
@@ -785,8 +842,17 @@ class $TransactionLabelsTable extends TransactionLabels
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
   @override
-  List<GeneratedColumn> get $columns => [id, name];
+  late final GeneratedColumn<String> color = GeneratedColumn<String>(
+    'color',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, color];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -810,6 +876,14 @@ class $TransactionLabelsTable extends TransactionLabels
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
+    if (data.containsKey('color')) {
+      context.handle(
+        _colorMeta,
+        color.isAcceptableOrUnknown(data['color']!, _colorMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_colorMeta);
+    }
     return context;
   }
 
@@ -827,6 +901,10 @@ class $TransactionLabelsTable extends TransactionLabels
         DriftSqlType.string,
         data['${effectivePrefix}name'],
       )!,
+      color: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}color'],
+      )!,
     );
   }
 
@@ -840,17 +918,27 @@ class TransactionLabel extends DataClass
     implements Insertable<TransactionLabel> {
   final int id;
   final String name;
-  const TransactionLabel({required this.id, required this.name});
+  final String color;
+  const TransactionLabel({
+    required this.id,
+    required this.name,
+    required this.color,
+  });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
+    map['color'] = Variable<String>(color);
     return map;
   }
 
   TransactionLabelsCompanion toCompanion(bool nullToAbsent) {
-    return TransactionLabelsCompanion(id: Value(id), name: Value(name));
+    return TransactionLabelsCompanion(
+      id: Value(id),
+      name: Value(name),
+      color: Value(color),
+    );
   }
 
   factory TransactionLabel.fromJson(
@@ -861,6 +949,7 @@ class TransactionLabel extends DataClass
     return TransactionLabel(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
+      color: serializer.fromJson<String>(json['color']),
     );
   }
   @override
@@ -869,15 +958,21 @@ class TransactionLabel extends DataClass
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
+      'color': serializer.toJson<String>(color),
     };
   }
 
-  TransactionLabel copyWith({int? id, String? name}) =>
-      TransactionLabel(id: id ?? this.id, name: name ?? this.name);
+  TransactionLabel copyWith({int? id, String? name, String? color}) =>
+      TransactionLabel(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        color: color ?? this.color,
+      );
   TransactionLabel copyWithCompanion(TransactionLabelsCompanion data) {
     return TransactionLabel(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
+      color: data.color.present ? data.color.value : this.color,
     );
   }
 
@@ -885,46 +980,59 @@ class TransactionLabel extends DataClass
   String toString() {
     return (StringBuffer('TransactionLabel(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('color: $color')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name);
+  int get hashCode => Object.hash(id, name, color);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is TransactionLabel &&
           other.id == this.id &&
-          other.name == this.name);
+          other.name == this.name &&
+          other.color == this.color);
 }
 
 class TransactionLabelsCompanion extends UpdateCompanion<TransactionLabel> {
   final Value<int> id;
   final Value<String> name;
+  final Value<String> color;
   const TransactionLabelsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
+    this.color = const Value.absent(),
   });
   TransactionLabelsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-  }) : name = Value(name);
+    required String color,
+  }) : name = Value(name),
+       color = Value(color);
   static Insertable<TransactionLabel> custom({
     Expression<int>? id,
     Expression<String>? name,
+    Expression<String>? color,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
+      if (color != null) 'color': color,
     });
   }
 
-  TransactionLabelsCompanion copyWith({Value<int>? id, Value<String>? name}) {
+  TransactionLabelsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String>? color,
+  }) {
     return TransactionLabelsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
+      color: color ?? this.color,
     );
   }
 
@@ -937,6 +1045,9 @@ class TransactionLabelsCompanion extends UpdateCompanion<TransactionLabel> {
     if (name.present) {
       map['name'] = Variable<String>(name.value);
     }
+    if (color.present) {
+      map['color'] = Variable<String>(color.value);
+    }
     return map;
   }
 
@@ -944,7 +1055,8 @@ class TransactionLabelsCompanion extends UpdateCompanion<TransactionLabel> {
   String toString() {
     return (StringBuffer('TransactionLabelsCompanion(')
           ..write('id: $id, ')
-          ..write('name: $name')
+          ..write('name: $name, ')
+          ..write('color: $color')
           ..write(')'))
         .toString();
   }
@@ -3488,9 +3600,17 @@ typedef $$TopicsTableProcessedTableManager =
       })
     >;
 typedef $$UsersTableCreateCompanionBuilder =
-    UsersCompanion Function({Value<int> id, required String name});
+    UsersCompanion Function({
+      Value<int> id,
+      required String name,
+      required String color,
+    });
 typedef $$UsersTableUpdateCompanionBuilder =
-    UsersCompanion Function({Value<int> id, Value<String> name});
+    UsersCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String> color,
+    });
 
 final class $$UsersTableReferences
     extends BaseReferences<_$AppDatabase, $UsersTable, User> {
@@ -3552,6 +3672,11 @@ class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
 
   ColumnFilters<String> get name => $composableBuilder(
     column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get color => $composableBuilder(
+    column: $table.color,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3624,6 +3749,11 @@ class $$UsersTableOrderingComposer
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$UsersTableAnnotationComposer
@@ -3640,6 +3770,9 @@ class $$UsersTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
 
   Expression<T> varTransactionsRefs<T extends Object>(
     Expression<T> Function($$VarTransactionsTableAnnotationComposer a) f,
@@ -3725,10 +3858,14 @@ class $$UsersTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-              }) => UsersCompanion(id: id, name: name),
+                Value<String> color = const Value.absent(),
+              }) => UsersCompanion(id: id, name: name, color: color),
           createCompanionCallback:
-              ({Value<int> id = const Value.absent(), required String name}) =>
-                  UsersCompanion.insert(id: id, name: name),
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required String color,
+              }) => UsersCompanion.insert(id: id, name: name, color: color),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) =>
@@ -3814,9 +3951,17 @@ typedef $$UsersTableProcessedTableManager =
       })
     >;
 typedef $$TransactionLabelsTableCreateCompanionBuilder =
-    TransactionLabelsCompanion Function({Value<int> id, required String name});
+    TransactionLabelsCompanion Function({
+      Value<int> id,
+      required String name,
+      required String color,
+    });
 typedef $$TransactionLabelsTableUpdateCompanionBuilder =
-    TransactionLabelsCompanion Function({Value<int> id, Value<String> name});
+    TransactionLabelsCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<String> color,
+    });
 
 final class $$TransactionLabelsTableReferences
     extends
@@ -3897,6 +4042,11 @@ class $$TransactionLabelsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnFilters(column),
+  );
+
   Expression<bool> varTransactionsRefs(
     Expression<bool> Function($$VarTransactionsTableFilterComposer f) f,
   ) {
@@ -3966,6 +4116,11 @@ class $$TransactionLabelsTableOrderingComposer
     column: $table.name,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get color => $composableBuilder(
+    column: $table.color,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$TransactionLabelsTableAnnotationComposer
@@ -3982,6 +4137,9 @@ class $$TransactionLabelsTableAnnotationComposer
 
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get color =>
+      $composableBuilder(column: $table.color, builder: (column) => column);
 
   Expression<T> varTransactionsRefs<T extends Object>(
     Expression<T> Function($$VarTransactionsTableAnnotationComposer a) f,
@@ -4072,10 +4230,19 @@ class $$TransactionLabelsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-              }) => TransactionLabelsCompanion(id: id, name: name),
+                Value<String> color = const Value.absent(),
+              }) =>
+                  TransactionLabelsCompanion(id: id, name: name, color: color),
           createCompanionCallback:
-              ({Value<int> id = const Value.absent(), required String name}) =>
-                  TransactionLabelsCompanion.insert(id: id, name: name),
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                required String color,
+              }) => TransactionLabelsCompanion.insert(
+                id: id,
+                name: name,
+                color: color,
+              ),
           withReferenceMapper: (p0) => p0
               .map(
                 (e) => (
