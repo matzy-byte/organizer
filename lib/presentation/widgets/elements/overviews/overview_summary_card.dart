@@ -56,7 +56,7 @@ class OverviewSummaryCard extends StatelessWidget {
               value: -totalCompensationsExpenses,
             ),
 
-            const SizedBox(height: 100),
+            const SizedBox(height: 32.5),
             const Divider(height: 20),
 
             // ----- NET -----

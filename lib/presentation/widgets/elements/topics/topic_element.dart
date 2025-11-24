@@ -9,7 +9,9 @@ class TopicElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = context.watch<TopicProvider>().topics.where((t) => t.categoryId == categoryId);
+    final items = context.watch<TopicProvider>().topics.where(
+      (t) => t.categoryId == categoryId,
+    );
     final theme = Theme.of(context);
 
     return SizedBox(
@@ -40,14 +42,20 @@ class TopicElement extends StatelessWidget {
               else
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    final width = constraints.maxWidth;
-                    final cardWidth = (width / 3 - 12)
-                        .clamp(200, double.infinity)
-                        .toDouble();
+                    const spacing = 8.0;
+                    const maxWidth = 260.0;
+
+                    final perRow = (constraints.maxWidth / (maxWidth + spacing))
+                        .floor()
+                        .clamp(1, items.length);
+
+                    final cardWidth =
+                        (constraints.maxWidth - (spacing * (perRow - 1))) /
+                        perRow;
 
                     return Wrap(
-                      spacing: 12,
-                      runSpacing: 12,
+                      spacing: spacing,
+                      runSpacing: spacing,
                       alignment: WrapAlignment.center,
                       children: items.map((t) {
                         return SizedBox(

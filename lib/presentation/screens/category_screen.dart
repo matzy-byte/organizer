@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/globals.dart' as globals;
+import 'package:organizer/app/routes.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
@@ -7,7 +8,7 @@ import 'package:organizer/presentation/widgets/drawer_content.dart';
 import 'package:organizer/presentation/widgets/elements/options/options_element.dart';
 import 'package:organizer/presentation/widgets/elements/overviews/overview_element.dart';
 import 'package:organizer/presentation/widgets/elements/topics/topic_element.dart';
-import 'package:organizer/presentation/widgets/header.dart';
+import 'package:organizer/presentation/widgets/elements/users/user_icon.dart';
 import 'package:organizer/presentation/widgets/multi_function_floating_button.dart';
 import 'package:provider/provider.dart';
 
@@ -26,7 +27,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     from = globals.from;
     to = globals.to;
   }
@@ -55,13 +56,36 @@ class _CategoryScreenState extends State<CategoryScreen> {
 
     return Scaffold(
       drawer: const Drawer(child: DrawerContent()),
+      appBar: AppBar(
+        title: Text(
+          category.name,
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: UserIcon(user: globals.user, size: 20),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.start),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.settings),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Header(title: category.name),
               OptionsElement(
                 fromDate: from,
                 toDate: to,
@@ -82,7 +106,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
               const SizedBox(height: 12),
               OverviewElement(),
               const SizedBox(height: 12),
-              TopicElement(categoryId: category.id,),
+              TopicElement(categoryId: category.id),
             ],
           ),
         ),

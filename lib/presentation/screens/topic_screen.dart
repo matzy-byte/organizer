@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/globals.dart' as globals;
+import 'package:organizer/app/routes.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
@@ -7,8 +8,8 @@ import 'package:organizer/presentation/widgets/drawer_content.dart';
 import 'package:organizer/presentation/widgets/elements/fix_transactions/fix_transaction_element.dart';
 import 'package:organizer/presentation/widgets/elements/options/options_element.dart';
 import 'package:organizer/presentation/widgets/elements/overviews/overview_element.dart';
+import 'package:organizer/presentation/widgets/elements/users/user_icon.dart';
 import 'package:organizer/presentation/widgets/elements/var_transactions/var_transaction_element.dart';
-import 'package:organizer/presentation/widgets/header.dart';
 import 'package:organizer/presentation/widgets/multi_function_floating_button.dart';
 import 'package:provider/provider.dart';
 
@@ -27,7 +28,7 @@ class _TopicScreenState extends State<TopicScreen> {
   @override
   void initState() {
     super.initState();
-    
+
     from = globals.from;
     to = globals.to;
   }
@@ -56,13 +57,36 @@ class _TopicScreenState extends State<TopicScreen> {
 
     return Scaffold(
       drawer: const Drawer(child: DrawerContent()),
+      appBar: AppBar(
+        title: Text(
+          topic.name,
+          style: Theme.of(
+            context,
+          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        leading: Builder(
+          builder: (context) => IconButton(
+            icon: const Icon(Icons.menu),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          ),
+        ),
+        actions: [
+          IconButton(
+            icon: UserIcon(user: globals.user, size: 20),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.start),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.settings),
+          ),
+        ],
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Header(title: topic.name),
               OptionsElement(
                 fromDate: from,
                 toDate: to,

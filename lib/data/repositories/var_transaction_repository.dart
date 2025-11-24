@@ -45,9 +45,14 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
 
   @override
   Future<List<VarTransaction>> getByDate(DateTime from, DateTime to) async {
-    final rows = await (db.select(
-      db.varTransactions,
-    )..where((v) => v.date.isBetweenValues(from, to))).get();
+    final rows =
+        await (db.select(db.varTransactions)
+              ..where((v) => v.date.isBetweenValues(from, to))
+              ..orderBy([
+                (t) =>
+                    OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+              ]))
+            .get();
     return rows
         .map(
           (v) => VarTransaction(
@@ -78,10 +83,15 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
     )..where((t) => t.categoryId.equals(categoryId))).get();
     final topicIds = topics.map((t) => t.id).toList();
     final rows =
-        await (db.select(db.varTransactions)..where(
-              (v) =>
-                  v.topicId.isIn(topicIds) & v.date.isBetweenValues(from, to),
-            ))
+        await (db.select(db.varTransactions)
+              ..where(
+                (v) =>
+                    v.topicId.isIn(topicIds) & v.date.isBetweenValues(from, to),
+              )
+              ..orderBy([
+                (t) =>
+                    OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+              ]))
             .get();
     return rows
         .map(
@@ -109,10 +119,16 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
     DateTime to,
   ) async {
     final rows =
-        await (db.select(db.varTransactions)..where(
-              (v) =>
-                  v.topicId.equals(topicId) & v.date.isBetweenValues(from, to),
-            ))
+        await (db.select(db.varTransactions)
+              ..where(
+                (v) =>
+                    v.topicId.equals(topicId) &
+                    v.date.isBetweenValues(from, to),
+              )
+              ..orderBy([
+                (t) =>
+                    OrderingTerm(expression: t.date, mode: OrderingMode.desc),
+              ]))
             .get();
     return rows
         .map(

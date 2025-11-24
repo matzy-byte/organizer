@@ -1,11 +1,14 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:organizer/app/defaults.dart';
+import 'package:organizer/core/models/user.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/core/utils/color_util.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
+import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:organizer/presentation/widgets/elements/overviews/overview_pie.dart';
 import 'package:organizer/presentation/widgets/elements/overviews/overview_summary_card.dart';
+import 'package:organizer/presentation/widgets/elements/overviews/overview_user_summary_card.dart';
 import 'package:provider/provider.dart';
 
 class OverviewGeneral extends StatelessWidget {
@@ -23,6 +26,7 @@ class OverviewGeneral extends StatelessWidget {
         ? varTransactions.where((t) => t.varRefId == null).toList()
         : varTransactions;
     final transactionLabelProvider = context.read<TransactionLabelProvider>();
+    final userProvider = context.read<UserProvider>();
 
     final totalValueIncome = filteredTransactions
         .where((t) => t.value >= 0)
@@ -105,6 +109,19 @@ class OverviewGeneral extends StatelessWidget {
       const Color.fromARGB(255, 82, 255, 43),
     ];
 
+    Map<User, List<VarTransaction>> userTransactions = {};
+    for (var t in filteredTransactions) {
+      final user = userProvider.users.firstWhereOrNull(
+        (u) => u.id == t.userRefId,
+      );
+      if (user == null) continue;
+      if (userTransactions[user] == null) {
+        userTransactions[user] = [t];
+      } else {
+        userTransactions[user]!.add(t);
+      }
+    }
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final width = constraints.maxWidth;
@@ -146,6 +163,13 @@ class OverviewGeneral extends StatelessWidget {
                       title: 'Compensations',
                       data: compensationTopics,
                       colorPalette: compensationColorPalette,
+                    ),
+                  ),
+                if (userTransactions.isNotEmpty && userTransactions.keys.length >= 2)
+                  SizedBox(
+                    width: cardWidth,
+                    child: OverviewUserSummaryCard(
+                      userTransactions: userTransactions,
                     ),
                   ),
               ],

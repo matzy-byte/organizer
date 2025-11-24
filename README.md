@@ -25,7 +25,7 @@
 - ✓ User needs color property
 - ✓ Transactionlabel needs color property
 - ✓ Visualize user in VarTransaction and FixTransaction
--  Redention user in overview
+- ✓ Redention user in overview
 - ✓ Summary card split in expenses and additions
 - ✓ Global date selection (from and to filtering)
 
