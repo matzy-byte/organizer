@@ -17,7 +17,7 @@
 - ✓ Split overview_elemnt into multiple classes
 - ✓ Overview for category
 - ✓ Overview Dashboard
--  Var transaction table needs media control
+- ✓ Var transaction table needs media control
 - ✓ Options element needs styling and filter logic for backend
 - ✓ Properly include FixTransactionelement
 - ✓ Implement automatic fixtransaction execution on app startup and checking on loading topic (check latest date)

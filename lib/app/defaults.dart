@@ -1,4 +1,4 @@
 class Defaults {
-  static int maxMobileWidth = 800;
-  static int maxTabletWidth = 1200;
+  static int maxMobileWidth = 600;
+  static int maxTabletWidth = 900;
 }

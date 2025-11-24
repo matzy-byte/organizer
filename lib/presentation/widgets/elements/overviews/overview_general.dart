@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:organizer/app/defaults.dart';
 import 'package:organizer/core/models/var_transaction.dart';
+import 'package:organizer/core/utils/color_util.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/widgets/elements/overviews/overview_pie.dart';
 import 'package:organizer/presentation/widgets/elements/overviews/overview_summary_card.dart';
@@ -24,27 +25,35 @@ class OverviewGeneral extends StatelessWidget {
     final transactionLabelProvider = context.read<TransactionLabelProvider>();
 
     final totalValueIncome = filteredTransactions
-    .where((t) => t.value >= 0)
-    .fold<int>(0, (sum, t) => sum + t.value);
+        .where((t) => t.value >= 0)
+        .fold<int>(0, (sum, t) => sum + t.value);
     final totalValueExpenses = filteredTransactions
-    .where((t) => t.value < 0)
-    .fold<int>(0, (sum, t) => sum + t.value);
+        .where((t) => t.value < 0)
+        .fold<int>(0, (sum, t) => sum + t.value);
 
     final totalCompensationsIncome = filteredTransactions
-    .where((t) => t.compensations != null && t.value >= 0)
-    .fold<int>(0, (sum, t) => sum +
-          t.compensations!.values.fold<int>(
-            0,
-            (compSum, c) => compSum + c.value,
-          ));
-    
+        .where((t) => t.compensations != null && t.value >= 0)
+        .fold<int>(
+          0,
+          (sum, t) =>
+              sum +
+              t.compensations!.values.fold<int>(
+                0,
+                (compSum, c) => compSum + c.value,
+              ),
+        );
+
     final totalCompensationsExpense = filteredTransactions
-    .where((t) => t.compensations != null && t.value < 0)
-    .fold<int>(0, (sum, t) => sum +
-          t.compensations!.values.fold<int>(
-            0,
-            (compSum, c) => compSum + c.value,
-          ));
+        .where((t) => t.compensations != null && t.value < 0)
+        .fold<int>(
+          0,
+          (sum, t) =>
+              sum +
+              t.compensations!.values.fold<int>(
+                0,
+                (compSum, c) => compSum + c.value,
+              ),
+        );
 
     Map<int, (String, int)> transactions = {};
     for (var t in filteredTransactions) {
@@ -59,6 +68,16 @@ class OverviewGeneral extends StatelessWidget {
       transactions[id] = (name, newValue);
     }
 
+    List<Color> transactionColorPalette = transactions.keys
+        .map(
+          (id) => ColorUtil.colorFromHexCode(
+            transactionLabelProvider.transactionLabels
+                .firstWhere((l) => l.id == id)
+                .color,
+          ),
+        )
+        .toList();
+
     Map<int, (String, int)> compensationTopics = {};
     for (var t in filteredTransactions) {
       if (t.compensations == null) continue;
@@ -70,6 +89,21 @@ class OverviewGeneral extends StatelessWidget {
         compensationTopics[id] = (name, newValue);
       }
     }
+
+    List<Color> compensationColorPalette = [
+      Colors.lightGreenAccent,
+      Colors.green,
+      Colors.teal,
+      Colors.lightGreen,
+      Colors.greenAccent,
+      const Color.fromARGB(255, 1, 167, 87),
+      const Color.fromARGB(255, 147, 255, 14),
+      const Color.fromARGB(255, 12, 184, 0),
+      const Color.fromARGB(255, 13, 127, 60),
+      const Color.fromARGB(255, 64, 122, 59),
+      const Color.fromARGB(255, 33, 255, 211),
+      const Color.fromARGB(255, 82, 255, 43),
+    ];
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -99,7 +133,11 @@ class OverviewGeneral extends StatelessWidget {
                 if (transactions.isNotEmpty)
                   SizedBox(
                     width: cardWidth,
-                    child: OverviewPie(title: 'Expenses', data: transactions),
+                    child: OverviewPie(
+                      title: 'Expenses',
+                      data: transactions,
+                      colorPalette: transactionColorPalette,
+                    ),
                   ),
                 if (compensationTopics.isNotEmpty)
                   SizedBox(
@@ -107,11 +145,7 @@ class OverviewGeneral extends StatelessWidget {
                     child: OverviewPie(
                       title: 'Compensations',
                       data: compensationTopics,
-                      colorPalette: [
-                        Colors.green,
-                        Colors.teal,
-                        Colors.lightGreen,
-                      ],
+                      colorPalette: compensationColorPalette,
                     ),
                   ),
               ],
