@@ -8,6 +8,7 @@ import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/transaction_label.dart';
+import 'package:organizer/core/utils/currency_formatter.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
@@ -402,13 +403,22 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                           labelText: 'Value',
                                           border: OutlineInputBorder(),
                                         ),
+                                        inputFormatters: [
+                                          CurrencyInputFormatter(),
+                                        ],
                                         keyboardType: TextInputType.number,
                                         onChanged: (_) => _validateForm(),
                                         validator: (v) {
                                           if (v == null || v.isEmpty) {
                                             return 'Enter value';
                                           }
-                                          if (num.tryParse(v) == null) {
+                                          if (num.tryParse(
+                                                v.replaceAll(
+                                                  RegExp(r'[^0-9]'),
+                                                  '',
+                                                ),
+                                              ) ==
+                                              null) {
                                             return 'Invalid number';
                                           }
                                           return null;
@@ -501,11 +511,15 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                             labelText: 'Value',
                             border: OutlineInputBorder(),
                           ),
+                          inputFormatters: [CurrencyInputFormatter()],
                           keyboardType: TextInputType.number,
                           onChanged: (_) => _validateForm(),
                           validator: (v) {
                             if (v == null || v.isEmpty) return 'Enter value';
-                            if (num.tryParse(v) == null) {
+                            if (num.tryParse(
+                                  v.replaceAll(RegExp(r'[^0-9]'), ''),
+                                ) ==
+                                null) {
                               return 'Invalid number';
                             }
                             return null;
@@ -545,7 +559,10 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                       ) {
                                         final c = _compensations[i];
                                         final value = int.parse(
-                                          c.valueController.text,
+                                          c.valueController.text.replaceAll(
+                                            RegExp(r'[^0-9]'),
+                                            '',
+                                          ),
                                         );
                                         compensationsMap[i] = CompensationInfo(
                                           topicId: c.topic!.id,
@@ -558,7 +575,10 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                         _intervalCountController.text,
                                       );
                                       final value = int.parse(
-                                        _valueController.text,
+                                        _valueController.text.replaceAll(
+                                          RegExp(r'[^0-9]'),
+                                          '',
+                                        ),
                                       );
 
                                       await fixTransactionProvider
