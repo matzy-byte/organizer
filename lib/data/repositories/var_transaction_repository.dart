@@ -30,6 +30,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
             date: date,
             value: value,
             userRefId: userRefId,
+            lastEdit: DateTime.now(),
             compensations: compensations == null
                 ? Value(null)
                 : Value(JsonUtil.compensation2String(compensations)),
@@ -61,6 +62,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
             date: v.date,
             value: v.value,
             userRefId: v.userRefId,
+            lastEdit: v.lastEdit,
             compensations: JsonUtil.string2CompensationInfo(v.compensations),
             transactionLabelId: v.transactionLabelId,
             description: v.description,
@@ -101,6 +103,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
             date: v.date,
             value: v.value,
             userRefId: v.userRefId,
+            lastEdit: v.lastEdit,
             compensations: JsonUtil.string2CompensationInfo(v.compensations),
             transactionLabelId: v.transactionLabelId,
             description: v.description,
@@ -138,6 +141,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
             date: v.date,
             value: v.value,
             userRefId: v.userRefId,
+            lastEdit: v.lastEdit,
             compensations: JsonUtil.string2CompensationInfo(v.compensations),
             transactionLabelId: v.transactionLabelId,
             description: v.description,
@@ -211,6 +215,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
         date: date == null ? Value(row.date) : Value(date),
         value: value == null ? Value(row.value) : Value(value),
         userRefId: userRefId == null ? Value(row.userRefId) : Value(userRefId),
+        lastEdit: Value(DateTime.now()),
         compensations: compensations == null
             ? Value(row.compensations)
             : Value(JsonUtil.compensation2String(compensations)),
@@ -248,6 +253,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
         )..where((v) => v.id.equals(ref.id))).write(
           VarTransactionsCompanion(
             compensations: Value(JsonUtil.compensation2String(comps)),
+            lastEdit: Value(DateTime.now()),
           ),
         );
       }
@@ -272,6 +278,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
       date: row.date,
       value: row.value,
       userRefId: row.userRefId,
+      lastEdit: row.lastEdit,
       compensations: JsonUtil.string2CompensationInfo(row.compensations),
       transactionLabelId: row.transactionLabelId,
       description: row.description,

@@ -25,6 +25,7 @@ class EditVarTransactionDialog extends StatefulWidget {
 }
 
 class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
+  final _firstFieldFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
 
@@ -40,8 +41,8 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
 
   DateTime? _date;
 
-  List<_CompensationEntry> _compensations = [];
-  List<_CompensationEntry> _compensationsToDelete = [];
+  final List<_CompensationEntry> _compensations = [];
+  final List<_CompensationEntry> _compensationsToDelete = [];
 
   TransactionLabel? _selectedTransactionLabel;
 
@@ -73,7 +74,10 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
     _isExpense = widget.varTransaction.value < 0;
     _descriptionController.text = widget.varTransaction.description ?? '';
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _validateForm();
+      _firstFieldFocusNode.requestFocus();
+  });
   }
 
   @override
@@ -103,6 +107,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
 
   @override
   void dispose() {
+    _firstFieldFocusNode.dispose();
     _valueController.dispose();
     _descriptionController.dispose();
     for (final c in _compensations) {
@@ -169,6 +174,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
 
                         // --- CATEGORY ---
                         DropdownButtonFormField<Category>(
+                          focusNode: _firstFieldFocusNode,
                           initialValue: _selectedCategory,
                           decoration: InputDecoration(
                             labelText: at.category,
@@ -592,6 +598,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                                         }
                                       }
 
+                                      // ignore: use_build_context_synchronously
                                       Navigator.pop(context, true);
                                     }
                                   : null,

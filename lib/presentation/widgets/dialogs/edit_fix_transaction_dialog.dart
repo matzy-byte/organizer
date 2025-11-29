@@ -27,6 +27,7 @@ class EditFixTransactionDialog extends StatefulWidget {
 }
 
 class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
+  final _firstFieldFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
 
@@ -47,7 +48,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
 
   IntervalUnit? _selectedIntervalUnit = IntervalUnit.month;
 
-  List<_CompensationEntry> _compensations = [];
+  final List<_CompensationEntry> _compensations = [];
 
   TransactionLabel? _selectedTransactionLabel;
 
@@ -84,7 +85,10 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
         );
     _descriptionController.text = widget.fixTransaction.description ?? '';
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _validateForm();
+      _firstFieldFocusNode.requestFocus();
+  });
   }
 
   @override
@@ -114,6 +118,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
 
   @override
   void dispose() {
+    _firstFieldFocusNode.dispose();
     _intervalCountController.dispose();
     _valueController.dispose();
     _descriptionController.dispose();
@@ -193,6 +198,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
 
                         // --- CATEGORY ---
                         DropdownButtonFormField<Category>(
+                          focusNode: _firstFieldFocusNode,
                           initialValue: _selectedCategory,
                           decoration: InputDecoration(
                             labelText: at.category,
@@ -637,6 +643,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                             null,
                                           );
 
+                                      // ignore: use_build_context_synchronously
                                       Navigator.pop(context, true);
                                     }
                                   : null,

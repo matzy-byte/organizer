@@ -20,6 +20,7 @@ class TopicRepositoryDrift implements TopicRepository {
           TopicsCompanion.insert(
             categoryId: categoryId,
             name: name,
+            lastEdit: DateTime.now(),
             description: Value(description),
           ),
         );
@@ -36,6 +37,7 @@ class TopicRepositoryDrift implements TopicRepository {
             id: t.id,
             categoryId: t.categoryId,
             name: t.name,
+            lastEdit: t.lastEdit,
             description: t.description,
           ),
         )
@@ -98,6 +100,7 @@ class TopicRepositoryDrift implements TopicRepository {
             id: t.id,
             categoryId: t.categoryId,
             name: t.name,
+            lastEdit: t.lastEdit,
             description: t.description,
           ),
         )

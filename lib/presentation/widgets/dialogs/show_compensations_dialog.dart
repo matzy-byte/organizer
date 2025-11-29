@@ -4,6 +4,7 @@ import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/currency_text.dart';
+import 'package:organizer/presentation/widgets/dialogs/alert_delete.dart';
 import 'package:organizer/presentation/widgets/dialogs/edit_var_transaction_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -51,10 +52,18 @@ class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
     });
   }
 
-  Future<void> _removeVarTransaction(int id) async {
+  Future<void> _removeVarTransaction(int id, BuildContext context) async {
     if (!mounted) return;
     setState(() => _isLoading = true);
 
+    final at = AppLocalizations.of(context)!;
+    bool confirm = await AlertDelete.show(context, type: at.transaction, value: at.transaction);
+    if (confirm == false) {
+      _loadVarTransactions();
+      return;
+    }
+
+    // ignore: use_build_context_synchronously
     final varTransactionProvider = context.read<VarTransactionProvider>();
     await varTransactionProvider.removeVarTransaction(id);
 
@@ -199,7 +208,7 @@ class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
                                             size: 20,
                                           ),
                                           onPressed: () =>
-                                              _removeVarTransaction(t.id),
+                                              _removeVarTransaction(t.id, context),
                                           padding: EdgeInsets.zero,
                                           constraints: const BoxConstraints(),
                                         ),

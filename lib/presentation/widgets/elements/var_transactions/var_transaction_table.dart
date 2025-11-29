@@ -7,6 +7,7 @@ import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:organizer/presentation/widgets/currency_text.dart';
+import 'package:organizer/presentation/widgets/dialogs/alert_delete.dart';
 import 'package:organizer/presentation/widgets/dialogs/show_compensations_dialog.dart';
 import 'package:organizer/presentation/widgets/elements/users/user_icon.dart';
 import 'package:provider/provider.dart';
@@ -89,7 +90,16 @@ class VarTransactionTable extends StatelessWidget {
           children: [
             IconButton(
               icon: const Icon(Icons.delete, size: 20),
-              onPressed: () => delete.call(t.id),
+              onPressed: () async {
+                final confirm = await AlertDelete.show(
+                  context,
+                  type: at.transaction,
+                  value: at.transaction,
+                );
+                if (confirm == true) {
+                  delete.call(t.id);
+                }
+              },
               padding: EdgeInsets.all(5),
               constraints: const BoxConstraints(),
             ),

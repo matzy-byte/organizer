@@ -9,13 +9,17 @@ class FileRepositoryDrift extends FileRepository {
 
   @override
   Future<void> addFile(String path) async {
-    await db.into(db.files).insert(FilesCompanion.insert(path: path));
+    await db
+        .into(db.files)
+        .insert(FilesCompanion.insert(path: path, lastEdit: DateTime.now()));
   }
 
   @override
   Future<List<File>> getAllFiles() async {
     final rows = await (db.select(db.files)).get();
-    return rows.map((t) => File(id: t.id, path: t.path)).toList();
+    return rows
+        .map((t) => File(id: t.id, path: t.path, lastEdit: t.lastEdit))
+        .toList();
   }
 
   @override
@@ -26,7 +30,11 @@ class FileRepositoryDrift extends FileRepository {
   @override
   Future<void> updateFile(int id, String path) async {
     await (db.update(db.files)..where((t) => t.id.equals(id))).write(
-      FilesCompanion(id: Value(id), path: Value(path)),
+      FilesCompanion(
+        id: Value(id),
+        path: Value(path),
+        lastEdit: Value(DateTime.now()),
+      ),
     );
   }
 }

@@ -5,7 +5,7 @@ import 'package:organizer/presentation/widgets/elements/topics/topic_card.dart';
 import 'package:provider/provider.dart';
 
 class TopicElement extends StatelessWidget {
-  final categoryId;
+  final int categoryId;
   const TopicElement({super.key, required this.categoryId});
 
   @override

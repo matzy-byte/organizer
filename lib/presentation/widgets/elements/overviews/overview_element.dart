@@ -5,7 +5,7 @@ import 'package:organizer/presentation/widgets/elements/overviews/overview_gener
 import 'package:provider/provider.dart';
 
 class OverviewElement extends StatelessWidget {
-  final isDashboard;
+  final bool isDashboard;
   const OverviewElement({super.key, this.isDashboard = false});
 
   @override

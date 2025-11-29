@@ -17,6 +17,7 @@ class FixTransactions extends Table {
   TextColumn get intervalUnit => textEnum<IntervalUnit>()();
   IntColumn get value => integer()();
   IntColumn get userRefId => integer().references(Users, #id)();
+  DateTimeColumn get lastEdit => dateTime()();
   TextColumn get compensations => text().nullable()();
   IntColumn get transactionLabelId =>
       integer().references(TransactionLabels, #id, onDelete: KeyAction.setNull).nullable()();

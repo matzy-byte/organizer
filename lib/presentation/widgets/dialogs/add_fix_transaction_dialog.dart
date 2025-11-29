@@ -28,6 +28,7 @@ class AddFixTransactionDialog extends StatefulWidget {
 }
 
 class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
+  final _firstFieldFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
 
@@ -48,7 +49,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
   IntervalUnit? _selectedIntervalUnit = IntervalUnit.month;
 
-  List<_CompensationEntry> _compensations = [];
+  final List<_CompensationEntry> _compensations = [];
 
   TransactionLabel? _selectedTransactionLabel;
 
@@ -83,11 +84,13 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _validateForm();
+      _firstFieldFocusNode.requestFocus();
     });
   }
 
   @override
   void dispose() {
+    _firstFieldFocusNode.dispose();
     _intervalCountController.dispose();
     _valueController.dispose();
     _descriptionController.dispose();
@@ -170,6 +173,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
 
                         // --- CATEGORY ---
                         DropdownButtonFormField<Category>(
+                          focusNode: _firstFieldFocusNode,
                           initialValue: _selectedCategory,
                           decoration: InputDecoration(
                             labelText: at.category,
@@ -532,8 +536,9 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                           keyboardType: TextInputType.number,
                           onChanged: (_) => _validateForm(),
                           validator: (v) {
-                            if (v == null || v.isEmpty)
+                            if (v == null || v.isEmpty) {
                               return at.itemInvalid(at.value);
+                            }
                             if (num.tryParse(
                                   v.replaceAll(RegExp(r'[^0-9]'), ''),
                                 ) ==
@@ -624,6 +629,7 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                                       await fixTransactionProvider
                                           .fixTransactionService
                                           .runDueFixTransactions();
+                                      // ignore: use_build_context_synchronously
                                       Navigator.pop(context, true);
                                     }
                                   : null,

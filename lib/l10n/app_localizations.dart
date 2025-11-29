@@ -107,6 +107,12 @@ abstract class AppLocalizations {
   /// **'{item} is invalid.'**
   String itemInvalid(Object item);
 
+  /// No description provided for @shureDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete {item}?'**
+  String shureDelete(Object item);
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
@@ -154,6 +160,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Close'**
   String get close;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
 
   /// No description provided for @dashboard.
   ///

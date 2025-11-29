@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
+import 'package:organizer/presentation/widgets/dialogs/alert_delete.dart';
 import 'package:provider/provider.dart';
 
 class CategoryTile extends StatelessWidget {
@@ -17,17 +18,7 @@ class CategoryTile extends StatelessWidget {
       trailing: IconButton(
         icon: const Icon(Icons.delete),
         onPressed: () async {
-          final confirm = await showDialog<bool>(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: const Text('Delete Category?'),
-              content: Text('Are you sure you want to delete "${category.name}"?'),
-              actions: [
-                TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-                TextButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete')),
-              ],
-            ),
-          );
+          final confirm = await AlertDelete.show(context, type: 'Category', value: category.name);
           if (confirm == true) await provider.removeCategory(category);
         },
       ),

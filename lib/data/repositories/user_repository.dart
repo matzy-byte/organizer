@@ -9,13 +9,30 @@ class UserRepositoryDrift extends UserRepository {
 
   @override
   Future<void> addUser(String name, String color) async {
-    await db.into(db.users).insert(UsersCompanion.insert(name: name, color: color));
+    await db
+        .into(db.users)
+        .insert(
+          UsersCompanion.insert(
+            name: name,
+            color: color,
+            lastEdit: DateTime.now(),
+          ),
+        );
   }
 
   @override
   Future<List<User>> getAllUsers() async {
     final rows = await (db.select(db.users)).get();
-    return rows.map((t) => User(id: t.id, name: t.name, color: t.color)).toList();
+    return rows
+        .map(
+          (t) => User(
+            id: t.id,
+            name: t.name,
+            color: t.color,
+            lastEdit: t.lastEdit,
+          ),
+        )
+        .toList();
   }
 
   @override
@@ -26,7 +43,12 @@ class UserRepositoryDrift extends UserRepository {
   @override
   Future<void> updateUser(int id, String name, String color) async {
     await (db.update(db.users)..where((t) => t.id.equals(id))).write(
-      UsersCompanion(id: Value(id), name: Value(name), color: Value(color)),
+      UsersCompanion(
+        id: Value(id),
+        name: Value(name),
+        color: Value(color),
+        lastEdit: Value(DateTime.now()),
+      ),
     );
   }
 }

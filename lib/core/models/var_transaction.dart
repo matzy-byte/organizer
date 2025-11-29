@@ -6,6 +6,7 @@ class VarTransaction {
   final DateTime date;
   final int value;
   final int userRefId;
+  final DateTime lastEdit;
   final Map<int, CompensationInfo>? compensations;
   final int? transactionLabelId;
   final String? description;
@@ -19,6 +20,7 @@ class VarTransaction {
     required this.date,
     required this.value,
     required this.userRefId,
+    required this.lastEdit,
     this.compensations,
     this.transactionLabelId,
     this.description,

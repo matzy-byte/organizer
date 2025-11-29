@@ -45,7 +45,7 @@ class FixTransactionInactiveTable extends StatelessWidget {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: fixTransactions.length,
-      separatorBuilder: (_, __) => Divider(
+      separatorBuilder: (_, _) => Divider(
         height: 1,
         thickness: 1,
         color: theme.colorScheme.outlineVariant,

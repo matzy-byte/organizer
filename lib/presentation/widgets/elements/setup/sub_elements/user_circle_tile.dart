@@ -18,9 +18,9 @@ class UserCircleTile extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        hoverColor: theme.colorScheme.primary.withOpacity(0.10),
-        highlightColor: theme.colorScheme.primary.withOpacity(0.15),
-        splashColor: theme.colorScheme.primary.withOpacity(0.25),
+        hoverColor: theme.colorScheme.primary.withValues(alpha: 0.10),
+        highlightColor: theme.colorScheme.primary.withValues(alpha: 0.15),
+        splashColor: theme.colorScheme.primary.withValues(alpha: 0.25),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
           decoration: BoxDecoration(borderRadius: BorderRadius.circular(16)),

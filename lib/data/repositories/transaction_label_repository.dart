@@ -11,13 +11,21 @@ class TransactionLabellRepositoryDrift extends TransactionLabelRepository {
   Future<void> addTransactionLabel(String name, String color) async {
     await db
         .into(db.transactionLabels)
-        .insert(TransactionLabelsCompanion.insert(name: name, color: color));
+        .insert(
+          TransactionLabelsCompanion.insert(
+            name: name,
+            color: color,
+            lastEdit: DateTime.now(),
+          ),
+        );
   }
 
   @override
   Future<List<TransactionLabel>> getAllTransactionLabels() async {
     final rows = await (db.select(db.transactionLabels)).get();
-    return rows.map((t) => TransactionLabel(t.id, t.name, t.color)).toList();
+    return rows
+        .map((t) => TransactionLabel(t.id, t.name, t.color, t.lastEdit))
+        .toList();
   }
 
   @override
@@ -27,7 +35,15 @@ class TransactionLabellRepositoryDrift extends TransactionLabelRepository {
 
   @override
   Future<void> updateTransactionLabel(int id, String name, String color) async {
-    await (db.update(db.transactionLabels)..where((t) => t.id.equals(id)))
-        .write(TransactionLabelsCompanion(id: Value(id), name: Value(name), color: Value(color)));
+    await (db.update(
+      db.transactionLabels,
+    )..where((t) => t.id.equals(id))).write(
+      TransactionLabelsCompanion(
+        id: Value(id),
+        name: Value(name),
+        color: Value(color),
+        lastEdit: Value(DateTime.now()),
+      ),
+    );
   }
 }

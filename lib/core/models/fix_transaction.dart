@@ -12,6 +12,7 @@ class FixTransaction {
   final IntervalUnit intervalUnit;
   final int value;
   final int userRefId;
+  final DateTime lastEdit;
   final Map<int, CompensationInfo>? compensations;
   final int? transactionLabelId;
   final String? description;
@@ -29,6 +30,7 @@ class FixTransaction {
     required this.intervalUnit,
     required this.value,
     required this.userRefId,
+    required this.lastEdit,
     this.compensations,
     this.transactionLabelId,
     this.description,

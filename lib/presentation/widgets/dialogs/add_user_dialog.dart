@@ -14,6 +14,7 @@ class AddUserDialog extends StatefulWidget {
 }
 
 class _AddUserDialogState extends State<AddUserDialog> {
+  final _firstFieldFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
   final _nameController = TextEditingController();
@@ -25,7 +26,10 @@ class _AddUserDialogState extends State<AddUserDialog> {
 
     _selectedColor = ColorUtil.randomColor();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _validateForm();
+      _firstFieldFocusNode.requestFocus();
+    });
   }
 
   void _validateForm() {
@@ -37,12 +41,13 @@ class _AddUserDialogState extends State<AddUserDialog> {
 
   @override
   void dispose() {
+    _firstFieldFocusNode.dispose();
     _nameController.dispose();
     super.dispose();
   }
 
   String get hexColor =>
-      '#${_selectedColor.value.toRadixString(16).substring(2).toUpperCase()}';
+      '#${_selectedColor.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +72,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
                     Expanded(
                       flex: 2,
                       child: TextFormField(
+                        focusNode: _firstFieldFocusNode,
                         controller: _nameController,
                         decoration: InputDecoration(
                           labelText: '${at.user} ${at.name}',

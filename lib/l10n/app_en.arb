@@ -2,6 +2,7 @@
   "@@locale": "en",
   "noItem": "No {item}.",
   "itemInvalid": "{item} is invalid.",
+  "shureDelete": "Are you sure you want to delete {item}?",
 
   "cancel": "Cancel",
   "save": "Save",
@@ -11,6 +12,7 @@
   "yes": "Yes",
   "okay": "Okay",
   "close": "Close",
+  "delete": "Delete",
 
   "dashboard": "Dashboard",
   "settings": "Settings",

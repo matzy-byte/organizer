@@ -14,7 +14,7 @@ import 'package:provider/provider.dart';
 
 class OverviewGeneral extends StatelessWidget {
   final List<VarTransaction> varTransactions;
-  final isDashboard;
+  final bool isDashboard;
   const OverviewGeneral({
     super.key,
     required this.varTransactions,

@@ -16,6 +16,7 @@ class AddTopicDialog extends StatefulWidget {
 }
 
 class _AddTopicDialogState extends State<AddTopicDialog> {
+  final _firstFieldFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
   final _nameController = TextEditingController();
@@ -29,11 +30,13 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _validateForm();
+      _firstFieldFocusNode.requestFocus();
     });
   }
 
   @override
   void dispose() {
+    _firstFieldFocusNode.dispose();
     _nameController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -111,6 +114,7 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
 
                       // --- TOPIC NAME ---
                       TextFormField(
+                        focusNode: _firstFieldFocusNode,
                         controller: _nameController,
                         decoration: InputDecoration(
                           labelText: '${at.topic} ${at.name}',

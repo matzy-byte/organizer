@@ -12,6 +12,7 @@ class AddCategoryDialog extends StatefulWidget {
 }
 
 class _AddCategoryDialogState extends State<AddCategoryDialog> {
+  final _firstFieldFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
   final _nameController = TextEditingController();
@@ -23,11 +24,13 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _validateForm();
+      _firstFieldFocusNode.requestFocus();
     });
   }
 
   @override
   void dispose() {
+    _firstFieldFocusNode.dispose();
     _nameController.dispose();
     _descriptionController.dispose();
     super.dispose();
@@ -71,6 +74,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
                 // --- NAME FIELD ---
                 TextFormField(
+                  focusNode: _firstFieldFocusNode,
                   controller: _nameController,
                   decoration: InputDecoration(
                     labelText: '${at.category} ${at.name}',

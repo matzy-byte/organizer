@@ -40,6 +40,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             intervalUnit: intervalUnit,
             value: value,
             userRefId: userRefId,
+            lastEdit: DateTime.now(),
             compensations: compensations == null
                 ? Value(null)
                 : Value(JsonUtil.compensation2String(compensations)),
@@ -67,6 +68,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             intervalUnit: f.intervalUnit,
             value: f.value,
             userRefId: f.userRefId,
+            lastEdit: f.lastEdit,
             compensations: JsonUtil.string2CompensationInfo(f.compensations),
             transactionLabelId: f.transactionLabelId,
             description: f.description,
@@ -97,6 +99,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             intervalUnit: f.intervalUnit,
             value: f.value,
             userRefId: f.userRefId,
+            lastEdit: f.lastEdit,
             compensations: JsonUtil.string2CompensationInfo(f.compensations),
             transactionLabelId: f.transactionLabelId,
             description: f.description,
@@ -172,6 +175,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             : Value(intervalUnit),
         value: value == null ? Value(row.value) : Value(value),
         userRefId: userRefId == null ? Value(row.userRefId) : Value(userRefId),
+        lastEdit: Value(DateTime.now()),
         compensations: compensations == null
             ? Value(row.compensations)
             : Value(JsonUtil.compensation2String(compensations)),

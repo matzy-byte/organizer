@@ -26,6 +26,7 @@ class AddVarTransactionDialog extends StatefulWidget {
 }
 
 class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
+  final _firstFieldFocusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
   bool _isFormValid = false;
 
@@ -41,7 +42,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
 
   DateTime? _date;
 
-  List<_CompensationEntry> _compensations = [];
+  final List<_CompensationEntry> _compensations = [];
 
   TransactionLabel? _selectedTransactionLabel;
 
@@ -73,11 +74,15 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
 
     _date = DateTime.now();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _validateForm();
+      _firstFieldFocusNode.requestFocus();
+  });
   }
 
   @override
   void dispose() {
+    _firstFieldFocusNode.dispose();
     _valueController.dispose();
     _descriptionController.dispose();
     for (var comp in _compensations) {
@@ -144,6 +149,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
 
                         // --- CATEGORY ---
                         DropdownButtonFormField<Category>(
+                          focusNode: _firstFieldFocusNode,
                           initialValue: _selectedCategory,
                           decoration: InputDecoration(
                             labelText: at.category,
@@ -522,6 +528,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                             );
                                       }
 
+                                      // ignore: use_build_context_synchronously
                                       Navigator.pop(context, true);
                                     }
                                   : null,

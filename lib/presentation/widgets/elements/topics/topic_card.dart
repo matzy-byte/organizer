@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/routes.dart';
 import 'package:organizer/core/models/topic.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/currency_text.dart';
+import 'package:organizer/presentation/widgets/dialogs/alert_delete.dart';
 import 'package:provider/provider.dart';
 
 class TopicCard extends StatelessWidget {
@@ -14,6 +16,7 @@ class TopicCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final varTransactionProvider = context.read<VarTransactionProvider>();
 
@@ -45,9 +48,17 @@ class TopicCard extends StatelessWidget {
                 child: IconButton(
                   icon: const Icon(Icons.delete),
                   onPressed: () async {
-                    await context.read<TopicProvider>().removeTopic(topic.id);
-                    await context.read<VarTransactionProvider>().reload();
-                    onDeleted?.call();
+                    final confirm = await AlertDelete.show(
+                      context,
+                      type: at.topic,
+                      value: topic.name,
+                    );
+                    if (confirm == true) {
+                      await context.read<TopicProvider>().removeTopic(topic.id);
+                      // ignore: use_build_context_synchronously
+                      await context.read<VarTransactionProvider>().reload();
+                      onDeleted?.call();
+                    }
                   },
                 ),
               ),

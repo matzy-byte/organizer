@@ -4,6 +4,7 @@ import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_transaction_label_dialog.dart';
+import 'package:organizer/presentation/widgets/dialogs/alert_delete.dart';
 import 'package:provider/provider.dart';
 
 class ManageTransactionLabelsDialog extends StatelessWidget {
@@ -38,6 +39,7 @@ class ManageTransactionLabelsDialog extends StatelessWidget {
               Align(
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
+                  autofocus: true,
                   icon: const Icon(Icons.add),
                   label: Text('${at.add} ${at.label}'),
                   onPressed: () async {
@@ -85,10 +87,17 @@ class ManageTransactionLabelsDialog extends StatelessWidget {
                                   IconButton(
                                     icon: const Icon(Icons.delete),
                                     onPressed: () async {
-                                      await transactionLabelProvider
-                                          .removeTransactionLabel(label.id);
-                                      await fixTransactionProvider.reload();
-                                      await varTransactionProvider.reload();
+                                      bool confirm = await AlertDelete.show(
+                                        context,
+                                        type: '${at.transaction} ${at.label}',
+                                        value: label.name,
+                                      );
+                                      if (confirm == true) {
+                                        await transactionLabelProvider
+                                            .removeTransactionLabel(label.id);
+                                        await fixTransactionProvider.reload();
+                                        await varTransactionProvider.reload();
+                                      }
                                     },
                                   ),
                                 ],

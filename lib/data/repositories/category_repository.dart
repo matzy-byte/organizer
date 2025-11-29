@@ -16,6 +16,7 @@ class CategoryRepositoryDrift implements CategoryRepository {
           CategoriesCompanion.insert(
             name: name,
             description: Value(description),
+            lastEdit: DateTime.now(),
           ),
         );
   }
@@ -25,7 +26,12 @@ class CategoryRepositoryDrift implements CategoryRepository {
     final rows = await db.select(db.categories).get();
     return rows
         .map(
-          (c) => Category(id: c.id, name: c.name, description: c.description),
+          (c) => Category(
+            id: c.id,
+            name: c.name,
+            description: c.description,
+            lastEdit: c.lastEdit,
+          ),
         )
         .toList();
   }

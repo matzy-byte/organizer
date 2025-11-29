@@ -19,6 +19,11 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String shureDelete(Object item) {
+    return 'Bist du dir sicher $item zu löschen?';
+  }
+
+  @override
   String get cancel => 'Abbrechen';
 
   @override
@@ -41,6 +46,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get close => 'Schließen';
+
+  @override
+  String get delete => 'Löschen';
 
   @override
   String get dashboard => 'Dashboard';
