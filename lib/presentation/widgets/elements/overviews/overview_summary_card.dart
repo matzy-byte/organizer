@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:organizer/l10n/app_localizations.dart';
+import 'package:organizer/presentation/widgets/currency_text.dart';
 
 class OverviewSummaryCard extends StatelessWidget {
   final int totalValueIncome;
@@ -84,7 +84,6 @@ class _SummaryRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final color = value >= 0 ? Colors.green[700] : Colors.red[700];
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -97,11 +96,10 @@ class _SummaryRow extends StatelessWidget {
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
             ),
           ),
-          Text(
-            NumberFormat.currency(symbol: '€').format(value / 100),
+          CurrencyText(
+            value: value / 100,
             style: theme.textTheme.bodyMedium?.copyWith(
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: color,
             ),
           ),
         ],

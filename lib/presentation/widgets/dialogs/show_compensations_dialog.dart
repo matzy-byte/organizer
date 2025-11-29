@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
+import 'package:organizer/presentation/widgets/currency_text.dart';
 import 'package:organizer/presentation/widgets/dialogs/edit_var_transaction_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -151,10 +152,9 @@ class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
                                         width: 120,
                                         child: Row(
                                           children: [
-                                            Text(
-                                              '(${NumberFormat.currency(symbol: "€").format(compSum / 100)})',
-                                              style: TextStyle(color: color),
-                                              textAlign: TextAlign.center,
+                                            CurrencyText(
+                                              value: compSum / 100,
+                                              isCompensation: true,
                                             ),
                                             IconButton(
                                               icon: const Icon(

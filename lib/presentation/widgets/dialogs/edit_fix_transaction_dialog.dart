@@ -8,7 +8,7 @@ import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/transaction_label.dart';
-import 'package:organizer/core/utils/currency_formatter.dart';
+import 'package:organizer/core/utils/currency_input_formatter.dart';
 import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
@@ -82,19 +82,34 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
         .firstWhereOrNull(
           (l) => l.id == widget.fixTransaction.transactionLabelId,
         );
-    _valueController.text = widget.fixTransaction.value.abs().toString();
     _descriptionController.text = widget.fixTransaction.description ?? '';
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final locale = Localizations.localeOf(context).toString();
+
+    _valueController.text = CurrencyInputFormatter.formatValue(
+      value: widget.fixTransaction.value.abs(),
+      locale: locale,
+    );
 
     if (widget.fixTransaction.compensations != null) {
       for (final e in widget.fixTransaction.compensations!.entries) {
         final topic = _allTopics.firstWhere((t) => t.id == e.value.topicId);
         _compensations.add(
-          _CompensationEntry.withData(topic, e.value.value.abs().toString()),
+          _CompensationEntry.withData(
+            topic,
+            e.value.value.abs(),
+            Localizations.localeOf(context),
+          ),
         );
       }
     }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
   }
 
   @override
@@ -254,7 +269,10 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                         // --- EXPENSE SEGMENTED ---
                         SegmentedButton<bool>(
                           segments: [
-                            ButtonSegment(value: true, label: Text(at.negative)),
+                            ButtonSegment(
+                              value: true,
+                              label: Text(at.negative),
+                            ),
                             ButtonSegment(
                               value: false,
                               label: Text(at.positive),
@@ -392,8 +410,9 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                           setState(() => comp.topic = v);
                                           _validateForm();
                                         },
-                                        validator: (v) =>
-                                            v == null ? at.itemInvalid(at.topic) : null,
+                                        validator: (v) => v == null
+                                            ? at.itemInvalid(at.topic)
+                                            : null,
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -406,7 +425,11 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                           border: OutlineInputBorder(),
                                         ),
                                         inputFormatters: [
-                                          CurrencyInputFormatter(),
+                                          CurrencyInputFormatter(
+                                            locale: Localizations.localeOf(
+                                              context,
+                                            ).toString(),
+                                          ),
                                         ],
                                         keyboardType: TextInputType.number,
                                         onChanged: (_) => _validateForm(),
@@ -513,11 +536,19 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                             labelText: at.value,
                             border: OutlineInputBorder(),
                           ),
-                          inputFormatters: [CurrencyInputFormatter()],
+                          inputFormatters: [
+                            CurrencyInputFormatter(
+                              locale: Localizations.localeOf(
+                                context,
+                              ).toString(),
+                            ),
+                          ],
                           keyboardType: TextInputType.number,
                           onChanged: (_) => _validateForm(),
                           validator: (v) {
-                            if (v == null || v.isEmpty) return at.itemInvalid(at.value);
+                            if (v == null || v.isEmpty) {
+                              return at.itemInvalid(at.value);
+                            }
                             if (num.tryParse(
                                   v.replaceAll(RegExp(r'[^0-9]'), ''),
                                 ) ==
@@ -629,7 +660,10 @@ class _CompensationEntry {
 
   _CompensationEntry();
 
-  _CompensationEntry.withData(this.topic, String value) {
-    valueController.text = value.toString();
+  _CompensationEntry.withData(this.topic, int value, Locale locale) {
+    valueController.text = CurrencyInputFormatter.formatValue(
+      value: value.abs(),
+      locale: locale.toString(),
+    );
   }
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
+import 'package:organizer/presentation/widgets/currency_text.dart';
 import 'package:provider/provider.dart';
 
 class FixTransactionInactiveTable extends StatelessWidget {
@@ -73,11 +73,9 @@ class FixTransactionInactiveTable extends StatelessWidget {
               const SizedBox(width: 10),
               SizedBox(
                 width: 50,
-                child: Text(
-                  NumberFormat.currency(symbol: "€").format(finalValue / 100),
-                  overflow: TextOverflow.ellipsis,
+                child: CurrencyText(
+                  value: finalValue / 100,
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.outline,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

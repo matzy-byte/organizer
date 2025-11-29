@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/themes/app_colors.dart';
 import 'package:organizer/app/themes/app_text_styles.dart';
+import 'package:organizer/app/themes/extensions/color_theme_extension.dart';
 import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 
 class AppTheme {
@@ -68,6 +69,11 @@ class AppTheme {
         cardPadding: EdgeInsets.all(24),
         userAvatarSize: 90,
         userAvatarSpacing: 16,
+      ),
+      const ColorTheme(
+        valuePositive: Colors.green,
+        valueNegative: Colors.red,
+        valueNeutral: Colors.grey,
       ),
     ],
   );

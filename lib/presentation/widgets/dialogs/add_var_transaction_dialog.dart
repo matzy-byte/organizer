@@ -5,7 +5,7 @@ import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/transaction_label.dart';
-import 'package:organizer/core/utils/currency_formatter.dart';
+import 'package:organizer/core/utils/currency_input_formatter.dart';
 import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
@@ -169,8 +169,9 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                               (_) => _validateForm(),
                             );
                           },
-                          validator: (value) =>
-                              value == null ? at.itemInvalid(at.category) : null,
+                          validator: (value) => value == null
+                              ? at.itemInvalid(at.category)
+                              : null,
                         ),
                         SizedBox(height: setupTheme.sectionSpacing),
 
@@ -202,7 +203,10 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                         // --- SEGMENTED POSITIVE/NEGATIVE ---
                         SegmentedButton<bool>(
                           segments: [
-                            ButtonSegment(value: true, label: Text(at.negative)),
+                            ButtonSegment(
+                              value: true,
+                              label: Text(at.negative),
+                            ),
                             ButtonSegment(
                               value: false,
                               label: Text(at.positive),
@@ -287,7 +291,11 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                           border: OutlineInputBorder(),
                                         ),
                                         inputFormatters: [
-                                          CurrencyInputFormatter(),
+                                          CurrencyInputFormatter(
+                                            locale: Localizations.localeOf(
+                                              context,
+                                            ).toString(),
+                                          ),
                                         ],
                                         onChanged: (_) => _validateForm(),
                                         validator: (v) {
@@ -397,7 +405,13 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                             labelText: at.value,
                             border: OutlineInputBorder(),
                           ),
-                          inputFormatters: [CurrencyInputFormatter()],
+                          inputFormatters: [
+                            CurrencyInputFormatter(
+                              locale: Localizations.localeOf(
+                                context,
+                              ).toString(),
+                            ),
+                          ],
                           keyboardType: TextInputType.number,
                           onChanged: (_) => _validateForm(),
                           validator: (value) {

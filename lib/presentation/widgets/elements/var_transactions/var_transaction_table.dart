@@ -6,6 +6,7 @@ import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
+import 'package:organizer/presentation/widgets/currency_text.dart';
 import 'package:organizer/presentation/widgets/dialogs/show_compensations_dialog.dart';
 import 'package:organizer/presentation/widgets/elements/users/user_icon.dart';
 import 'package:provider/provider.dart';
@@ -25,7 +26,7 @@ class VarTransactionTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final at = AppLocalizations.of(context)!;
-    
+
     if (varTransactions.isEmpty) {
       return Center(child: Text(at.noItem(at.transactions)));
     }
@@ -51,29 +52,13 @@ class VarTransactionTable extends StatelessWidget {
         final u = userProvider.users.firstWhere((u) => u.id == t.userRefId);
         final value = getFinalValue(t);
 
-        final valueText = Text(
-          NumberFormat.currency(symbol: "€").format(value / 100),
-          style: TextStyle(
-            color: value > 0
-                ? const Color(0xFF006400)
-                : const Color(0xFF8B0000),
-            fontWeight: FontWeight.w600,
-          ),
-          textAlign: TextAlign.center,
-        );
+        final valueText = CurrencyText(value: value / 100);
 
         final compensationSum =
             t.compensations?.values.fold<int>(0, (sum, c) => sum + c.value) ??
             0;
 
-        final compensationText = Text(
-          '(${NumberFormat.currency(symbol: "€").format(compensationSum / 100)})',
-          style: TextStyle(
-            color: t.value > 0
-                ? const Color(0xFF006400)
-                : const Color(0xFF8B0000),
-          ),
-        );
+        final compensationText = CurrencyText(value: compensationSum / 100);
 
         final compensationIcon = IconButton(
           onPressed: () async => await showDialog(

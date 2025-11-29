@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:organizer/app/routes.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
+import 'package:organizer/presentation/widgets/currency_text.dart';
 import 'package:provider/provider.dart';
 
 class TopicCard extends StatelessWidget {
@@ -27,11 +27,6 @@ class TopicCard extends StatelessWidget {
           0;
       return sum + (t.value - compSum);
     });
-
-    final valueColor = totalValue >= 0 ? Colors.green : Colors.red;
-    final formattedValue = NumberFormat.currency(
-      symbol: "€",
-    ).format(totalValue / 100);
 
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -79,11 +74,10 @@ class TopicCard extends StatelessWidget {
                         ),
                       ),
                     const SizedBox(height: 8),
-                    Text(
-                      formattedValue,
-                      style: theme.textTheme.titleSmall?.copyWith(
+                    CurrencyText(
+                      value: totalValue / 100,
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: valueColor,
                       ),
                     ),
                   ],

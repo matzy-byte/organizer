@@ -5,7 +5,7 @@ import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/transaction_label.dart';
 import 'package:organizer/core/models/var_transaction.dart';
-import 'package:organizer/core/utils/currency_formatter.dart';
+import 'package:organizer/core/utils/currency_input_formatter.dart';
 import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
@@ -71,23 +71,34 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
           (l) => l.id == widget.varTransaction.transactionLabelId,
         );
     _isExpense = widget.varTransaction.value < 0;
-    _valueController.text = widget.varTransaction.value.abs().toString();
     _descriptionController.text = widget.varTransaction.description ?? '';
+
+    WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    final locale = Localizations.localeOf(context).toString();
+
+    _valueController.text = CurrencyInputFormatter.formatValue(
+      value: widget.varTransaction.value.abs(),
+      locale: locale,
+    );
 
     if (widget.varTransaction.compensations != null) {
       for (final e in widget.varTransaction.compensations!.entries) {
         final topic = _allTopics.firstWhere((t) => t.id == e.value.topicId);
         _compensations.add(
           _CompensationEntry.withData(
-            e.key,
             topic,
-            e.value.value.abs().toString(),
+            e.value.value.abs(),
+            Localizations.localeOf(context),
           ),
         );
       }
     }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) => _validateForm());
   }
 
   @override
@@ -183,8 +194,9 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                               (_) => _validateForm(),
                             );
                           },
-                          validator: (value) =>
-                              value == null ? at.itemInvalid(at.category) : null,
+                          validator: (value) => value == null
+                              ? at.itemInvalid(at.category)
+                              : null,
                         ),
                         SizedBox(height: setupTheme.sectionSpacing),
 
@@ -216,7 +228,10 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                         // --- SEGMENTED POSITIVE/NEGATIVE ---
                         SegmentedButton<bool>(
                           segments: [
-                            ButtonSegment(value: true, label: Text(at.negative)),
+                            ButtonSegment(
+                              value: true,
+                              label: Text(at.negative),
+                            ),
                             ButtonSegment(
                               value: false,
                               label: Text(at.positive),
@@ -301,7 +316,11 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                                           border: const OutlineInputBorder(),
                                         ),
                                         inputFormatters: [
-                                          CurrencyInputFormatter(),
+                                          CurrencyInputFormatter(
+                                            locale: Localizations.localeOf(
+                                              context,
+                                            ).toString(),
+                                          ),
                                         ],
                                         onChanged: (_) => _validateForm(),
                                         validator: (v) {
@@ -412,7 +431,13 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                             labelText: at.value,
                             border: const OutlineInputBorder(),
                           ),
-                          inputFormatters: [CurrencyInputFormatter()],
+                          inputFormatters: [
+                            CurrencyInputFormatter(
+                              locale: Localizations.localeOf(
+                                context,
+                              ).toString(),
+                            ),
+                          ],
                           keyboardType: TextInputType.number,
                           onChanged: (_) => _validateForm(),
                           validator: (value) {
@@ -470,7 +495,11 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                                                 null,
                                                 null,
                                                 _selectedTransactionLabel?.id,
-                                                _descriptionController.text.isNotEmpty ? '${at.compensation}": ${_descriptionController.text}' : null,
+                                                _descriptionController
+                                                        .text
+                                                        .isNotEmpty
+                                                    ? '${at.compensation}": ${_descriptionController.text}'
+                                                    : null,
                                                 null,
                                                 null,
                                                 null,
@@ -498,7 +527,11 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                                                     null,
                                                     _selectedTransactionLabel
                                                         ?.id,
-                                                    _descriptionController.text.isNotEmpty ? '${at.compensation}": ${_descriptionController.text}' : null,
+                                                    _descriptionController
+                                                            .text
+                                                            .isNotEmpty
+                                                        ? '${at.compensation}": ${_descriptionController.text}'
+                                                        : null,
                                                     null,
                                                     null,
                                                     null,
@@ -583,7 +616,10 @@ class _CompensationEntry {
 
   _CompensationEntry();
 
-  _CompensationEntry.withData(this.id, this.topic, String value) {
-    valueController.text = value.toString();
+  _CompensationEntry.withData(this.topic, int value, Locale locale) {
+    valueController.text = CurrencyInputFormatter.formatValue(
+      value: value.abs(),
+      locale: locale.toString(),
+    );
   }
 }

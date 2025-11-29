@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/transaction_label.dart';
@@ -7,6 +6,7 @@ import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
+import 'package:organizer/presentation/widgets/currency_text.dart';
 import 'package:organizer/presentation/widgets/elements/users/user_icon.dart';
 import 'package:provider/provider.dart';
 
@@ -78,14 +78,6 @@ class FixTransactionActiveCard extends StatelessWidget {
           .firstWhere((t) => t.id == fixTransaction.transactionLabelId);
     }
 
-    final valueColor = fixTransaction.value >= 0
-        ? Colors.green
-        : theme.colorScheme.error;
-
-    final formattedValue = NumberFormat.currency(
-      symbol: '€',
-    ).format(fixTransaction.value / 100);
-
     return Card(
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -98,13 +90,11 @@ class FixTransactionActiveCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    formattedValue,
+                  CurrencyText(
+                    value: fixTransaction.value / 100,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: valueColor,
                     ),
-                    textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 6),
 

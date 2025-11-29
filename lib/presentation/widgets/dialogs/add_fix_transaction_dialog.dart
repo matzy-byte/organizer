@@ -7,7 +7,7 @@ import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/transaction_label.dart';
-import 'package:organizer/core/utils/currency_formatter.dart';
+import 'package:organizer/core/utils/currency_input_formatter.dart';
 import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
@@ -246,7 +246,10 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                         // --- SEGMENTED EXPENSE ---
                         SegmentedButton<bool>(
                           segments: [
-                            ButtonSegment(value: true, label: Text(at.negative)),
+                            ButtonSegment(
+                              value: true,
+                              label: Text(at.negative),
+                            ),
                             ButtonSegment(
                               value: false,
                               label: Text(at.positive),
@@ -310,11 +313,15 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                                 onChanged: (_) => _validateForm(),
                                 validator: (v) {
                                   if (v == null || v.isEmpty) {
-                                    return at.itemInvalid('${at.interval} ${at.count}');
+                                    return at.itemInvalid(
+                                      '${at.interval} ${at.count}',
+                                    );
                                   }
                                   final n = int.tryParse(v);
                                   if (n == null || n <= 0) {
-                                    return at.itemInvalid('${at.interval} ${at.count}');
+                                    return at.itemInvalid(
+                                      '${at.interval} ${at.count}',
+                                    );
                                   }
                                   return null;
                                 },
@@ -383,8 +390,9 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                                           setState(() => comp.topic = v);
                                           _validateForm();
                                         },
-                                        validator: (v) =>
-                                            v == null ? at.itemInvalid(at.topic) : null,
+                                        validator: (v) => v == null
+                                            ? at.itemInvalid(at.topic)
+                                            : null,
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -397,7 +405,11 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                                           border: OutlineInputBorder(),
                                         ),
                                         inputFormatters: [
-                                          CurrencyInputFormatter(),
+                                          CurrencyInputFormatter(
+                                            locale: Localizations.localeOf(
+                                              context,
+                                            ).toString(),
+                                          ),
                                         ],
                                         keyboardType: TextInputType.number,
                                         onChanged: (_) => _validateForm(),
@@ -510,11 +522,18 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                             labelText: at.value,
                             border: OutlineInputBorder(),
                           ),
-                          inputFormatters: [CurrencyInputFormatter()],
+                          inputFormatters: [
+                            CurrencyInputFormatter(
+                              locale: Localizations.localeOf(
+                                context,
+                              ).toString(),
+                            ),
+                          ],
                           keyboardType: TextInputType.number,
                           onChanged: (_) => _validateForm(),
                           validator: (v) {
-                            if (v == null || v.isEmpty) return at.itemInvalid(at.value);
+                            if (v == null || v.isEmpty)
+                              return at.itemInvalid(at.value);
                             if (num.tryParse(
                                   v.replaceAll(RegExp(r'[^0-9]'), ''),
                                 ) ==

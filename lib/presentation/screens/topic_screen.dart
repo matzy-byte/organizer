@@ -71,6 +71,24 @@ class _TopicScreenState extends State<TopicScreen> {
           ),
         ),
         actions: [
+          PopupMenuButton<String>(
+            icon: const Icon(Icons.sync),
+            tooltip: 'synching',
+            onSelected: (value) {
+              if (value == 'update') {
+                // update repeated transactions
+              } else if (value == 'sync') {
+                // sync devices
+              }
+            },
+            itemBuilder: (context) => [
+              const PopupMenuItem(
+                value: 'update',
+                child: Text("Update repeated transactions"),
+              ),
+              const PopupMenuItem(value: 'sync', child: Text("Sync devices")),
+            ],
+          ),
           IconButton(
             icon: UserIcon(user: globals.user, size: 20),
             onPressed: () => Navigator.pushNamed(context, AppRoutes.start),
