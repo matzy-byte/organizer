@@ -18,6 +18,7 @@ import 'package:organizer/data/repositories/topic_repository.dart';
 import 'package:organizer/data/repositories/transaction_label_repository.dart';
 import 'package:organizer/data/repositories/user_repository.dart';
 import 'package:organizer/data/repositories/var_transaction_repository.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/file_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
@@ -101,6 +102,9 @@ class DesktopApp extends StatelessWidget {
       theme: AppTheme.light,
       initialRoute: isSetup ? AppRoutes.setup : AppRoutes.start,
       routes: AppRoutes.routes,
+      locale: globals.locale,
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
     );
   }
 }

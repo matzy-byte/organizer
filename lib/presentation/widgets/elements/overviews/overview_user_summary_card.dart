@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:organizer/core/models/user.dart';
 import 'package:organizer/core/models/var_transaction.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 
 class OverviewUserSummaryCard extends StatelessWidget {
   final Map<User, List<VarTransaction>> userTransactions;
@@ -64,6 +65,7 @@ class OverviewUserSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     final settlements = _calculateSettlements(userTransactions);
@@ -76,7 +78,7 @@ class OverviewUserSummaryCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'User Summary',
+              '${at.user} ${at.summary}',
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -105,7 +107,7 @@ class OverviewUserSummaryCard extends StatelessWidget {
 
               ...settlements.map(
                 (s) => Text(
-                  "${s.from.name} → ${s.to.name}: ${NumberFormat.currency(symbol: "€").format(s.amount / 100)}",
+                  '${s.from.name} → ${s.to.name}: ${NumberFormat.currency(symbol: "€").format(s.amount / 100)}',
                 ),
               ),
             ],

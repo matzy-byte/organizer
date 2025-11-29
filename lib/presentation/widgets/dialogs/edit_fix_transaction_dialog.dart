@@ -9,6 +9,7 @@ import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/transaction_label.dart';
 import 'package:organizer/core/utils/currency_formatter.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
@@ -142,6 +143,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final setupTheme = theme.extension<SetupTheme>()!;
     final transactionLabelProvider = context.read<TransactionLabelProvider>();
@@ -167,7 +169,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                       children: [
                         // --- TITLE ---
                         Text(
-                          'Edit Fix Transaction',
+                          '${at.edit} ${at.repeated} ${at.transaction}',
                           style: theme.textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -177,8 +179,8 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                         // --- CATEGORY ---
                         DropdownButtonFormField<Category>(
                           initialValue: _selectedCategory,
-                          decoration: const InputDecoration(
-                            labelText: 'Category',
+                          decoration: InputDecoration(
+                            labelText: at.category,
                             border: OutlineInputBorder(),
                           ),
                           items: _categories
@@ -202,7 +204,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                             );
                           },
                           validator: (v) =>
-                              v == null ? 'Please select a category' : null,
+                              v == null ? at.itemInvalid(at.category) : null,
                         ),
                         SizedBox(height: setupTheme.sectionSpacing),
 
@@ -210,8 +212,8 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                         if (_selectedCategory != null)
                           DropdownButtonFormField<Topic>(
                             initialValue: _selectedTopic,
-                            decoration: const InputDecoration(
-                              labelText: 'Topic',
+                            decoration: InputDecoration(
+                              labelText: at.topic,
                               border: OutlineInputBorder(),
                             ),
                             items: _topics
@@ -227,20 +229,20 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                               _validateForm();
                             },
                             validator: (v) =>
-                                v == null ? 'Please select a topic' : null,
+                                v == null ? at.itemInvalid(at.topic) : null,
                           ),
                         SizedBox(height: setupTheme.sectionSpacing),
 
                         // --- STATUS SEGMENTED ---
                         SegmentedButton<Status>(
-                          segments: const [
+                          segments: [
                             ButtonSegment(
                               value: Status.active,
-                              label: Text('Active'),
+                              label: Text(at.active),
                             ),
                             ButtonSegment(
                               value: Status.inactive,
-                              label: Text('Inactive'),
+                              label: Text(at.inactive),
                             ),
                           ],
                           selected: {_status},
@@ -251,11 +253,11 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
 
                         // --- EXPENSE SEGMENTED ---
                         SegmentedButton<bool>(
-                          segments: const [
-                            ButtonSegment(value: true, label: Text('Negative')),
+                          segments: [
+                            ButtonSegment(value: true, label: Text(at.negative)),
                             ButtonSegment(
                               value: false,
-                              label: Text('Positive'),
+                              label: Text(at.positive),
                             ),
                           ],
                           selected: {_isExpense},
@@ -267,37 +269,37 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                         // --- DATES ---
                         TextFormField(
                           readOnly: true,
-                          decoration: const InputDecoration(
-                            labelText: 'Start Date',
+                          decoration: InputDecoration(
+                            labelText: '${at.start} ${at.date}',
                             suffixIcon: Icon(Icons.calendar_today),
                             border: OutlineInputBorder(),
                           ),
                           controller: TextEditingController(
                             text: _startDate == null
                                 ? ''
-                                : "${_startDate!.toLocal()}".split(' ')[0],
+                                : '${_startDate!.toLocal()}'.split(' ')[0],
                           ),
                           onTap: () => _pickDate(context, true),
                           validator: (v) => (v == null || v.isEmpty)
-                              ? 'Please select a start date'
+                              ? at.itemInvalid('${at.start} ${at.date}')
                               : null,
                         ),
                         SizedBox(height: setupTheme.sectionSpacing),
                         TextFormField(
                           readOnly: true,
-                          decoration: const InputDecoration(
-                            labelText: 'End Date',
+                          decoration: InputDecoration(
+                            labelText: '${at.end} ${at.date}',
                             suffixIcon: Icon(Icons.calendar_today),
                             border: OutlineInputBorder(),
                           ),
                           controller: TextEditingController(
                             text: _endDate == null
                                 ? ''
-                                : "${_endDate!.toLocal()}".split(' ')[0],
+                                : '${_endDate!.toLocal()}'.split(' ')[0],
                           ),
                           onTap: () => _pickDate(context, false),
                           validator: (v) => (v == null || v.isEmpty)
-                              ? 'Please select an end date'
+                              ? at.itemInvalid('${at.end} ${at.date}')
                               : null,
                         ),
                         SizedBox(height: setupTheme.sectionSpacing),
@@ -309,19 +311,19 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                               flex: 2,
                               child: TextFormField(
                                 controller: _intervalCountController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Interval Count',
+                                decoration: InputDecoration(
+                                  labelText: '${at.interval} ${at.count}',
                                   border: OutlineInputBorder(),
                                 ),
                                 keyboardType: TextInputType.number,
                                 onChanged: (_) => _validateForm(),
                                 validator: (v) {
                                   if (v == null || v.isEmpty) {
-                                    return 'Enter interval';
+                                    return at.itemInvalid(at.interval);
                                   }
                                   final n = int.tryParse(v);
                                   if (n == null || n <= 0) {
-                                    return 'Enter positive number';
+                                    return at.itemInvalid(at.interval);
                                   }
                                   return null;
                                 },
@@ -332,8 +334,8 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                               flex: 3,
                               child: DropdownButtonFormField<IntervalUnit>(
                                 initialValue: _selectedIntervalUnit,
-                                decoration: const InputDecoration(
-                                  labelText: 'Interval Unit',
+                                decoration: InputDecoration(
+                                  labelText: '${at.interval} ${at.unit}',
                                   border: OutlineInputBorder(),
                                 ),
                                 items: IntervalUnit.values
@@ -356,7 +358,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
 
                         // --- COMPENSATIONS ---
                         ExpansionTile(
-                          title: const Text('Compensations'),
+                          title: Text(at.compensations),
                           children: [
                             ..._compensations.asMap().entries.map((entry) {
                               final index = entry.key;
@@ -372,8 +374,8 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                       flex: 3,
                                       child: DropdownButtonFormField<Topic>(
                                         initialValue: comp.topic,
-                                        decoration: const InputDecoration(
-                                          labelText: 'Topic',
+                                        decoration: InputDecoration(
+                                          labelText: at.topic,
                                           border: OutlineInputBorder(),
                                         ),
                                         items: _allTopics
@@ -381,7 +383,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                               (t) => DropdownMenuItem(
                                                 value: t,
                                                 child: Text(
-                                                  "${_categories.firstWhere((c) => c.id == t.categoryId).name}/${t.name}",
+                                                  '${_categories.firstWhere((c) => c.id == t.categoryId).name}/${t.name}',
                                                 ),
                                               ),
                                             )
@@ -391,7 +393,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                           _validateForm();
                                         },
                                         validator: (v) =>
-                                            v == null ? 'Select topic' : null,
+                                            v == null ? at.itemInvalid(at.topic) : null,
                                       ),
                                     ),
                                     const SizedBox(width: 8),
@@ -399,8 +401,8 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                       flex: 2,
                                       child: TextFormField(
                                         controller: comp.valueController,
-                                        decoration: const InputDecoration(
-                                          labelText: 'Value',
+                                        decoration: InputDecoration(
+                                          labelText: at.value,
                                           border: OutlineInputBorder(),
                                         ),
                                         inputFormatters: [
@@ -410,7 +412,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                         onChanged: (_) => _validateForm(),
                                         validator: (v) {
                                           if (v == null || v.isEmpty) {
-                                            return 'Enter value';
+                                            return at.itemInvalid(at.value);
                                           }
                                           if (num.tryParse(
                                                 v.replaceAll(
@@ -419,7 +421,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                                 ),
                                               ) ==
                                               null) {
-                                            return 'Invalid number';
+                                            return at.itemInvalid(at.value);
                                           }
                                           return null;
                                         },
@@ -446,7 +448,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                       _compensations.add(_CompensationEntry()),
                                 ),
                                 icon: const Icon(Icons.add),
-                                label: const Text('Add Compensation'),
+                                label: Text('${at.add} ${at.compensation}'),
                               ),
                             ),
                           ],
@@ -460,11 +462,11 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                             Expanded(
                               child: DropdownButtonFormField<TransactionLabel>(
                                 initialValue: _selectedTransactionLabel,
-                                decoration: const InputDecoration(
-                                  labelText: 'Label',
+                                decoration: InputDecoration(
+                                  labelText: at.label,
                                   border: OutlineInputBorder(),
                                 ),
-                                hint: const Text('None'),
+                                hint: Text(at.none),
                                 items: transactionLabelProvider
                                     .transactionLabels
                                     .map(
@@ -485,7 +487,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                             ),
                             const SizedBox(width: 8),
                             Tooltip(
-                              message: 'Manage Labels',
+                              message: '${at.manage} ${at.labels}',
                               child: IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () async {
@@ -507,20 +509,20 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                         // --- VALUE ---
                         TextFormField(
                           controller: _valueController,
-                          decoration: const InputDecoration(
-                            labelText: 'Value',
+                          decoration: InputDecoration(
+                            labelText: at.value,
                             border: OutlineInputBorder(),
                           ),
                           inputFormatters: [CurrencyInputFormatter()],
                           keyboardType: TextInputType.number,
                           onChanged: (_) => _validateForm(),
                           validator: (v) {
-                            if (v == null || v.isEmpty) return 'Enter value';
+                            if (v == null || v.isEmpty) return at.itemInvalid(at.value);
                             if (num.tryParse(
                                   v.replaceAll(RegExp(r'[^0-9]'), ''),
                                 ) ==
                                 null) {
-                              return 'Invalid number';
+                              return at.itemInvalid(at.value);
                             }
                             return null;
                           },
@@ -530,8 +532,8 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                         // --- DESCRIPTION ---
                         TextFormField(
                           controller: _descriptionController,
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
+                          decoration: InputDecoration(
+                            labelText: at.description,
                           ),
                           maxLines: 2,
                         ),
@@ -544,7 +546,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                           children: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: const Text('Cancel'),
+                              child: Text(at.cancel),
                             ),
                             const SizedBox(width: 12),
                             ElevatedButton(
@@ -607,7 +609,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                       Navigator.pop(context, true);
                                     }
                                   : null,
-                              child: const Text('Save'),
+                              child: Text(at.save),
                             ),
                           ],
                         ),

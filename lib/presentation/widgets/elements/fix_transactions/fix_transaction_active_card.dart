@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/transaction_label.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
@@ -61,6 +62,7 @@ class FixTransactionActiveCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     final user = context.read<UserProvider>().users.firstWhere(
@@ -81,7 +83,7 @@ class FixTransactionActiveCard extends StatelessWidget {
         : theme.colorScheme.error;
 
     final formattedValue = NumberFormat.currency(
-      symbol: "€",
+      symbol: '€',
     ).format(fixTransaction.value / 100);
 
     return Card(
@@ -132,8 +134,8 @@ class FixTransactionActiveCard extends StatelessWidget {
 
                   Text(
                     daysLeft == null
-                        ? "No upcoming payment"
-                        : "Next in $daysLeft day${daysLeft == 1 ? '' : 's'}",
+                        ? '${at.no} ${at.upcomingPayment}'
+                        : '${at.next} ${at.in_} $daysLeft ${daysLeft == 1 ? at.day : at.days}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.outline,
                     ),
@@ -150,7 +152,7 @@ class FixTransactionActiveCard extends StatelessWidget {
                   IconButton(
                     icon: Icon(Icons.edit, color: theme.colorScheme.secondary),
                     onPressed: () => edit(fixTransaction.id),
-                    tooltip: "Edit transaction",
+                    tooltip: '${at.edit} ${at.transaction}',
                   ),
                 ],
               ),

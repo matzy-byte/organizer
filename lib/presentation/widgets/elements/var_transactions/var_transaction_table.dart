@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:organizer/app/defaults.dart';
 import 'package:organizer/core/models/var_transaction.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
@@ -23,8 +24,10 @@ class VarTransactionTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
+    
     if (varTransactions.isEmpty) {
-      return const Center(child: Text('No variable transactions'));
+      return Center(child: Text(at.noItem(at.transactions)));
     }
 
     final userProvider = context.read<UserProvider>();
@@ -89,7 +92,7 @@ class VarTransactionTable extends StatelessWidget {
                           .where((l) => l.id == t.transactionLabelId)
                           .firstOrNull
                           ?.name ??
-                      'Loading ...',
+                      at.loading,
                 ),
               )
             : null;

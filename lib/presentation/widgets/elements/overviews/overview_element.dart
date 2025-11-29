@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/elements/overviews/overview_general.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,7 @@ class OverviewElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final items = context.watch<VarTransactionProvider>().varTransactions;
     final theme = Theme.of(context);
 
@@ -22,7 +24,7 @@ class OverviewElement extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Overview',
+              at.overview,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),

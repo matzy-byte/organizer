@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 
 class ColorWheelDialog extends StatefulWidget {
   final Color color;
@@ -21,6 +22,8 @@ class _ColorWheelDialog extends State<ColorWheelDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
+    
     return Dialog(
       insetPadding: EdgeInsets.all(16),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -41,14 +44,14 @@ class _ColorWheelDialog extends State<ColorWheelDialog> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
+                  child: Text(at.cancel),
                 ),
                 const SizedBox(width: 8),
                 ElevatedButton(
                   onPressed: () {
                     Navigator.pop(context, _selectedColor);
                   },
-                  child: const Text('Ok'),
+                  child: Text(at.okay),
                 ),
               ],
             ),

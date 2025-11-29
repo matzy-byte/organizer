@@ -6,6 +6,7 @@ import 'package:organizer/core/models/compensation_info.dart';
 import 'package:organizer/core/models/topic.dart';
 import 'package:organizer/core/models/transaction_label.dart';
 import 'package:organizer/core/utils/currency_formatter.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
@@ -108,6 +109,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final setupTheme = theme.extension<SetupTheme>()!;
     final transactionLabelProvider = context.read<TransactionLabelProvider>();
@@ -133,7 +135,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                       children: [
                         // --- TITLE ---
                         Text(
-                          'Add Var Transaction',
+                          '${at.add} ${at.transaction}',
                           style: theme.textTheme.headlineSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -143,8 +145,8 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                         // --- CATEGORY ---
                         DropdownButtonFormField<Category>(
                           initialValue: _selectedCategory,
-                          decoration: const InputDecoration(
-                            labelText: 'Category',
+                          decoration: InputDecoration(
+                            labelText: at.category,
                             border: OutlineInputBorder(),
                           ),
                           items: _categories
@@ -168,7 +170,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                             );
                           },
                           validator: (value) =>
-                              value == null ? 'Please select a category' : null,
+                              value == null ? at.itemInvalid(at.category) : null,
                         ),
                         SizedBox(height: setupTheme.sectionSpacing),
 
@@ -176,8 +178,8 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                         if (_selectedCategory != null)
                           DropdownButtonFormField<Topic>(
                             initialValue: _selectedTopic,
-                            decoration: const InputDecoration(
-                              labelText: 'Topic',
+                            decoration: InputDecoration(
+                              labelText: at.topic,
                               border: OutlineInputBorder(),
                             ),
                             items: _topics
@@ -193,17 +195,17 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                               _validateForm();
                             },
                             validator: (value) =>
-                                value == null ? 'Please select a topic' : null,
+                                value == null ? at.itemInvalid(at.topic) : null,
                           ),
                         SizedBox(height: setupTheme.sectionSpacing),
 
                         // --- SEGMENTED POSITIVE/NEGATIVE ---
                         SegmentedButton<bool>(
-                          segments: const [
-                            ButtonSegment(value: true, label: Text('Negative')),
+                          segments: [
+                            ButtonSegment(value: true, label: Text(at.negative)),
                             ButtonSegment(
                               value: false,
-                              label: Text('Positive'),
+                              label: Text(at.positive),
                             ),
                           ],
                           selected: <bool>{_isExpense},
@@ -217,25 +219,25 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                         TextFormField(
                           readOnly: true,
                           decoration: InputDecoration(
-                            labelText: 'Date',
+                            labelText: at.date,
                             border: const OutlineInputBorder(),
                             suffixIcon: const Icon(Icons.calendar_today),
                           ),
                           controller: TextEditingController(
                             text: _date == null
                                 ? ''
-                                : "${_date!.toLocal()}".split(' ')[0],
+                                : '${_date!.toLocal()}'.split(' ')[0],
                           ),
                           onTap: () => _pickDate(context),
                           validator: (value) => (value == null || value.isEmpty)
-                              ? 'Please select a start date'
+                              ? at.itemInvalid(at.date)
                               : null,
                         ),
                         SizedBox(height: setupTheme.sectionSpacing),
 
                         // --- COMPENSATIONS ---
                         ExpansionTile(
-                          title: const Text('Compensations'),
+                          title: Text(at.compensations),
                           children: [
                             ..._compensations.asMap().entries.map((entry) {
                               final index = entry.key;
@@ -251,8 +253,8 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                       flex: 3,
                                       child: DropdownButtonFormField<Topic>(
                                         initialValue: comp.topic,
-                                        decoration: const InputDecoration(
-                                          labelText: 'Topic',
+                                        decoration: InputDecoration(
+                                          labelText: at.topic,
                                           border: OutlineInputBorder(),
                                         ),
                                         items: _allTopics
@@ -270,7 +272,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                           _validateForm();
                                         },
                                         validator: (value) => value == null
-                                            ? 'Select a topic'
+                                            ? at.itemInvalid(at.topic)
                                             : null,
                                       ),
                                     ),
@@ -280,8 +282,8 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                       child: TextFormField(
                                         controller: comp.valueController,
                                         keyboardType: TextInputType.number,
-                                        decoration: const InputDecoration(
-                                          labelText: 'Value',
+                                        decoration: InputDecoration(
+                                          labelText: at.value,
                                           border: OutlineInputBorder(),
                                         ),
                                         inputFormatters: [
@@ -290,7 +292,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                         onChanged: (_) => _validateForm(),
                                         validator: (v) {
                                           if (v == null || v.isEmpty) {
-                                            return 'Enter value';
+                                            return at.itemInvalid(at.value);
                                           }
                                           if (num.tryParse(
                                                 v.replaceAll(
@@ -299,7 +301,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                                 ),
                                               ) ==
                                               null) {
-                                            return 'Invalid number';
+                                            return at.itemInvalid(at.value);
                                           }
                                           return null;
                                         },
@@ -330,7 +332,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                   );
                                 },
                                 icon: const Icon(Icons.add),
-                                label: const Text('Add Compensation'),
+                                label: Text('${at.add} ${at.compensation}'),
                               ),
                             ),
                           ],
@@ -344,11 +346,11 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                             Expanded(
                               child: DropdownButtonFormField<TransactionLabel>(
                                 initialValue: _selectedTransactionLabel,
-                                decoration: const InputDecoration(
-                                  labelText: 'Label',
+                                decoration: InputDecoration(
+                                  labelText: at.label,
                                   border: OutlineInputBorder(),
                                 ),
-                                hint: const Text('None'),
+                                hint: Text(at.none),
                                 items: transactionLabelProvider
                                     .transactionLabels
                                     .map(
@@ -369,7 +371,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                             ),
                             const SizedBox(width: 8),
                             Tooltip(
-                              message: 'Manage Labels',
+                              message: '${at.manage} ${at.labels}',
                               child: IconButton(
                                 icon: const Icon(Icons.edit),
                                 onPressed: () async {
@@ -391,8 +393,8 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                         // --- VALUE ---
                         TextFormField(
                           controller: _valueController,
-                          decoration: const InputDecoration(
-                            labelText: 'Value',
+                          decoration: InputDecoration(
+                            labelText: at.value,
                             border: OutlineInputBorder(),
                           ),
                           inputFormatters: [CurrencyInputFormatter()],
@@ -400,13 +402,13 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                           onChanged: (_) => _validateForm(),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Please enter value';
+                              return at.itemInvalid(at.value);
                             }
                             if (num.tryParse(
                                   value.replaceAll(RegExp(r'[^0-9]'), ''),
                                 ) ==
                                 null) {
-                              return 'Enter valid number';
+                              return at.itemInvalid(at.value);
                             }
                             return null;
                           },
@@ -416,8 +418,8 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                         // --- DESCRIPTION ---
                         TextFormField(
                           controller: _descriptionController,
-                          decoration: const InputDecoration(
-                            labelText: 'Description',
+                          decoration: InputDecoration(
+                            labelText: at.description,
                             border: OutlineInputBorder(),
                           ),
                           maxLines: 2,
@@ -430,7 +432,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                           children: [
                             TextButton(
                               onPressed: () => Navigator.pop(context),
-                              child: const Text('Cancel'),
+                              child: Text(at.cancel),
                             ),
                             const SizedBox(width: 8),
                             ElevatedButton(
@@ -453,7 +455,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                               globals.user.id,
                                               null,
                                               _selectedTransactionLabel?.id,
-                                              "Compensation: ${_descriptionController.text}",
+                                              '${at.compensation}: ${_descriptionController.text}',
                                               null,
                                               null,
                                               null,
@@ -509,7 +511,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                       Navigator.pop(context, true);
                                     }
                                   : null,
-                              child: const Text('Add'),
+                              child: Text(at.add),
                             ),
                           ],
                         ),

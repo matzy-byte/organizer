@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -43,6 +44,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final categoryProvider = context.read<CategoryProvider>();
     final theme = Theme.of(context);
     final setupTheme = theme.extension<SetupTheme>()!;
@@ -60,7 +62,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
               children: [
                 // --- TITLE ---
                 Text(
-                  'Add Category',
+                  '${at.add} ${at.category}',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -70,14 +72,14 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                 // --- NAME FIELD ---
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
-                    labelText: 'Category Name',
+                  decoration: InputDecoration(
+                    labelText: '${at.category} ${at.name}',
                     border: OutlineInputBorder(),
                   ),
                   onChanged: (value) => _validateForm(),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
-                      return 'Please enter a category name';
+                      return at.itemInvalid(at.name);
                     }
                     return null;
                   },
@@ -87,8 +89,8 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                 // --- DESCRIPTION FIELD ---
                 TextFormField(
                   controller: _descriptionController,
-                  decoration: const InputDecoration(
-                    labelText: 'Description',
+                  decoration: InputDecoration(
+                    labelText: at.description,
                     border: OutlineInputBorder(),
                   ),
                   maxLines: 2,
@@ -101,7 +103,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text(at.cancel),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -114,7 +116,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                               Navigator.pop(context);
                             }
                           : null,
-                      child: const Text('Add'),
+                      child: Text(at.add),
                     ),
                   ],
                 ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:organizer/app/routes.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/topic.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ class DrawerContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final categoryProvider = context.watch<CategoryProvider>();
     final topicProvider = context.watch<TopicProvider>();
@@ -24,7 +26,7 @@ class DrawerContent extends StatelessWidget {
 
           ListTile(
             leading: Icon(Icons.dashboard, color: theme.colorScheme.primary),
-            title: Text('Dashboard', style: theme.textTheme.titleMedium),
+            title: Text(at.dashboard, style: theme.textTheme.titleMedium),
             onTap: () {
               Navigator.pop(context);
               Navigator.pushNamed(context, AppRoutes.dashboard);
@@ -48,12 +50,14 @@ class DrawerContent extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context, ThemeData theme) {
+    final at = AppLocalizations.of(context)!;
+    
     return DrawerHeader(
       decoration: BoxDecoration(color: theme.colorScheme.primaryContainer),
       child: Align(
         alignment: Alignment.bottomLeft,
         child: Text(
-          'Navigation',
+          at.categories,
           style: theme.textTheme.headlineSmall?.copyWith(
             color: theme.colorScheme.onPrimaryContainer,
             fontWeight: FontWeight.bold,

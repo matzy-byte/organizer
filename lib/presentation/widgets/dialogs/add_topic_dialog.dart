@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 import 'package:organizer/core/models/category.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +50,7 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final categoryProvider = context.read<CategoryProvider>();
     final topicProvider = context.read<TopicProvider>();
     final theme = Theme.of(context);
@@ -76,7 +78,7 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
                     children: [
                       // --- TITLE ---
                       Text(
-                        'Add Topic',
+                        '${at.add} ${at.topic}',
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
@@ -86,8 +88,8 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
                       // --- CATEGORY DROPDOWN ---
                       DropdownButtonFormField<Category>(
                         initialValue: _selectedCategory,
-                        decoration: const InputDecoration(
-                          labelText: 'Select Category',
+                        decoration: InputDecoration(
+                          labelText: at.category,
                           border: OutlineInputBorder(),
                         ),
                         items: categoryProvider.categories
@@ -103,21 +105,21 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
                           _validateForm();
                         },
                         validator: (value) =>
-                            value == null ? 'Please select a category' : null,
+                            value == null ? at.itemInvalid(at.category) : null,
                       ),
                       SizedBox(height: setupTheme.itemSpacing),
 
                       // --- TOPIC NAME ---
                       TextFormField(
                         controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Topic Name',
+                        decoration: InputDecoration(
+                          labelText: '${at.topic} ${at.name}',
                           border: OutlineInputBorder(),
                         ),
                         onChanged: (value) => _validateForm(),
                         validator: (value) =>
                             (value == null || value.trim().isEmpty)
-                            ? 'Please enter a topic name'
+                            ? at.itemInvalid(at.topic)
                             : null,
                       ),
                       SizedBox(height: setupTheme.itemSpacing),
@@ -125,8 +127,8 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
                       // --- TOPIC DESCRIPTION ---
                       TextFormField(
                         controller: _descriptionController,
-                        decoration: const InputDecoration(
-                          labelText: 'Description',
+                        decoration: InputDecoration(
+                          labelText: at.description,
                           border: OutlineInputBorder(),
                         ),
                         maxLines: 2,
@@ -139,7 +141,7 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
                         children: [
                           TextButton(
                             onPressed: () => Navigator.pop(context),
-                            child: const Text('Cancel'),
+                            child: Text(at.cancel),
                           ),
                           const SizedBox(width: 8),
                           ElevatedButton(
@@ -160,7 +162,7 @@ class _AddTopicDialogState extends State<AddTopicDialog> {
                                     Navigator.pop(context);
                                   }
                                 : null,
-                            child: const Text('Add'),
+                            child: Text(at.add),
                           ),
                         ],
                       ),

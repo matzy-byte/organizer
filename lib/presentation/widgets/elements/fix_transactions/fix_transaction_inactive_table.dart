@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:provider/provider.dart';
@@ -23,12 +24,13 @@ class FixTransactionInactiveTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     if (fixTransactions.isEmpty) {
       return Center(
         child: Text(
-          'No inactive fix transactions',
+          at.noItem('${at.repeated} ${at.transactions}'),
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.outline,
           ),
@@ -109,7 +111,7 @@ class FixTransactionInactiveTable extends StatelessWidget {
               IconButton(
                 onPressed: () => edit(t.id),
                 icon: Icon(Icons.edit, color: theme.colorScheme.secondary),
-                tooltip: 'Edit transaction',
+                tooltip: '${at.edit} ${at.transaction}',
               ),
             ],
           ),

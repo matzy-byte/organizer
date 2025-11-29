@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 import 'package:organizer/core/utils/color_util.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -45,6 +46,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final userProvider = context.read<UserProvider>();
     final theme = Theme.of(context);
     final setupTheme = theme.extension<SetupTheme>()!;
@@ -66,14 +68,14 @@ class _AddUserDialogState extends State<AddUserDialog> {
                       flex: 2,
                       child: TextFormField(
                         controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'User Name',
+                        decoration: InputDecoration(
+                          labelText: '${at.user} ${at.name}',
                           border: OutlineInputBorder(),
                         ),
                         onChanged: (_) => _validateForm(),
                         validator: (value) =>
                             (value == null || value.trim().isEmpty)
-                            ? 'Please enter a user name'
+                            ? at.itemInvalid('${at.user} ${at.name}')
                             : null,
                       ),
                     ),
@@ -129,7 +131,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text(at.cancel),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -142,7 +144,7 @@ class _AddUserDialogState extends State<AddUserDialog> {
                               Navigator.pop(context, true);
                             }
                           : null,
-                      child: const Text('Add'),
+                      child: Text(at.add),
                     ),
                   ],
                 ),

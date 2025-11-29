@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
 import 'package:organizer/core/models/transaction_label.dart';
 import 'package:organizer/core/utils/color_util.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/widgets/color_wheel.dart';
 import 'package:provider/provider.dart';
@@ -53,6 +54,7 @@ class _AddTransactionLabelDialogState extends State<AddTransactionLabelDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final provider = context.read<TransactionLabelProvider>();
     final theme = Theme.of(context);
     final setupTheme = theme.extension<SetupTheme>()!;
@@ -69,7 +71,7 @@ class _AddTransactionLabelDialogState extends State<AddTransactionLabelDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  _isNew ? 'Add Transaction Label' : 'Edit Transaction Label',
+                  '${_isNew ? at.add : at.edit} ${at.transaction} ${at.label}',
                   style: theme.textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -82,13 +84,13 @@ class _AddTransactionLabelDialogState extends State<AddTransactionLabelDialog> {
                       flex: 2,
                       child: TextFormField(
                         controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Name',
+                        decoration: InputDecoration(
+                          labelText: '${at.label} ${at.name}',
                           border: OutlineInputBorder(),
                         ),
                         onChanged: (_) => _validateForm(),
                         validator: (v) => (v == null || v.trim().isEmpty)
-                            ? 'Enter a name'
+                            ? at.itemInvalid('${at.label} ${at.name}')
                             : null,
                       ),
                     ),
@@ -131,7 +133,7 @@ class _AddTransactionLabelDialogState extends State<AddTransactionLabelDialog> {
                   children: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Cancel'),
+                      child: Text(at.cancel),
                     ),
                     const SizedBox(width: 8),
                     ElevatedButton(
@@ -152,7 +154,7 @@ class _AddTransactionLabelDialogState extends State<AddTransactionLabelDialog> {
                               Navigator.pop(context, true);
                             }
                           : null,
-                      child: Text(_isNew ? 'Add' : 'Save'),
+                      child: Text(_isNew ? at.add : at.save),
                     ),
                   ],
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 
 class OptionsElement extends StatefulWidget {
   final DateTime? fromDate;
@@ -59,13 +60,15 @@ class _OptionsElementState extends State<OptionsElement> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
+    
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
           children: [
-            const Text(
-              'Options',
+            Text(
+              at.option,
               style: TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
@@ -74,7 +77,7 @@ class _OptionsElementState extends State<OptionsElement> {
                 Expanded(
                   child: Column(
                     children: [
-                      const Text('From'),
+                      Text(at.from),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -91,7 +94,7 @@ class _OptionsElementState extends State<OptionsElement> {
                 Expanded(
                   child: Column(
                     children: [
-                      const Text('To'),
+                      Text(at.to),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -115,8 +118,8 @@ class _OptionsElementState extends State<OptionsElement> {
                       vertical: 12,
                     ),
                   ),
-                  child: const Text(
-                    'OK',
+                  child: Text(
+                    at.okay,
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),

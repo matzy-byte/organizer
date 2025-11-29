@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/core/models/status.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/edit_fix_transaction_dialog.dart';
 import 'package:organizer/presentation/widgets/elements/fix_transactions/fix_transaction_active_card.dart';
@@ -13,6 +14,7 @@ class FixTransactionElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     final provider = context.watch<FixTransactionProvider>();
@@ -33,7 +35,7 @@ class FixTransactionElement extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Fix Transactions',
+                  '${at.repeated} ${at.transactions}',
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -63,10 +65,12 @@ class _ActiveSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
+
     if (active.isEmpty) {
       return Center(
         child: Text(
-          'No active fix transactions',
+          at.noItem('${at.active} ${at.transactions}'),
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       );
@@ -127,6 +131,7 @@ class _InactiveSectionState extends State<_InactiveSection> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     return Column(
@@ -141,7 +146,7 @@ class _InactiveSectionState extends State<_InactiveSection> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Inactive Transactions',
+                  '${at.inactive} ${at.transactions}',
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),

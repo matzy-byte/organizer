@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/app/routes.dart';
 import 'package:organizer/app/themes/extensions/setup_theme_extension.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:organizer/presentation/widgets/elements/setup/structure_setup.dart';
 import 'package:organizer/presentation/widgets/elements/setup/user_setup.dart';
@@ -11,6 +12,7 @@ class SetupScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final setupTheme = Theme.of(context).extension<SetupTheme>()!;
 
     return Scaffold(
@@ -27,7 +29,7 @@ class SetupScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          'Setup',
+                          at.setup,
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         SizedBox(height: setupTheme.sectionSpacing),
@@ -45,7 +47,7 @@ class SetupScreen extends StatelessWidget {
                             }
                             Navigator.pushNamed(context, AppRoutes.start);
                           },
-                          child: const Text('Finish Setup'),
+                          child: Text('${at.finish} ${at.setup}'),
                         ),
                       ],
                     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/widgets/elements/topics/topic_card.dart';
 import 'package:provider/provider.dart';
@@ -9,6 +10,8 @@ class TopicElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
+    
     final items = context.watch<TopicProvider>().topics.where(
       (t) => t.categoryId == categoryId,
     );
@@ -26,7 +29,7 @@ class TopicElement extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Topics',
+                at.topics,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -35,7 +38,7 @@ class TopicElement extends StatelessWidget {
               if (items.isEmpty)
                 Center(
                   child: Text(
-                    'No Topics found',
+                    at.noItem(at.topics),
                     style: theme.textTheme.bodyMedium,
                   ),
                 )

@@ -4,6 +4,7 @@ import 'package:organizer/app/defaults.dart';
 import 'package:organizer/core/models/user.dart';
 import 'package:organizer/core/models/var_transaction.dart';
 import 'package:organizer/core/utils/color_util.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:organizer/presentation/widgets/elements/overviews/overview_pie.dart';
@@ -22,6 +23,7 @@ class OverviewGeneral extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final filteredTransactions = isDashboard
         ? varTransactions.where((t) => t.varRefId == null).toList()
         : varTransactions;
@@ -151,7 +153,7 @@ class OverviewGeneral extends StatelessWidget {
                   SizedBox(
                     width: cardWidth,
                     child: OverviewPie(
-                      title: 'Expenses',
+                      title: at.expense,
                       data: transactions,
                       colorPalette: transactionColorPalette,
                     ),
@@ -160,7 +162,7 @@ class OverviewGeneral extends StatelessWidget {
                   SizedBox(
                     width: cardWidth,
                     child: OverviewPie(
-                      title: 'Compensations',
+                      title: at.compensation,
                       data: compensationTopics,
                       colorPalette: compensationColorPalette,
                     ),

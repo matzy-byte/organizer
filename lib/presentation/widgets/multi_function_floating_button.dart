@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/category.dart';
 import 'package:organizer/core/models/topic.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_category_dialog.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_fix_transaction_dialog.dart';
 import 'package:organizer/presentation/widgets/dialogs/add_topic_dialog.dart';
@@ -94,16 +95,18 @@ class _MultiFunctionFloatingButtonState
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
+    
     final actions = <Widget>[
       _buildActionButton(
         icon: Icons.person,
-        label: 'Add User',
+        label: '${at.add} ${at.user}',
         onTap: () =>
             showDialog(context: context, builder: (_) => AddUserDialog()),
       ),
       _buildActionButton(
         icon: Icons.label,
-        label: 'Manage Transaction Label',
+        label: '${at.manage} ${at.transaction} ${at.label}',
         onTap: () => showDialog(
           context: context,
           builder: (_) => ManageTransactionLabelsDialog(),
@@ -111,7 +114,7 @@ class _MultiFunctionFloatingButtonState
       ),
       _buildActionButton(
         icon: Icons.description,
-        label: 'Add Category',
+        label: '${at.add} ${at.category}',
         onTap: () => showDialog(
           context: context,
           builder: (_) => const AddCategoryDialog(),
@@ -119,7 +122,7 @@ class _MultiFunctionFloatingButtonState
       ),
       _buildActionButton(
         icon: Icons.table_chart,
-        label: 'Add Topic',
+        label: '${at.add} ${at.topic}',
         onTap: () => showDialog(
           context: context,
           builder: (_) => AddTopicDialog(category: widget.category),
@@ -127,7 +130,7 @@ class _MultiFunctionFloatingButtonState
       ),
       _buildActionButton(
         icon: Icons.schedule,
-        label: 'Add Fix Transaction',
+        label: '${at.add} ${at.repeated} ${at.transaction}',
         onTap: () async {
           final updated = await showDialog(
             context: context,
@@ -141,7 +144,7 @@ class _MultiFunctionFloatingButtonState
       ),
       _buildActionButton(
         icon: Icons.event,
-        label: 'Add Var Transaction',
+        label: '${at.add} ${at.transaction}',
         onTap: () async {
           final updated = await showDialog<bool>(
             context: context,

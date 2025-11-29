@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:organizer/core/models/var_transaction.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/edit_var_transaction_dialog.dart';
 import 'package:provider/provider.dart';
@@ -83,6 +84,7 @@ class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -100,16 +102,16 @@ class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Compensations',
+                      at.compensations,
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 12),
                     if (_varTransactions.isEmpty)
-                      const SizedBox(
+                      SizedBox(
                         height: 100,
-                        child: Center(child: Text('No compensations set')),
+                        child: Center(child: Text(at.noItem(at.compensations))),
                       )
                     else
                       Flexible(
@@ -179,7 +181,7 @@ class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
                                     Expanded(
                                       flex: 2,
                                       child: Text(
-                                        'Topic: ${widget.varTransaction.compensations![t.id]!.topicName}',
+                                        '${at.topic}: ${widget.varTransaction.compensations![t.id]!.topicName}',
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -228,7 +230,7 @@ class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
                       children: [
                         TextButton(
                           onPressed: () => Navigator.pop(context),
-                          child: const Text('Close'),
+                          child: Text(at.close),
                         ),
                       ],
                     ),

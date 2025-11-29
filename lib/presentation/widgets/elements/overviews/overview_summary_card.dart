@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 
 class OverviewSummaryCard extends StatelessWidget {
   final int totalValueIncome;
@@ -18,6 +19,7 @@ class OverviewSummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
     final netValue = totalValueIncome + totalValueExpenses;
@@ -33,7 +35,7 @@ class OverviewSummaryCard extends StatelessWidget {
         child: Column(
           children: [
             Text(
-              'Summary',
+              at.summary,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -41,18 +43,18 @@ class OverviewSummaryCard extends StatelessWidget {
             const SizedBox(height: 12),
 
             // ----- TRANSACTION VALUES -----
-            _SummaryRow(label: 'Income', value: totalValueIncome),
-            _SummaryRow(label: 'Expenses', value: totalValueExpenses),
+            _SummaryRow(label: at.income, value: totalValueIncome),
+            _SummaryRow(label: at.expense, value: totalValueExpenses),
 
             const SizedBox(height: 12),
 
             // ----- COMPENSATIONS -----
             _SummaryRow(
-              label: 'Compensation Income',
+              label: '${at.compensation} ${at.income}',
               value: -totalCompensationsIncome,
             ),
             _SummaryRow(
-              label: 'Compensation Expenses',
+              label: '${at.compensation} ${at.expense}',
               value: -totalCompensationsExpenses,
             ),
 
@@ -60,7 +62,7 @@ class OverviewSummaryCard extends StatelessWidget {
             const Divider(height: 20),
 
             // ----- NET -----
-            _SummaryRow(label: 'Net Total', value: netTotal, isBold: true),
+            _SummaryRow(label: at.total, value: netTotal, isBold: true),
           ],
         ),
       ),

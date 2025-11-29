@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
@@ -10,6 +11,7 @@ class ManageTransactionLabelsDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final transactionLabelProvider = context.watch<TransactionLabelProvider>();
     final fixTransactionProvider = context.read<FixTransactionProvider>();
     final varTransactionProvider = context.read<VarTransactionProvider>();
@@ -27,7 +29,7 @@ class ManageTransactionLabelsDialog extends StatelessWidget {
             children: [
               // Title
               Text(
-                'Manage Transaction Labels',
+                '${at.manage} ${at.transaction} ${at.labels}',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
@@ -37,7 +39,7 @@ class ManageTransactionLabelsDialog extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: TextButton.icon(
                   icon: const Icon(Icons.add),
-                  label: const Text('Add Label'),
+                  label: Text('${at.add} ${at.label}'),
                   onPressed: () async {
                     await showDialog<bool>(
                       context: context,
@@ -51,10 +53,10 @@ class ManageTransactionLabelsDialog extends StatelessWidget {
               // List of labels
               Expanded(
                 child: labels.isEmpty
-                    ? const Center(child: Text('No labels found'))
+                    ? Center(child: Text(at.noItem(at.labels)))
                     : ListView.separated(
                         itemCount: labels.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        separatorBuilder: (_, _) => const SizedBox(height: 8),
                         itemBuilder: (context, index) {
                           final label = labels[index];
                           return Card(
@@ -105,7 +107,7 @@ class ManageTransactionLabelsDialog extends StatelessWidget {
                 children: [
                   TextButton(
                     onPressed: () => Navigator.pop(context),
-                    child: const Text('Close'),
+                    child: Text(at.close),
                   ),
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/edit_var_transaction_dialog.dart';
 import 'package:organizer/presentation/widgets/elements/var_transactions/var_transaction_table.dart';
@@ -10,6 +11,7 @@ class VarTransactionElement extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final provider = context.watch<VarTransactionProvider>();
     final items = provider.varTransactions;
     final theme = Theme.of(context);
@@ -24,7 +26,7 @@ class VarTransactionElement extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Variable Transactions',
+              at.transactions,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -32,7 +34,7 @@ class VarTransactionElement extends StatelessWidget {
             const SizedBox(height: 12),
             if (items.isEmpty)
               Text(
-                'No transactions',
+                at.noItem(at.transactions),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
