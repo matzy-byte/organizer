@@ -27,6 +27,7 @@ import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> runDesktop() async {
   final db = await DriftProvider.instance;
@@ -47,6 +48,8 @@ Future<void> runDesktop() async {
 
   await fixTransactionService.runDueFixTransactions();
 
+  final prefs = await SharedPreferences.getInstance();
+  globals.locale.value = Locale(prefs.getString('locale') ?? 'en');
   globals.from = DateUtil.getFromCurrentMonth();
   globals.to = DateUtil.getToCurrentMonth();
 
@@ -96,15 +99,20 @@ class DesktopApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Organizer',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      initialRoute: isSetup ? AppRoutes.setup : AppRoutes.start,
-      routes: AppRoutes.routes,
-      locale: globals.locale,
-      supportedLocales: AppLocalizations.supportedLocales,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
+    return ValueListenableBuilder<Locale>(
+      valueListenable: globals.locale,
+      builder: (context, locale, _) {
+        return MaterialApp(
+          title: 'Organizer',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.light,
+          initialRoute: isSetup ? AppRoutes.setup : AppRoutes.start,
+          routes: AppRoutes.routes,
+          locale: locale,
+          supportedLocales: AppLocalizations.supportedLocales,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+        );
+      },
     );
   }
 }

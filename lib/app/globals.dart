@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/user.dart';
 
-Locale locale = Locale('de');
+ValueNotifier<Locale> locale = ValueNotifier(const Locale('en'));
 User user = User(
   id: -1,
   name: "undefined",
