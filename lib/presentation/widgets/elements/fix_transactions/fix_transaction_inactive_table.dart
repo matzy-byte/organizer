@@ -4,16 +4,19 @@ import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/main.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/widgets/currency_text.dart';
+import 'package:organizer/presentation/widgets/dialogs/alert_delete.dart';
 import 'package:provider/provider.dart';
 
 class FixTransactionInactiveTable extends StatelessWidget {
   final List<FixTransaction> fixTransactions;
   final IntCallback edit;
+  final IntCallback delete;
 
   const FixTransactionInactiveTable({
     super.key,
     required this.fixTransactions,
     required this.edit,
+    required this.delete,
   });
 
   int _finalValue(FixTransaction t) {
@@ -72,7 +75,7 @@ class FixTransactionInactiveTable extends StatelessWidget {
 
               const SizedBox(width: 10),
               SizedBox(
-                width: 50,
+                width: 200,
                 child: CurrencyText(
                   value: finalValue / 100,
                   style: theme.textTheme.bodyMedium?.copyWith(
@@ -104,6 +107,21 @@ class FixTransactionInactiveTable extends StatelessWidget {
                     color: theme.colorScheme.onSurface,
                   ),
                 ),
+              ),
+
+              IconButton(
+                onPressed: () async {
+                  final confirm = await AlertDelete.show(
+                    context,
+                    type: '${at.repeated} ${at.transaction}',
+                    value: '${at.repeated} ${at.transaction}',
+                  );
+                  if (confirm == true) {
+                    delete(t.id);
+                  }
+                },
+                icon: Icon(Icons.delete, color: theme.colorScheme.secondary),
+                tooltip: '${at.delete} ${at.transaction}',
               ),
 
               IconButton(

@@ -13,6 +13,7 @@ import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
+import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/manage_transaction_labels_dialog.dart';
 import 'package:provider/provider.dart';
 
@@ -629,6 +630,9 @@ class _AddFixTransactionDialogState extends State<AddFixTransactionDialog> {
                                       await fixTransactionProvider
                                           .fixTransactionService
                                           .runDueFixTransactions();
+                                        
+                                      // ignore: use_build_context_synchronously
+                                      await context.read<VarTransactionProvider>().reload();
                                       // ignore: use_build_context_synchronously
                                       Navigator.pop(context, true);
                                     }

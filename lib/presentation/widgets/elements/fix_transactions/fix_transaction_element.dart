@@ -4,6 +4,7 @@ import 'package:organizer/core/models/fix_transaction.dart';
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
+import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/edit_fix_transaction_dialog.dart';
 import 'package:organizer/presentation/widgets/elements/fix_transactions/fix_transaction_active_card.dart';
 import 'package:organizer/presentation/widgets/elements/fix_transactions/fix_transaction_inactive_table.dart';
@@ -174,6 +175,12 @@ class _InactiveSectionState extends State<_InactiveSection> {
                 builder: (context) =>
                     EditFixTransactionDialog(fixTransaction: f),
               );
+            },
+            delete: (id) async {
+              final fixTransactionProvider = context.read<FixTransactionProvider>();
+              await fixTransactionProvider.removeFixTransaction(id);
+              // ignore: use_build_context_synchronously
+              await context.read<VarTransactionProvider>().reload();
             },
           ),
         ],
