@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:organizer/app/globals.dart' as globals;
 import 'package:organizer/app/routes.dart';
 import 'package:organizer/l10n/app_localizations.dart';
+import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/drawer_content.dart';
 import 'package:organizer/presentation/widgets/elements/options/options_element.dart';
@@ -35,7 +36,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final fixTransactionProvider = context.read<FixTransactionProvider>();
     final at = AppLocalizations.of(context)!;
+
     return Scaffold(
       drawer: const Drawer(child: DrawerContent()),
       appBar: AppBar(
@@ -55,11 +58,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
           PopupMenuButton<String>(
             icon: const Icon(Icons.sync),
             tooltip: 'synching',
-            onSelected: (value) {
+            onSelected: (value) async {
               if (value == 'update') {
-                // update repeated transactions
+                await fixTransactionProvider.fixTransactionService
+                    .runDueFixTransactions();
               } else if (value == 'sync') {
-                // sync devices
+                Navigator.pushNamed(context, AppRoutes.synchronize);
               }
             },
             itemBuilder: (context) => [

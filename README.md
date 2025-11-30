@@ -32,6 +32,11 @@
 - ✓ Prepare export for all platforms
 - ✓ make db file within application data directory
 
+- ✓ Update ui on disconnects - req check
+- ✓ Implement data syncing logic
+- ✓ encrypt payload
+-  dublicate database file for rollback in case of errors or cancelation (before synchronization process)
+
 - UI:  
 Topic: Details, Overview month (+, -, rest, awaited to pay), FixTransaction cards (active and inactive), VarTransaction table with filter options  
 Category: Topic cards (Title, description, Overview month)  

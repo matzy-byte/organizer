@@ -4,6 +4,7 @@ import 'package:organizer/presentation/screens/dashboard_screen.dart';
 import 'package:organizer/presentation/screens/settings_screen.dart';
 import 'package:organizer/presentation/screens/setup_screen.dart';
 import 'package:organizer/presentation/screens/start_screen.dart';
+import 'package:organizer/presentation/screens/synchronize_screen.dart';
 import 'package:organizer/presentation/screens/topic_screen.dart';
 
 class AppRoutes {
@@ -13,6 +14,7 @@ class AppRoutes {
   static String settings = "/settings";
   static String category = "/category";
   static String topic = "/topic";
+  static String synchronize = "/synchronize";
   static Map<String, WidgetBuilder> routes = {
     setup: (context) => const SetupScreen(),
     start: (context) => const StartScreen(),
@@ -20,5 +22,6 @@ class AppRoutes {
     settings: (context) => const SettingsScreen(),
     category: (context) => const CategoryScreen(),
     topic: (context) => const TopicScreen(),
+    synchronize: (context) => const SynchronizeScreen(),
   };
 }

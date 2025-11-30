@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:organizer/app/globals.dart' as globals;
 import 'package:organizer/app/routes.dart';
 import 'package:organizer/core/models/category.dart';
+import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/drawer_content.dart';
@@ -53,6 +54,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
   @override
   Widget build(BuildContext context) {
     final category = ModalRoute.of(context)!.settings.arguments as Category;
+    final fixTransactionProvider = context.read<FixTransactionProvider>();
 
     return Scaffold(
       drawer: const Drawer(child: DrawerContent()),
@@ -73,11 +75,12 @@ class _CategoryScreenState extends State<CategoryScreen> {
           PopupMenuButton<String>(
             icon: const Icon(Icons.sync),
             tooltip: 'synching',
-            onSelected: (value) {
+            onSelected: (value) async {
               if (value == 'update') {
-                // update repeated transactions
+                await fixTransactionProvider.fixTransactionService
+                    .runDueFixTransactions();
               } else if (value == 'sync') {
-                // sync devices
+                Navigator.pushNamed(context, AppRoutes.synchronize);
               }
             },
             itemBuilder: (context) => [

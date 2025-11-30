@@ -54,6 +54,7 @@ class _TopicScreenState extends State<TopicScreen> {
   @override
   Widget build(BuildContext context) {
     final topic = ModalRoute.of(context)!.settings.arguments as Topic;
+    final fixTransactionProvider = context.read<FixTransactionProvider>();
 
     return Scaffold(
       drawer: const Drawer(child: DrawerContent()),
@@ -74,11 +75,12 @@ class _TopicScreenState extends State<TopicScreen> {
           PopupMenuButton<String>(
             icon: const Icon(Icons.sync),
             tooltip: 'synching',
-            onSelected: (value) {
+            onSelected: (value) async {
               if (value == 'update') {
-                // update repeated transactions
+                await fixTransactionProvider.fixTransactionService
+                    .runDueFixTransactions();
               } else if (value == 'sync') {
-                // sync devices
+                Navigator.pushNamed(context, AppRoutes.synchronize);
               }
             },
             itemBuilder: (context) => [

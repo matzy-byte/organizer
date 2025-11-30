@@ -4,6 +4,8 @@ import 'package:organizer/app/globals.dart' as globals;
 import 'package:organizer/core/services/category_service.dart';
 import 'package:organizer/core/services/file_service.dart';
 import 'package:organizer/core/services/fix_transaction_service.dart';
+import 'package:organizer/core/services/synchronization_service_desktop.dart';
+import 'package:organizer/core/services/synchronization_service_mobile.dart';
 import 'package:organizer/core/services/topic_service.dart';
 import 'package:organizer/core/services/transaction_label_service.dart';
 import 'package:organizer/core/services/user_service.dart';
@@ -22,6 +24,8 @@ import 'package:organizer/plattform_entrypoints/mobile_app.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/file_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
+import 'package:organizer/presentation/state/synchronization_provider_desktop.dart';
+import 'package:organizer/presentation/state/synchronization_provider_mobile.dart';
 import 'package:organizer/presentation/state/topic_provider.dart';
 import 'package:organizer/presentation/state/transaction_label_provider.dart';
 import 'package:organizer/presentation/state/user_provider.dart';
@@ -53,8 +57,8 @@ Future<void> run() async {
   );
   final userService = UserService(UserRepositoryDrift(db));
   final fileService = FileService(FileRepositoryDrift(db));
-
-  await fixTransactionService.runDueFixTransactions();
+  final synchronizationServiceDesktop = SynchronizationServiceDesktop(db);
+  final synchronizationServiceMobile = SynchronizationServiceMobile(db);
 
   final prefs = await SharedPreferences.getInstance();
   globals.locale.value = Locale(prefs.getString('locale') ?? 'en');
@@ -91,9 +95,14 @@ Future<void> run() async {
             varTransactionService: varTransactionService,
           ),
         ),
-
         ChangeNotifierProvider(
           create: (_) => FileProvider(fileService: fileService),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SynchronizationProviderDesktop(synchronizationServiceDesktop),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => SynchronizationProviderMobile(synchronizationServiceMobile),
         ),
       ],
       child: isDesktop
