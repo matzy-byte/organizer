@@ -4,9 +4,9 @@ import 'package:organizer/app/routes.dart';
 import 'package:organizer/app/themes/app_theme.dart';
 import 'package:organizer/l10n/app_localizations.dart';
 
-class DesktopApp extends StatelessWidget {
+class MobileApp extends StatelessWidget {
   final bool isSetup;
-  const DesktopApp({super.key, required this.isSetup});
+  const MobileApp({super.key, required this.isSetup});
 
   @override
   Widget build(BuildContext context) {
