@@ -18,7 +18,7 @@ class CurrencyText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final locale = Localizations.localeOf(context).toString();
+    final locale = Localizations.localeOf(context).languageCode;
 
     final symbol = currencyCode == null
         ? NumberFormat.simpleCurrency(locale: locale).currencySymbol

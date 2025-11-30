@@ -9,7 +9,6 @@ import 'package:organizer/data/database/tables/transaction_labels.dart';
 import 'package:organizer/data/database/tables/users.dart';
 import 'package:organizer/data/database/tables/var_transactions.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
 import 'package:organizer/core/models/status.dart';
 import 'package:organizer/core/models/interval_unit.dart';
@@ -50,10 +49,20 @@ class AppDatabase extends _$AppDatabase {
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    final dir = await getApplicationDocumentsDirectory();
-    final path = p.join(dir.path, 'organizer.db');
+    late io.File dbFile;
+    if (io.Platform.isWindows || io.Platform.isLinux) {
+      final exe = io.File(io.Platform.resolvedExecutable);
+      dbFile = io.File('${exe.parent.path}/organizer.sqlite');
+    } else if (io.Platform.isMacOS) {
+      final dir = await getApplicationSupportDirectory();
+      dbFile = io.File('${dir.path}/organizer.sqlite');
+    } else if (io.Platform.isAndroid) {
+      final dir = await getApplicationDocumentsDirectory();
+      dbFile = io.File('${dir.path}/organizer.sqlite');
+    } else {
+    }
     return NativeDatabase(
-      io.File(path),
+      dbFile,
       setup: (database) => database.execute('PRAGMA foreign_keys = ON'),
     );
   });

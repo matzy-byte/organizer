@@ -107,6 +107,8 @@ class _ActiveSection extends StatelessWidget {
                         builder: (context) =>
                             EditFixTransactionDialog(fixTransaction: f),
                       );
+                      // ignore: use_build_context_synchronously
+                      context.read<FixTransactionProvider>().reload();
                     },
                   ),
                 ),

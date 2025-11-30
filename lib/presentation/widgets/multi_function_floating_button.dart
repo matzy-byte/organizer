@@ -181,8 +181,8 @@ class _MultiFunctionFloatingButtonState
 
         // Floating main button
         Positioned(
-          bottom: 16,
-          right: 16,
+          bottom: 4,
+          right: 4,
           child: FloatingActionButton(
             onPressed: _toggle,
             backgroundColor: Theme.of(context).colorScheme.primary,

@@ -29,6 +29,9 @@
 - ✓ Summary card split in expenses and additions
 - ✓ Global date selection (from and to filtering)
 
+- ✓ Prepare export for all platforms
+- ✓ make db file within application data directory
+
 - UI:  
 Topic: Details, Overview month (+, -, rest, awaited to pay), FixTransaction cards (active and inactive), VarTransaction table with filter options  
 Category: Topic cards (Title, description, Overview month)  

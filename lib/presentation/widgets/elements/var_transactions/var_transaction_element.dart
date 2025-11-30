@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:organizer/l10n/app_localizations.dart';
+import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/var_transaction_provider.dart';
 import 'package:organizer/presentation/widgets/dialogs/edit_var_transaction_dialog.dart';
 import 'package:organizer/presentation/widgets/elements/var_transactions/var_transaction_table.dart';
@@ -52,7 +53,11 @@ class VarTransactionElement extends StatelessWidget {
                         EditVarTransactionDialog(varTransaction: v),
                   );
                 },
-                delete: (id) async => await provider.removeVarTransaction(id),
+                delete: (id) async {
+                  await provider.removeVarTransaction(id);
+                  // ignore: use_build_context_synchronously
+                  context.read<FixTransactionProvider>().reload();
+                },
               ),
           ],
         ),

@@ -1,5 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:organizer/app/globals.dart';
 
 class OverviewPie extends StatelessWidget {
   final String title;
@@ -22,6 +24,8 @@ class OverviewPie extends StatelessWidget {
     final colors =
         colorPalette ??
         [Colors.blue, Colors.orange, Colors.purple, Colors.cyan];
+
+    final formatter = NumberFormat.currency(locale: locale.value.languageCode, symbol: NumberFormat.simpleCurrency(locale: locale.value.languageCode).currencySymbol);
 
     return Card(
       elevation: 3,
@@ -84,7 +88,7 @@ class OverviewPie extends StatelessWidget {
                       color: colors[i % colors.length],
                     ),
                     const SizedBox(width: 4),
-                    Text('$name ($value)', style: theme.textTheme.bodySmall),
+                    Text('$name (${formatter.format(value / 100)})', style: theme.textTheme.bodySmall),
                   ],
                 );
               }).toList(),
