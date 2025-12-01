@@ -15,6 +15,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
     DateTime date,
     int value,
     int userRefId,
+    DateTime lastEdit,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
@@ -30,10 +31,8 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
             date: date,
             value: value,
             userRefId: userRefId,
-            lastEdit: DateTime.now(),
-            compensations: compensations == null
-                ? Value(null)
-                : Value(JsonUtil.compensation2String(compensations)),
+            lastEdit: lastEdit,
+            compensations: Value(JsonUtil.compensation2String(compensations)),
             transactionLabelId: Value(transactionLabelId),
             description: Value(description),
             fixRefId: Value(fixRefId),
@@ -154,7 +153,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
   }
 
   @override
-  Future<void> removeVarTransaction(int id) async {
+  Future<void> deleteVarTransaction(int id) async {
     await db.transaction(() async {
       final row = await (db.select(
         db.varTransactions,
@@ -183,7 +182,7 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
       if (row.compensations != null) {
         final children = JsonUtil.string2CompensationInfo(row.compensations)!;
         for (final childId in children.keys) {
-          await removeVarTransaction(childId);
+          await deleteVarTransaction(childId);
         }
       }
 
@@ -194,10 +193,11 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
   @override
   Future<void> updateVarTransaction(
     int id,
-    int? topicId,
-    DateTime? date,
-    int? value,
-    int? userRefId,
+    int topicId,
+    DateTime date,
+    int value,
+    int userRefId,
+    DateTime lastEdit,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
@@ -211,23 +211,17 @@ class VarTransactionRepositoryDrift implements VarTransactionRepository {
     await (db.update(db.varTransactions)..where((v) => v.id.equals(id))).write(
       VarTransactionsCompanion(
         id: Value(id),
-        topicId: topicId == null ? Value(row.topicId) : Value(topicId),
-        date: date == null ? Value(row.date) : Value(date),
-        value: value == null ? Value(row.value) : Value(value),
-        userRefId: userRefId == null ? Value(row.userRefId) : Value(userRefId),
-        lastEdit: Value(DateTime.now()),
-        compensations: compensations == null
-            ? Value(row.compensations)
-            : Value(JsonUtil.compensation2String(compensations)),
-        transactionLabelId: transactionLabelId == null
-            ? Value(row.transactionLabelId)
-            : Value(transactionLabelId),
-        description: description == null
-            ? Value(row.description)
-            : Value(description),
-        fixRefId: fixRefId == null ? Value(row.fixRefId) : Value(fixRefId),
-        varRefId: varRefId == null ? Value(row.varRefId) : Value(varRefId),
-        fileRefId: fileRefId == null ? Value(row.fileRefId) : Value(fileRefId),
+        topicId: Value(topicId),
+        date: Value(date),
+        value: Value(value),
+        userRefId: Value(userRefId),
+        lastEdit: Value(lastEdit),
+        compensations: Value(JsonUtil.compensation2String(compensations)),
+        transactionLabelId: Value(transactionLabelId),
+        description: Value(description),
+        fixRefId: Value(fixRefId),
+        varRefId: Value(varRefId),
+        fileRefId: Value(fileRefId),
       ),
     );
     final updatedRow = await (db.select(

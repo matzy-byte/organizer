@@ -12,6 +12,7 @@ class TopicRepositoryDrift implements TopicRepository {
   Future<void> addTopic(
     int categoryId,
     String name,
+    DateTime lastEdit,
     String? description,
   ) async {
     await db
@@ -20,7 +21,7 @@ class TopicRepositoryDrift implements TopicRepository {
           TopicsCompanion.insert(
             categoryId: categoryId,
             name: name,
-            lastEdit: DateTime.now(),
+            lastEdit: lastEdit,
             description: Value(description),
           ),
         );
@@ -45,7 +46,7 @@ class TopicRepositoryDrift implements TopicRepository {
   }
 
   @override
-  Future<void> removeTopic(int id) async {
+  Future<void> deleteTopic(int id) async {
     await db.transaction(() async {
       final varTransactions = await (db.select(
         db.varTransactions,
@@ -105,5 +106,24 @@ class TopicRepositoryDrift implements TopicRepository {
           ),
         )
         .toList();
+  }
+
+  @override
+  Future<void> updateTopic(
+    int id,
+    int categoryId,
+    String name,
+    DateTime lastEdit,
+    String? description,
+  ) async {
+    await (db.update(db.topics)..where((t) => t.id.equals(id))).write(
+      TopicsCompanion(
+        id: Value(id),
+        categoryId: Value(categoryId),
+        name: Value(name),
+        lastEdit: Value(lastEdit),
+        description: Value(description),
+      ),
+    );
   }
 }

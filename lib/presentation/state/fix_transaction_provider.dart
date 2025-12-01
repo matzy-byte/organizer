@@ -56,6 +56,7 @@ class FixTransactionProvider with ChangeNotifier {
       intervalUnit,
       value,
       userRefId,
+      DateTime.now(),
       compensations,
       transactionLabelId,
       description,
@@ -69,20 +70,20 @@ class FixTransactionProvider with ChangeNotifier {
   }
 
   Future<void> removeFixTransaction(int id) async {
-    await fixTransactionService.removeFixTransaction(id);
+    await fixTransactionService.deleteFixTransaction(id);
     await reload();
   }
 
   Future<void> updateFixTransaction(
     int id,
-    int? topicId,
-    Status? status,
-    DateTime? start,
-    DateTime? end,
-    int? intervalCount,
-    IntervalUnit? intervalUnit,
-    int? value,
-    int? userRefId,
+    int topicId,
+    Status status,
+    DateTime start,
+    DateTime end,
+    int intervalCount,
+    IntervalUnit intervalUnit,
+    int value,
+    int userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
@@ -100,6 +101,7 @@ class FixTransactionProvider with ChangeNotifier {
       intervalUnit,
       value,
       userRefId,
+      DateTime.now(),
       compensations,
       transactionLabelId,
       description,

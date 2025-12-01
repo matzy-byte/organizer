@@ -7,6 +7,7 @@ abstract class VarTransactionRepository {
     DateTime date,
     int value,
     int userRefId,
+    DateTime lastEdit,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
@@ -14,13 +15,14 @@ abstract class VarTransactionRepository {
     int? varRefId,
     int? fileRefId,
   );
-  Future<void> removeVarTransaction(int id);
+  Future<void> deleteVarTransaction(int id);
   Future<void> updateVarTransaction(
     int id,
-    int? topicId,
-    DateTime? date,
-    int? value,
-    int? userRefId,
+    int topicId,
+    DateTime date,
+    int value,
+    int userRefId,
+    DateTime lastEdit,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
@@ -40,8 +42,5 @@ abstract class VarTransactionRepository {
     DateTime from,
     DateTime to,
   );
-  Future<List<VarTransaction>> getByDate(
-    DateTime from,
-    DateTime to,
-  );
+  Future<List<VarTransaction>> getByDate(DateTime from, DateTime to);
 }

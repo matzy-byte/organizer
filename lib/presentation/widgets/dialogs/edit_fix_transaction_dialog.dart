@@ -89,7 +89,7 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _validateForm();
       _firstFieldFocusNode.requestFocus();
-  });
+    });
   }
 
   @override
@@ -641,11 +641,13 @@ class _EditFixTransactionDialogState extends State<EditFixTransactionDialog> {
                                                 : _descriptionController.text,
                                             widget.fixTransaction.latestDate,
                                             widget.fixTransaction.varRefId,
-                                            null,
+                                            widget.fixTransaction.fileRefId,
                                           );
 
                                       // ignore: use_build_context_synchronously
-                                      await context.read<VarTransactionProvider>().reload();
+                                      await context
+                                          .read<VarTransactionProvider>()
+                                          .reload();
                                       // ignore: use_build_context_synchronously
                                       Navigator.pop(context, true);
                                     }

@@ -8,15 +8,11 @@ class UserRepositoryDrift extends UserRepository {
   UserRepositoryDrift(this.db);
 
   @override
-  Future<void> addUser(String name, String color) async {
+  Future<void> addUser(String name, String color, DateTime lastEdit) async {
     await db
         .into(db.users)
         .insert(
-          UsersCompanion.insert(
-            name: name,
-            color: color,
-            lastEdit: DateTime.now(),
-          ),
+          UsersCompanion.insert(name: name, color: color, lastEdit: lastEdit),
         );
   }
 
@@ -36,18 +32,23 @@ class UserRepositoryDrift extends UserRepository {
   }
 
   @override
-  Future<void> removeUser(int id) async {
+  Future<void> deleteUser(int id) async {
     await (db.delete(db.users)..where((t) => t.id.equals(id))).go();
   }
 
   @override
-  Future<void> updateUser(int id, String name, String color) async {
+  Future<void> updateUser(
+    int id,
+    String name,
+    String color,
+    DateTime lastEdit,
+  ) async {
     await (db.update(db.users)..where((t) => t.id.equals(id))).write(
       UsersCompanion(
         id: Value(id),
         name: Value(name),
         color: Value(color),
-        lastEdit: Value(DateTime.now()),
+        lastEdit: Value(lastEdit),
       ),
     );
   }

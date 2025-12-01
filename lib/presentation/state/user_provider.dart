@@ -18,15 +18,15 @@ class UserProvider with ChangeNotifier {
     return await userService.getAllUsers();
   }
   Future<void> addUser(String name, String color) async {
-    await userService.addUser(name, color);
+    await userService.addUser(name, color, DateTime.now());
     await loadAllUsers();
   }
   Future<void> removeUser(int id) async {
-    await userService.removeUser(id);
+    await userService.deleteUser(id);
     await loadAllUsers();
   }
   Future<void> updateUser(int id, String name, String color) async {
-    await userService.updateUser(id, name, color);
+    await userService.updateUser(id, name, color, DateTime.now());
     await loadAllUsers();
   }
 }

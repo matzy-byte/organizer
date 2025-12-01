@@ -18,15 +18,15 @@ class TransactionLabelProvider with ChangeNotifier {
     return await transactionLabelService.getAllTransactionLabels();
   }
   Future<void> addTransactionLabel(String name, String color) async {
-    await transactionLabelService.addTransactionLabel(name, color);
+    await transactionLabelService.addTransactionLabel(name, color, DateTime.now());
     await loadAllTransactionLabels();
   }
   Future<void> removeTransactionLabel(int id) async {
-    await transactionLabelService.removeTransactionLabel(id);
+    await transactionLabelService.deleteTransactionLabel(id);
     await loadAllTransactionLabels();
   }
   Future<void> updateTransactionLabel(int id, String name, String color) async {
-    await transactionLabelService.updateTransactionLabel(id, name, color);
+    await transactionLabelService.updateTransactionLabel(id, name, color, DateTime.now());
     await loadAllTransactionLabels();
   }
 }

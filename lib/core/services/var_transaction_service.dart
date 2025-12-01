@@ -12,6 +12,7 @@ class VarTransactionService {
     DateTime date,
     int value,
     int userRefId,
+    DateTime lastEdit,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
@@ -23,6 +24,7 @@ class VarTransactionService {
     date,
     value,
     userRefId,
+    lastEdit,
     compensations,
     transactionLabelId,
     description,
@@ -30,15 +32,16 @@ class VarTransactionService {
     varRefId,
     fileRefId,
   );
-  Future<void> removeVarTransaction(int id) =>
-      repository.removeVarTransaction(id);
+  Future<void> deleteVarTransaction(int id) =>
+      repository.deleteVarTransaction(id);
 
   Future<void> updateVarTransaction(
     int id,
-    int? topicId,
-    DateTime? date,
-    int? value,
-    int? userRefId,
+    int topicId,
+    DateTime date,
+    int value,
+    int userRefId,
+    DateTime lastEdit,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
@@ -51,6 +54,7 @@ class VarTransactionService {
     date,
     value,
     userRefId,
+    lastEdit,
     compensations,
     transactionLabelId,
     description,
@@ -76,8 +80,6 @@ class VarTransactionService {
     DateTime to,
   ) => repository.getByDateForCategoryId(categoryId, from, to);
 
-  Future<List<VarTransaction>> getByDate(
-    DateTime from,
-    DateTime to,
-  ) => repository.getByDate(from, to);
+  Future<List<VarTransaction>> getByDate(DateTime from, DateTime to) =>
+      repository.getByDate(from, to);
 }

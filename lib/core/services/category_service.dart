@@ -14,8 +14,17 @@ class CategoryService {
     return cats;
   }
 
-  Future<void> addCategory(String name, String? description) =>
-      repository.addCategory(name, description);
-  Future<void> removeCategory(int categoryId) =>
-      repository.removeCategory(categoryId);
+  Future<void> addCategory(
+    String name,
+    DateTime lastEdit,
+    String? description,
+  ) => repository.addCategory(name, lastEdit, description);
+  Future<void> updateCategory(
+    int id,
+    String name,
+    DateTime lastEdit,
+    String? description,
+  ) => repository.updateCategory(id, name, lastEdit, description);
+  Future<void> deleteCategory(int categoryId) =>
+      repository.deleteCategory(categoryId);
 }

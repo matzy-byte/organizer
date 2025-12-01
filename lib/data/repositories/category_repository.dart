@@ -9,14 +9,18 @@ class CategoryRepositoryDrift implements CategoryRepository {
   CategoryRepositoryDrift(this.db);
 
   @override
-  Future<void> addCategory(String name, String? description) async {
+  Future<void> addCategory(
+    String name,
+    DateTime lastEdit,
+    String? description,
+  ) async {
     await db
         .into(db.categories)
         .insert(
           CategoriesCompanion.insert(
             name: name,
             description: Value(description),
-            lastEdit: DateTime.now(),
+            lastEdit: lastEdit,
           ),
         );
   }
@@ -37,7 +41,7 @@ class CategoryRepositoryDrift implements CategoryRepository {
   }
 
   @override
-  Future<void> removeCategory(int categoryId) async {
+  Future<void> deleteCategory(int categoryId) async {
     await db.transaction(() async {
       final topics = await (db.select(
         db.topics,
@@ -88,5 +92,22 @@ class CategoryRepositoryDrift implements CategoryRepository {
         db.categories,
       )..where((c) => c.id.equals(categoryId))).go();
     });
+  }
+
+  @override
+  Future<void> updateCategory(
+    int id,
+    String name,
+    DateTime lastEdit,
+    String? description,
+  ) async {
+    await (db.update(db.categories)..where((c) => c.id.equals(id))).write(
+      CategoriesCompanion(
+        id: Value(id),
+        name: Value(name),
+        lastEdit: Value(lastEdit),
+        description: Value(description),
+      ),
+    );
   }
 }

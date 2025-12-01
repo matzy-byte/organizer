@@ -21,6 +21,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
     IntervalUnit intervalUnit,
     int value,
     int userRefId,
+    DateTime lastEdit,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
@@ -40,7 +41,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
             intervalUnit: intervalUnit,
             value: value,
             userRefId: userRefId,
-            lastEdit: DateTime.now(),
+            lastEdit: lastEdit,
             compensations: compensations == null
                 ? Value(null)
                 : Value(JsonUtil.compensation2String(compensations)),
@@ -112,7 +113,7 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
   }
 
   @override
-  Future<void> removeFixTransaction(int id) async {
+  Future<void> deleteFixTransaction(int id) async {
     await db.transaction(() async {
       final varTransactions = await (db.select(
         db.varTransactions,
@@ -142,14 +143,15 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
   @override
   Future<void> updateFixTransaction(
     int id,
-    int? topicId,
-    Status? status,
-    DateTime? start,
-    DateTime? end,
-    int? intervalCount,
-    IntervalUnit? intervalUnit,
-    int? value,
-    int? userRefId,
+    int topicId,
+    Status status,
+    DateTime start,
+    DateTime end,
+    int intervalCount,
+    IntervalUnit intervalUnit,
+    int value,
+    int userRefId,
+    DateTime lastEdit,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
@@ -157,39 +159,24 @@ class FixTransactionRepositoryDrift implements FixTransactionRepository {
     int? varRefId,
     int? fileRefId,
   ) async {
-    final row = await (db.select(
-      db.fixTransactions,
-    )..where((v) => v.id.equals(id))).getSingle();
     await (db.update(db.fixTransactions)..where((v) => v.id.equals(id))).write(
       FixTransactionsCompanion(
         id: Value(id),
-        topicId: topicId == null ? Value(row.topicId) : Value(topicId),
-        status: status == null ? Value(row.status) : Value(status),
-        start: start == null ? Value(row.start) : Value(start),
-        end: end == null ? Value(row.end) : Value(end),
-        intervalCount: intervalCount == null
-            ? Value(row.intervalCount)
-            : Value(intervalCount),
-        intervalUnit: intervalUnit == null
-            ? Value(row.intervalUnit)
-            : Value(intervalUnit),
-        value: value == null ? Value(row.value) : Value(value),
-        userRefId: userRefId == null ? Value(row.userRefId) : Value(userRefId),
-        lastEdit: Value(DateTime.now()),
-        compensations: compensations == null
-            ? Value(row.compensations)
-            : Value(JsonUtil.compensation2String(compensations)),
-        transactionLabelId: transactionLabelId == null
-            ? Value(row.transactionLabelId)
-            : Value(transactionLabelId),
-        description: description == null
-            ? Value(row.description)
-            : Value(description),
-        latestDate: latestDate == null
-            ? Value(row.latestDate)
-            : Value(latestDate),
-        varRefId: varRefId == null ? Value(row.varRefId) : Value(varRefId),
-        fileRefId: fileRefId == null ? Value(row.fileRefId) : Value(fileRefId),
+        topicId: Value(topicId),
+        status: Value(status),
+        start: Value(start),
+        end: Value(end),
+        intervalCount: Value(intervalCount),
+        intervalUnit: Value(intervalUnit),
+        value: Value(value),
+        userRefId: Value(userRefId),
+        lastEdit: Value(lastEdit),
+        compensations: Value(JsonUtil.compensation2String(compensations)),
+        transactionLabelId: Value(transactionLabelId),
+        description: Value(description),
+        latestDate: Value(latestDate),
+        varRefId: Value(varRefId),
+        fileRefId: Value(fileRefId),
       ),
     );
   }

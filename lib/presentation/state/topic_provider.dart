@@ -19,12 +19,12 @@ class TopicProvider with ChangeNotifier {
   }
 
   Future<void> addTopic(int categoryId, String name, String? description) async {
-    await topicService.addTopic(categoryId, name, description);
+    await topicService.addTopic(categoryId, name, DateTime.now(), description);
     loadAllTopics();
   }
 
   Future<void> removeTopic(int id) async {
-    await topicService.removeTopic(id);
+    await topicService.deleteTopic(id);
     loadAllTopics();
   }
 }

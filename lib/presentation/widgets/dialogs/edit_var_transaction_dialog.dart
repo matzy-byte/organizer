@@ -77,7 +77,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _validateForm();
       _firstFieldFocusNode.requestFocus();
-  });
+    });
   }
 
   @override
@@ -492,23 +492,25 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                                           ),
                                         );
                                         if (c.id != null) {
+                                          final v = await varTransactionProvider
+                                              .get(c.id!);
                                           await varTransactionProvider
                                               .updateVarTransaction(
                                                 c.id!,
                                                 c.topic!.id,
-                                                null,
+                                                v.date,
                                                 _isExpense ? -1 * value : value,
-                                                null,
-                                                null,
+                                                v.userRefId,
+                                                v.compensations,
                                                 _selectedTransactionLabel?.id,
                                                 _descriptionController
                                                         .text
                                                         .isNotEmpty
                                                     ? '${at.compensation}": ${_descriptionController.text}'
                                                     : null,
-                                                null,
-                                                null,
-                                                null,
+                                                v.fixRefId,
+                                                v.varRefId,
+                                                v.fileRefId,
                                               );
                                           compensationsMap[c.id!] =
                                               CompensationInfo(
@@ -563,9 +565,9 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                                           .updateVarTransaction(
                                             widget.varTransaction.id,
                                             _selectedTopic!.id,
-                                            _date,
+                                            _date!,
                                             _isExpense ? -1 * value : value,
-                                            null,
+                                            widget.varTransaction.userRefId,
                                             compensationsMap.isEmpty
                                                 ? null
                                                 : compensationsMap,
@@ -578,9 +580,9 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                                                 : _descriptionController
                                                       .value
                                                       .text,
-                                            null,
-                                            null,
-                                            null,
+                                            widget.varTransaction.fixRefId,
+                                            widget.varTransaction.varRefId,
+                                            widget.varTransaction.fileRefId,
                                           );
 
                                       for (final id in compensationsMap.keys) {

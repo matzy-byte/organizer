@@ -12,7 +12,16 @@ class TopicService {
   Future<void> addTopic(
     int categoryId,
     String name,
+    DateTime lastEdit,
     String? description,
-  ) async => await repository.addTopic(categoryId, name, description);
-  Future<void> removeTopic(int id) async => await repository.removeTopic(id);
+  ) async => await repository.addTopic(categoryId, name, lastEdit, description);
+  Future<void> updateTopic(
+    int id,
+    int categoryId,
+    String name,
+    DateTime lastEdit,
+    String? description,
+  ) async =>
+      await repository.updateTopic(id, categoryId, name, lastEdit, description);
+  Future<void> deleteTopic(int id) async => await repository.deleteTopic(id);
 }

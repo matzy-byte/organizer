@@ -98,6 +98,7 @@ class VarTransactionProvider with ChangeNotifier {
       date,
       value,
       userRefId,
+      DateTime.now(),
       compensations,
       transactionLabelId,
       description,
@@ -110,16 +111,16 @@ class VarTransactionProvider with ChangeNotifier {
   }
 
   Future<void> removeVarTransaction(int id) async {
-    await varTransactionService.removeVarTransaction(id);
+    await varTransactionService.deleteVarTransaction(id);
     await reload();
   }
 
   Future<void> updateVarTransaction(
     int id,
-    int? topicId,
-    DateTime? date,
-    int? value,
-    int? userRefId,
+    int topicId,
+    DateTime date,
+    int value,
+    int userRefId,
     Map<int, CompensationInfo>? compensations,
     int? transactionLabelId,
     String? description,
@@ -133,6 +134,7 @@ class VarTransactionProvider with ChangeNotifier {
       date,
       value,
       userRefId,
+      DateTime.now(),
       compensations,
       transactionLabelId,
       description,

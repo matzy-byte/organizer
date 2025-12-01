@@ -10,15 +10,24 @@ class TransactionLabelService {
     return await repository.getAllTransactionLabels();
   }
 
-  Future<void> addTransactionLabel(String name, String color) async {
-    await repository.addTransactionLabel(name, color);
+  Future<void> addTransactionLabel(
+    String name,
+    String color,
+    DateTime lastEdit,
+  ) async {
+    await repository.addTransactionLabel(name, color, lastEdit);
   }
 
-  Future<void> removeTransactionLabel(int id) async {
-    await repository.removeTransactionLabel(id);
+  Future<void> deleteTransactionLabel(int id) async {
+    await repository.deleteTransactionLabel(id);
   }
 
-  Future<void> updateTransactionLabel(int id, String name, String color) async {
-    await repository.updateTransactionLabel(id, name, color);
+  Future<void> updateTransactionLabel(
+    int id,
+    String name,
+    String color,
+    DateTime lastEdit,
+  ) async {
+    await repository.updateTransactionLabel(id, name, color, lastEdit);
   }
 }
