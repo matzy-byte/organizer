@@ -475,7 +475,7 @@ class _AddVarTransactionDialogState extends State<AddVarTransactionDialog> {
                                               globals.user.id,
                                               null,
                                               _selectedTransactionLabel?.id,
-                                              '${at.compensation}: ${_descriptionController.text}',
+                                              '${at.compensation}${_descriptionController.text.isEmpty ? '' : ': ${_descriptionController.text}'}',
                                               null,
                                               null,
                                               null,

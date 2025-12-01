@@ -17,7 +17,7 @@ class MobileApp extends StatelessWidget {
           title: 'Organizer',
           debugShowCheckedModeBanner: false,
           theme: AppTheme.light,
-          initialRoute: isSetup ? AppRoutes.setup : AppRoutes.start,
+          initialRoute: isSetup ? AppRoutes.setupMobile : AppRoutes.start,
           routes: AppRoutes.routes,
           locale: locale,
           supportedLocales: AppLocalizations.supportedLocales,

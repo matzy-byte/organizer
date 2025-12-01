@@ -177,11 +177,10 @@ class SynchronizationServiceMobile {
 
     // Begin DB transaction to keep integrity
     await db.transaction(() async {
+      final Map<int, int> fixTransactionRefTable = {};
       for (final entry in _receivedTables.entries) {
         final tableName = entry.key;
         final rows = entry.value;
-
-        if (rows.isEmpty) continue;
 
         switch (tableName) {
           case 'users':
@@ -482,14 +481,17 @@ class SynchronizationServiceMobile {
               )..where((t) => t.id.equals(idValue))).getSingleOrNull();
 
               if (existing == null) {
+                fixTransactionRefTable[idValue] = row['varRefId'];
                 final companion = FixTransactionsCompanion(
                   id: Value(idValue),
                   topicId: Value(row['topicId'] as int),
-                  status: Value(row['status'] as Status),
+                  status: Value(Status.values.byName(row['status'])),
                   start: Value(parseDate((row['start']))!),
                   end: Value(parseDate((row['end']))!),
                   intervalCount: Value(row['intervalCount'] as int),
-                  intervalUnit: Value(row['intervalUnit'] as IntervalUnit),
+                  intervalUnit: Value(
+                    IntervalUnit.values.byName(row['intervalUnit']),
+                  ),
                   value: Value(row['value'] as int),
                   userRefId: Value(row['userRefId'] as int),
                   lastEdit: Value(incomingLastEdit),
@@ -497,18 +499,20 @@ class SynchronizationServiceMobile {
                   transactionLabelId: Value(row['transactionLabelId'] as int?),
                   description: Value(row['description'] as String?),
                   latestDate: Value(parseDate((row['latestDate']))!),
-                  varRefId: Value(row['varRefId'] as int?),
+                  varRefId: Value.absent(),
                   fileRefId: Value(row['fileRefId'] as int?),
                 );
                 await db.into(db.fixTransactions).insert(companion);
               } else if (incomingLastEdit.isAfter(existing.lastEdit)) {
                 final companion = FixTransactionsCompanion(
                   topicId: Value(row['topicId'] as int),
-                  status: Value(row['status'] as Status),
+                  status: Value(Status.values.byName(row['status'])),
                   start: Value(parseDate((row['start']))!),
                   end: Value(parseDate((row['end']))!),
                   intervalCount: Value(row['intervalCount'] as int),
-                  intervalUnit: Value(row['intervalUnit'] as IntervalUnit),
+                  intervalUnit: Value(
+                    IntervalUnit.values.byName(row['status']),
+                  ),
                   value: Value(row['value'] as int),
                   userRefId: Value(row['userRefId'] as int),
                   lastEdit: Value(incomingLastEdit),
@@ -609,6 +613,10 @@ class SynchronizationServiceMobile {
             }
             break;
         }
+      }
+      for (final e in fixTransactionRefTable.entries) {
+        await (db.update(db.fixTransactions)..where((f) => f.id.equals(e.key)))
+            .write(FixTransactionsCompanion(varRefId: Value(e.value)));
       }
     });
 

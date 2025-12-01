@@ -4,6 +4,16 @@
   "itemInvalid": "{item} is invalid.",
   "shureDelete": "Are you sure you want to delete {item}?",
 
+  "finishConfigurationAndWaitForMobile": "Finish configuration and wait for mobile",
+  "openSynchronizationOnMobile": "Open synchronization on mobile",
+  "mobileNotConnectedYet": "Mobile not connected yet ...",
+  "mobileConnected": "Mobile connected. Ready to syncronize!",
+  "deleteMissingEntries": "Delete missing entries?",
+  "mobileConnectedReadyToSynchronize": "Mobile connected. Synchronize?",
+  "synchronizing": "Synchronizing ...",
+  "waitingForDesktop": "Waiting for desktop ...",
+  "synchronizationComplete": "Synchronization complete!",
+
   "cancel": "Cancel",
   "save": "Save",
   "add": "Add",
@@ -58,5 +68,8 @@
   "loading": "Loading ...",
   "in_": "In",
   "day": "Day",
-  "days": "Days"
+  "days": "Days",
+  "desktop": "Desktop",
+  "mobile": "Mobile",
+  "synchronization": "Synchronization"
 }

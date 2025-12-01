@@ -96,6 +96,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
         final topic = _allTopics.firstWhere((t) => t.id == e.value.topicId);
         _compensations.add(
           _CompensationEntry.withData(
+            e.key,
             topic,
             e.value.value.abs(),
             Localizations.localeOf(context),
@@ -503,11 +504,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                                                 v.userRefId,
                                                 v.compensations,
                                                 _selectedTransactionLabel?.id,
-                                                _descriptionController
-                                                        .text
-                                                        .isNotEmpty
-                                                    ? '${at.compensation}": ${_descriptionController.text}'
-                                                    : null,
+                                                '${at.compensation}${_descriptionController.text.isEmpty ? '' : ': ${_descriptionController.text}'}',
                                                 v.fixRefId,
                                                 v.varRefId,
                                                 v.fileRefId,
@@ -535,11 +532,7 @@ class _EditVarTransactionDialogState extends State<EditVarTransactionDialog> {
                                                     null,
                                                     _selectedTransactionLabel
                                                         ?.id,
-                                                    _descriptionController
-                                                            .text
-                                                            .isNotEmpty
-                                                        ? '${at.compensation}": ${_descriptionController.text}'
-                                                        : null,
+                                                    '${at.compensation}${_descriptionController.text.isEmpty ? '' : ': ${_descriptionController.text}'}',
                                                     null,
                                                     null,
                                                     null,
@@ -625,7 +618,7 @@ class _CompensationEntry {
 
   _CompensationEntry();
 
-  _CompensationEntry.withData(this.topic, int value, Locale locale) {
+  _CompensationEntry.withData(this.id, this.topic, int value, Locale locale) {
     valueController.text = CurrencyInputFormatter.formatValue(
       value: value.abs(),
       locale: locale.toString(),

@@ -154,19 +154,39 @@ class SynchronizationServiceDesktop {
 
   Future<String> _getLocalIp() async {
     final interfaces = await NetworkInterface.list(
+      includeLoopback: false,
       type: InternetAddressType.IPv4,
     );
 
-    final wifiInterface = interfaces.firstWhere(
-      (i) => ['wlan0', 'Wi-Fi'].contains(i.name),
-      orElse: () => interfaces.first,
-    );
+    final activeInterfaces = interfaces.where((i) {
+      final name = i.name.toLowerCase();
+      return !name.contains('veth') &&
+          !name.contains('virtual') &&
+          !name.contains('hyper-v') &&
+          !name.contains('vmware');
+    }).toList();
 
-    final ipv4 = wifiInterface.addresses.firstWhere(
-      (a) => !a.isLoopback && a.type == InternetAddressType.IPv4,
+    if (activeInterfaces.isEmpty) {
+      return '127.0.0.1';
+    }
+
+    final wifiInterfaces = activeInterfaces.where((i) {
+      final name = i.name.toLowerCase();
+      return name.contains('wlan') ||
+          name.contains('wi-fi') ||
+          name.contains('en0');
+    }).toList();
+
+    final selectedInterface = wifiInterfaces.isNotEmpty
+        ? wifiInterfaces.first
+        : activeInterfaces.first;
+
+    final ipAddress = selectedInterface.addresses.firstWhere(
+      (a) => a.type == InternetAddressType.IPv4 && !a.isLoopback,
       orElse: () => InternetAddress('127.0.0.1'),
     );
-    return ipv4.address;
+
+    return ipAddress.address;
   }
 
   // Notify provider/UI
@@ -245,11 +265,10 @@ class SynchronizationServiceDesktop {
 
     // Begin DB transaction to keep integrity
     await db.transaction(() async {
+      final Map<int, int> fixTransactionRefTable = {};
       for (final entry in _receivedTables.entries) {
         final tableName = entry.key;
         final rows = entry.value;
-
-        if (rows.isEmpty) continue;
 
         switch (tableName) {
           case 'users':
@@ -550,14 +569,17 @@ class SynchronizationServiceDesktop {
               )..where((t) => t.id.equals(idValue))).getSingleOrNull();
 
               if (existing == null) {
+                fixTransactionRefTable[idValue] = row['varRefId'];
                 final companion = FixTransactionsCompanion(
                   id: Value(idValue),
                   topicId: Value(row['topicId'] as int),
-                  status: Value(row['status'] as Status),
+                  status: Value(Status.values.byName(row['status'])),
                   start: Value(parseDate((row['start']))!),
                   end: Value(parseDate((row['end']))!),
                   intervalCount: Value(row['intervalCount'] as int),
-                  intervalUnit: Value(row['intervalUnit'] as IntervalUnit),
+                  intervalUnit: Value(
+                    IntervalUnit.values.byName(row['intervalUnit']),
+                  ),
                   value: Value(row['value'] as int),
                   userRefId: Value(row['userRefId'] as int),
                   lastEdit: Value(incomingLastEdit),
@@ -565,18 +587,20 @@ class SynchronizationServiceDesktop {
                   transactionLabelId: Value(row['transactionLabelId'] as int?),
                   description: Value(row['description'] as String?),
                   latestDate: Value(parseDate((row['latestDate']))!),
-                  varRefId: Value(row['varRefId'] as int?),
+                  varRefId: Value.absent(),
                   fileRefId: Value(row['fileRefId'] as int?),
                 );
                 await db.into(db.fixTransactions).insert(companion);
               } else if (incomingLastEdit.isAfter(existing.lastEdit)) {
                 final companion = FixTransactionsCompanion(
                   topicId: Value(row['topicId'] as int),
-                  status: Value(row['status'] as Status),
+                  status: Value(Status.values.byName(row['status'])),
                   start: Value(parseDate((row['start']))!),
                   end: Value(parseDate((row['end']))!),
                   intervalCount: Value(row['intervalCount'] as int),
-                  intervalUnit: Value(row['intervalUnit'] as IntervalUnit),
+                  intervalUnit: Value(
+                    IntervalUnit.values.byName(row['status']),
+                  ),
                   value: Value(row['value'] as int),
                   userRefId: Value(row['userRefId'] as int),
                   lastEdit: Value(incomingLastEdit),
@@ -677,6 +701,10 @@ class SynchronizationServiceDesktop {
             }
             break;
         }
+      }
+      for (final e in fixTransactionRefTable.entries) {
+        await (db.update(db.fixTransactions)..where((f) => f.id.equals(e.key)))
+            .write(FixTransactionsCompanion(varRefId: Value(e.value)));
       }
     });
 

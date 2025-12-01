@@ -24,6 +24,33 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get finishConfigurationAndWaitForMobile => 'Finish configuration and wait for mobile';
+
+  @override
+  String get openSynchronizationOnMobile => 'Open synchronization on mobile';
+
+  @override
+  String get mobileNotConnectedYet => 'Mobile not connected yet ...';
+
+  @override
+  String get mobileConnected => 'Mobile connected. Ready to syncronize!';
+
+  @override
+  String get deleteMissingEntries => 'Delete missing entries?';
+
+  @override
+  String get mobileConnectedReadyToSynchronize => 'Mobile connected. Synchronize?';
+
+  @override
+  String get synchronizing => 'Synchronizing ...';
+
+  @override
+  String get waitingForDesktop => 'Waiting for desktop ...';
+
+  @override
+  String get synchronizationComplete => 'Synchronization complete!';
+
+  @override
   String get cancel => 'Cancel';
 
   @override
@@ -184,4 +211,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get days => 'Days';
+
+  @override
+  String get desktop => 'Desktop';
+
+  @override
+  String get mobile => 'Mobile';
+
+  @override
+  String get synchronization => 'Synchronization';
 }

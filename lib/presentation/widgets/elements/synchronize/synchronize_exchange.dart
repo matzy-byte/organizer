@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:organizer/app/routes.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/category_provider.dart';
 import 'package:organizer/presentation/state/fix_transaction_provider.dart';
 import 'package:organizer/presentation/state/synchronization_provider_desktop.dart';
@@ -24,6 +27,7 @@ class SynchronizeExchange extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final progress = isDesktop
         ? context.watch<SynchronizationProviderDesktop>().syncProgress
         : context.watch<SynchronizationProviderMobile>().syncProgress;
@@ -33,20 +37,20 @@ class SynchronizeExchange extends StatelessWidget {
         : context.watch<SynchronizationProviderMobile>().isSyncRunning;
 
     return AlertDialog(
-      title: const Text("Synchronization"),
+      title: Text(at.synchronization),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           if (isDesktop) ...[
             if (!isSyncRunning && progress < 1.0)
-              const Text("Phone connected. Ready to synchronize?")
+              Text(at.mobileConnectedReadyToSynchronize)
             else if (progress < 1.0) ...[
-              const Text("Synchronizing…"),
-              const SizedBox(height: 10),
+              Text(at.synchronizing),
+              SizedBox(height: 10),
               LinearProgressIndicator(value: progress),
             ] else
-              const Text(
-                "Synchronization complete!",
+              Text(
+                at.synchronizationComplete,
                 style: TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.bold,
@@ -54,12 +58,12 @@ class SynchronizeExchange extends StatelessWidget {
               ),
           ] else ...[
             if (progress < 1.0) ...[
-              const Text("Waiting for desktop…"),
+              Text(at.waitingForDesktop),
               const SizedBox(height: 10),
               LinearProgressIndicator(value: progress),
             ] else
-              const Text(
-                "Synchronization complete!",
+              Text(
+                at.synchronizationComplete,
                 style: TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.bold,
@@ -71,29 +75,37 @@ class SynchronizeExchange extends StatelessWidget {
       actions: [
         progress >= 1.0
             ? TextButton(
-                onPressed: () {
+                onPressed: () async {
                   if (isDesktop) {
-                    context.read<SynchronizationProviderDesktop>().stopServer();
+                    await context.read<SynchronizationProviderDesktop>().stopServer();
                   } else {
-                    context.read<SynchronizationProviderMobile>().disconnect();
+                    await context.read<SynchronizationProviderMobile>().disconnect();
                   }
-                  context.read<UserProvider>().loadAllUsers();
-                  context.read<TransactionLabelProvider>().loadAllTransactionLabels();
-                  context.read<CategoryProvider>().loadCategories();
-                  context.read<TopicProvider>().loadAllTopics();
-                  context.read<FixTransactionProvider>().reload();
-                  context.read<VarTransactionProvider>().reload();
+                  await context.read<UserProvider>().loadAllUsers();
+                  await context
+                      .read<TransactionLabelProvider>()
+                      .loadAllTransactionLabels();
+                  await context.read<CategoryProvider>().loadCategories();
+                  await context.read<TopicProvider>().loadAllTopics();
+                  await context.read<FixTransactionProvider>().reload();
+                  await context.read<VarTransactionProvider>().reload();
 
                   Navigator.of(context).pop();
-                  Navigator.of(
-                    context,
-                  ).pushReplacementNamed(AppRoutes.dashboard);
+                  if (isDesktop) {
+                    Navigator.of(
+                      context,
+                    ).pushReplacementNamed(AppRoutes.start);
+                    Navigator.of(context).pushNamed(AppRoutes.start);
+                  } else {
+                    Navigator.of(context).pushReplacementNamed(AppRoutes.start);
+                    Navigator.of(context).pushNamed(AppRoutes.start);
+                  }
                 },
-                child: const Text("Ok"),
+                child: Text(at.okay),
               )
-            : TextButton(onPressed: onCancel, child: const Text("Cancel")),
+            : TextButton(onPressed: onCancel, child: Text(at.cancel)),
         if (isDesktop && onStart != null && !isSyncRunning && progress < 1.0)
-          ElevatedButton(onPressed: onStart, child: const Text("Start")),
+          ElevatedButton(onPressed: onStart, child: Text(at.start)),
       ],
     );
   }

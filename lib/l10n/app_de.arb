@@ -4,6 +4,16 @@
   "itemInvalid": "{item} ist ungültig.",
   "shureDelete": "Bist du dir sicher {item} zu löschen?",
 
+  "finishConfigurationAndWaitForMobile": "Schließe Konfiguration ab und warte auf mobil",
+  "openSynchronizationOnMobile": "Öffne Synchronisation auf mobil",
+  "mobileNotConnectedYet": "Mobil noch nicht verbunden ...",
+  "mobileConnected": "Mobil verbunden. Bereit zu synchronisieren!",
+  "deleteMissingEntries": "Lösche fehlende Einträge?",
+  "mobileConnectedReadyToSynchronize": "Mobil verbunden. Synchronisieren?",
+  "synchronizing": "Synchronisiere ...",
+  "waitingForDesktop": "Warte auf Desktop ...",
+  "synchronizationComplete": "Synchronisation abgeschlossen!",
+
   "cancel": "Abbrechen",
   "save": "Speichern",
   "add": "Hinzufügen",
@@ -58,5 +68,8 @@
   "loading": "Lade ...",
   "in": "In",
   "day": "Tag",
-  "days": "Tagen"
+  "days": "Tagen",
+  "desktop": "Desktop",
+  "mobile": "Mobil",
+  "synchronization": "Synchronisation"
 }

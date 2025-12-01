@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:organizer/core/models/synchronization_configuration.dart';
+import 'package:organizer/l10n/app_localizations.dart';
 import 'package:organizer/presentation/state/synchronization_provider_desktop.dart';
 import 'package:organizer/presentation/widgets/elements/synchronize/synchronize_exchange.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +34,7 @@ class _SynchronizeConnectDesktopState extends State<SynchronizeConnectDesktop> {
 
   @override
   Widget build(BuildContext context) {
+    final at = AppLocalizations.of(context)!;
     final provider = context.watch<SynchronizationProviderDesktop>();
 
     // Configuration state
@@ -46,7 +48,7 @@ class _SynchronizeConnectDesktopState extends State<SynchronizeConnectDesktop> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: _startServer,
-              child: const Text("Finish setup and start waiting for client"),
+              child: Text(at.finishConfigurationAndWaitForMobile),
             ),
           ],
         ),
@@ -94,27 +96,28 @@ class _SynchronizeConnectDesktopState extends State<SynchronizeConnectDesktop> {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            "Open Synchronization On Mobile",
+          Text(
+            at.openSynchronizationOnMobile,
             style: TextStyle(fontSize: 18),
           ),
           const SizedBox(height: 20),
           QrImageView(data: qrData, size: 250),
           const SizedBox(height: 20),
           if (!provider.isClientConnected)
-            const Text("Client not connected yet…")
+            Text(at.mobileNotConnectedYet)
           else
-            const Text("Client connected. Ready to sync!"),
+            Text(at.mobileConnected),
         ],
       ),
     );
   }
 
   Widget _directionRow() {
+    final at = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        const Text("Desktop", style: TextStyle(fontSize: 18)),
+        Text(at.desktop, style: TextStyle(fontSize: 18)),
         IconButton(
           onPressed: () => setState(() => _desktopToMobile = !_desktopToMobile),
           icon: AnimatedRotation(
@@ -123,12 +126,13 @@ class _SynchronizeConnectDesktopState extends State<SynchronizeConnectDesktop> {
             child: const Icon(Icons.arrow_forward, size: 30),
           ),
         ),
-        const Text("Mobile", style: TextStyle(fontSize: 18)),
+        Text(at.mobile, style: TextStyle(fontSize: 18)),
       ],
     );
   }
 
   Widget _deleteMissingCheckbox() {
+    final at = AppLocalizations.of(context)!;
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -137,7 +141,7 @@ class _SynchronizeConnectDesktopState extends State<SynchronizeConnectDesktop> {
           onChanged: (v) => setState(() => _deleteMissing = v ?? false),
         ),
         const SizedBox(width: 8),
-        const Text("Delete missing entries?", style: TextStyle(fontSize: 16)),
+        Text(at.deleteMissingEntries, style: TextStyle(fontSize: 16)),
       ],
     );
   }

@@ -113,6 +113,60 @@ abstract class AppLocalizations {
   /// **'Are you sure you want to delete {item}?'**
   String shureDelete(Object item);
 
+  /// No description provided for @finishConfigurationAndWaitForMobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish configuration and wait for mobile'**
+  String get finishConfigurationAndWaitForMobile;
+
+  /// No description provided for @openSynchronizationOnMobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Open synchronization on mobile'**
+  String get openSynchronizationOnMobile;
+
+  /// No description provided for @mobileNotConnectedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile not connected yet ...'**
+  String get mobileNotConnectedYet;
+
+  /// No description provided for @mobileConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile connected. Ready to syncronize!'**
+  String get mobileConnected;
+
+  /// No description provided for @deleteMissingEntries.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete missing entries?'**
+  String get deleteMissingEntries;
+
+  /// No description provided for @mobileConnectedReadyToSynchronize.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile connected. Synchronize?'**
+  String get mobileConnectedReadyToSynchronize;
+
+  /// No description provided for @synchronizing.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronizing ...'**
+  String get synchronizing;
+
+  /// No description provided for @waitingForDesktop.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for desktop ...'**
+  String get waitingForDesktop;
+
+  /// No description provided for @synchronizationComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronization complete!'**
+  String get synchronizationComplete;
+
   /// No description provided for @cancel.
   ///
   /// In en, this message translates to:
@@ -436,6 +490,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Days'**
   String get days;
+
+  /// No description provided for @desktop.
+  ///
+  /// In en, this message translates to:
+  /// **'Desktop'**
+  String get desktop;
+
+  /// No description provided for @mobile.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile'**
+  String get mobile;
+
+  /// No description provided for @synchronization.
+  ///
+  /// In en, this message translates to:
+  /// **'Synchronization'**
+  String get synchronization;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
