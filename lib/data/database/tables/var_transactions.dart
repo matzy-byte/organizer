@@ -10,7 +10,7 @@ class VarTransactions extends Table {
   IntColumn get topicId => integer().references(Topics, #id, onDelete: KeyAction.cascade)();
   DateTimeColumn get date => dateTime()();
   IntColumn get value => integer()();
-  IntColumn get userRefId => integer().references(Users, #id)();
+  IntColumn get userRefId => integer().references(Users, #id, onDelete: KeyAction.cascade)();
   DateTimeColumn get lastEdit => dateTime()();
   TextColumn get compensations => text().nullable()();
   IntColumn get transactionLabelId =>

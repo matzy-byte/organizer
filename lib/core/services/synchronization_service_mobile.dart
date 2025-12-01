@@ -4,13 +4,12 @@ import 'package:drift/drift.dart';
 import 'package:encrypt/encrypt.dart';
 import 'package:organizer/core/models/interval_unit.dart';
 import 'package:organizer/core/models/status.dart';
+import 'package:organizer/core/utils/json_util.dart';
 import 'package:organizer/data/database/database.dart';
 
 class SynchronizationServiceMobile {
   final AppDatabase db;
-  SynchronizationServiceMobile(
-    this.db,
-  );
+  SynchronizationServiceMobile(this.db);
   WebSocket? _ws;
   bool _receivingTables = false;
   Map<String, List<Map<String, dynamic>>> _receivedTables = {};
@@ -265,10 +264,78 @@ class SynchronizationServiceMobile {
           case 'Categories':
             if (_deleteMissingEntry == true) {
               final ids = rows.map((e) => e['id'] as int).toList();
-              await (db.delete(
+              final categoriesToDelete = await (db.select(
                 db.categories,
-              )..where((c) => c.id.isNotIn(ids))).go();
+              )..where((c) => c.id.isNotIn(ids))).get();
+
+              for (final cat in categoriesToDelete) {
+                final categoryId = cat.id;
+
+                final topics = await (db.select(
+                  db.topics,
+                )..where((t) => t.categoryId.equals(categoryId))).get();
+
+                final topicIds = topics.map((t) => t.id).toList();
+
+                if (topicIds.isNotEmpty) {
+                  final varTransactions = await (db.select(
+                    db.varTransactions,
+                  )..where((v) => v.topicId.isIn(topicIds))).get();
+
+                  for (final vt in varTransactions) {
+                    if (vt.compensations != null) {
+                      final compensations = JsonUtil.string2CompensationInfo(
+                        vt.compensations!,
+                      )!;
+                      for (final compId in compensations.keys) {
+                        await (db.delete(
+                          db.varTransactions,
+                        )..where((vT) => vT.id.equals(compId))).go();
+                      }
+                    }
+
+                    if (vt.varRefId != null) {
+                      final parent =
+                          await (db.select(db.varTransactions)
+                                ..where((v) => v.id.equals(vt.varRefId!)))
+                              .getSingleOrNull();
+
+                      if (parent != null && parent.compensations != null) {
+                        final parentComps = JsonUtil.string2CompensationInfo(
+                          parent.compensations!,
+                        )!;
+                        parentComps.remove(vt.id);
+
+                        await (db.update(
+                          db.varTransactions,
+                        )..where((v) => v.id.equals(parent.id))).write(
+                          VarTransactionsCompanion(
+                            compensations: Value(
+                              parentComps.isEmpty
+                                  ? null
+                                  : JsonUtil.compensation2String(parentComps),
+                            ),
+                          ),
+                        );
+                      }
+                    }
+
+                    await (db.delete(
+                      db.varTransactions,
+                    )..where((v) => v.topicId.isIn(topicIds))).go();
+                  }
+
+                  await (db.delete(
+                    db.topics,
+                  )..where((t) => t.categoryId.equals(categoryId))).go();
+
+                  await (db.delete(
+                    db.categories,
+                  )..where((c) => c.id.equals(categoryId))).go();
+                }
+              }
             }
+
             for (final row in rows) {
               final idValue = row['id'] as int;
               final incomingLastEdit = parseDate((row['lastEdit']))!;
@@ -304,9 +371,64 @@ class SynchronizationServiceMobile {
           case 'Topics':
             if (_deleteMissingEntry == true) {
               final ids = rows.map((e) => e['id'] as int).toList();
-              await (db.delete(
+              final topicsToDelete = await (db.select(
                 db.topics,
-              )..where((t) => t.id.isNotIn(ids))).go();
+              )..where((t) => t.id.isNotIn(ids))).get();
+
+              for (final topic in topicsToDelete) {
+                final topicId = topic.id;
+
+                final varTransactions = await (db.select(
+                  db.varTransactions,
+                )..where((v) => v.topicId.equals(topicId))).get();
+
+                for (final vt in varTransactions) {
+                  if (vt.compensations != null) {
+                    final comps = JsonUtil.string2CompensationInfo(
+                      vt.compensations!,
+                    )!;
+                    for (final cId in comps.keys) {
+                      await (db.delete(
+                        db.varTransactions,
+                      )..where((v) => v.id.equals(cId))).go();
+                    }
+                  }
+
+                  if (vt.varRefId != null) {
+                    final parent =
+                        await (db.select(db.varTransactions)
+                              ..where((v) => v.id.equals(vt.varRefId!)))
+                            .getSingleOrNull();
+
+                    if (parent != null && parent.compensations != null) {
+                      final parentComps = JsonUtil.string2CompensationInfo(
+                        parent.compensations!,
+                      )!;
+                      parentComps.remove(vt.id);
+
+                      await (db.update(
+                        db.varTransactions,
+                      )..where((v) => v.id.equals(parent.id))).write(
+                        VarTransactionsCompanion(
+                          compensations: Value(
+                            parentComps.isEmpty
+                                ? null
+                                : JsonUtil.compensation2String(parentComps),
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                }
+
+                await (db.delete(
+                  db.varTransactions,
+                )..where((v) => v.topicId.equals(topicId))).go();
+
+                await (db.delete(
+                  db.topics,
+                )..where((t) => t.id.equals(topicId))).go();
+              }
             }
             for (final row in rows) {
               final idValue = row['id'] as int;
@@ -343,6 +465,10 @@ class SynchronizationServiceMobile {
           case 'FixTransactions':
             if (_deleteMissingEntry == true) {
               final ids = rows.map((e) => e['id'] as int).toList();
+              await (db.update(db.varTransactions)..where(
+                    (v) => v.fixRefId.isNotNull() & v.fixRefId.isNotIn(ids),
+                  ))
+                  .write(VarTransactionsCompanion(fixRefId: Value.absent()));
               await (db.delete(
                 db.fixTransactions,
               )..where((f) => f.id.isNotIn(ids))).go();
@@ -404,6 +530,36 @@ class SynchronizationServiceMobile {
           case 'VarTransactions':
             if (_deleteMissingEntry == true) {
               final ids = rows.map((e) => e['id'] as int).toList();
+              final toBeDeleted =
+                  await (db.select(db.varTransactions)..where(
+                        (v) =>
+                            v.id.isNotIn(ids) &
+                            v.varRefId.isNotNull() &
+                            v.varRefId.isIn(ids),
+                      ))
+                      .get();
+              for (final entry in toBeDeleted) {
+                final parent =
+                    await (db.select(db.varTransactions)
+                          ..where((v) => v.id.equals(entry.varRefId!)))
+                        .getSingleOrNull();
+                if (parent != null && parent.compensations != null) {
+                  final parentComps = JsonUtil.string2CompensationInfo(
+                    parent.compensations,
+                  )!;
+                  parentComps.remove(entry.id);
+                  final updatedComps = parentComps.isEmpty ? null : parentComps;
+                  await (db.update(
+                    db.varTransactions,
+                  )..where((v) => v.id.equals(parent.id))).write(
+                    VarTransactionsCompanion(
+                      compensations: Value(
+                        JsonUtil.compensation2String(updatedComps),
+                      ),
+                    ),
+                  );
+                }
+              }
               await (db.delete(
                 db.varTransactions,
               )..where((v) => v.id.isNotIn(ids))).go();

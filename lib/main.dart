@@ -99,10 +99,12 @@ Future<void> run() async {
           create: (_) => FileProvider(fileService: fileService),
         ),
         ChangeNotifierProvider(
-          create: (_) => SynchronizationProviderDesktop(synchronizationServiceDesktop),
+          create: (_) =>
+              SynchronizationProviderDesktop(synchronizationServiceDesktop),
         ),
         ChangeNotifierProvider(
-          create: (_) => SynchronizationProviderMobile(synchronizationServiceMobile),
+          create: (_) =>
+              SynchronizationProviderMobile(synchronizationServiceMobile),
         ),
       ],
       child: isDesktop
