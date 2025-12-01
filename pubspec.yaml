@@ -1,7 +1,7 @@
 name: organizer
-description: "A new Flutter project."
+description: "Local organization application for management of finance and file storage, as well as secure data transmission via mutiple devices, to synchronnize changes on the go."
 publish_to: 'none'
-version: 0.1.0
+version: 1.0.0
 
 environment:
   sdk: ^3.9.2

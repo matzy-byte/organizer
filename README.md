@@ -1,48 +1,43 @@
 # organizer
+Local organization application for management of finance and file storage, as well as secure data transmission via mutiple devices, to synchronize changes on the go.
 
-- ✓ VarTransaction entries need optional reference to FixTransaction entry
-- ✓ Compensation becomes topic
-- ✓ AddVarTransaction needs Button to make list of compensations (VarTransactions) with each entry having to set category, topic and value. Rest of VarTransaction creation for compensation is done internally with given data.
-- ✓ VarTransaction entry needs List< VarTransaction >? compensations.
-- ✓ VarTransaction (if being a compensation) needs a id reference to the compensated VarTransaction
-- ✓ Same for FixTransaction: FixTransaction entry needs List< Dict < Topic, int > >? compensation
--> When FixTransaction creates VarTransaction it also creates VarTransaction for compensations ahead (like writen before)
-- ✓ Proper removing logic needs to be implemented
-- ✓ Compensation needs to be available from topics from other categories
-- ✓ Add edit fix transaction dialogs
-- ✓ Show compensations dialog
-- ✓ Properly set up TransactionLabels in add loggig and settings to control.
-- ✓ Added users and file references for future safety.
-- ✓ Overview ui element
-- ✓ Split overview_elemnt into multiple classes
-- ✓ Overview for category
-- ✓ Overview Dashboard
-- ✓ Var transaction table needs media control
-- ✓ Options element needs styling and filter logic for backend
-- ✓ Properly include FixTransactionelement
-- ✓ Implement automatic fixtransaction execution on app startup and checking on loading topic (check latest date)
-- ✓ Check properly deleting any of the database tables (remove references, or cascade deletion)
-- ✓ User needs color property
-- ✓ Transactionlabel needs color property
-- ✓ Visualize user in VarTransaction and FixTransaction
-- ✓ Redention user in overview
-- ✓ Summary card split in expenses and additions
-- ✓ Global date selection (from and to filtering)
+## How to use
+### Getting started
+Install the application on your device. When running the application for the first time you will be guided through the setup process.
+Explanation of the applications most important components are listedd down below.
 
-- ✓ Prepare export for all platforms
-- ✓ make db file within application data directory
+### Adding items
+Using the floating action button you can open dialogs to create several components, which are also easily to configure in the dialog.
 
-- ✓ Update ui on disconnects - req check
-- ✓ Implement data syncing logic
-- ✓ encrypt payload
--  Make phone only setup with qr code
+### Deleting items
+Whenever you delete an item you will be asked to confirm in an alert dialog. This is an critical change for the synchronization process.
 
-- UI:  
-Topic: Details, Overview month (+, -, rest, awaited to pay), FixTransaction cards (active and inactive), VarTransaction table with filter options  
-Category: Topic cards (Title, description, Overview month)  
-Dashboard: Overview month general, Topic cards of favorites  
-Seperate designs mobile and desktop  
+### Synchronization
+The application can be run on desktop and mobile. It is highly recommended to make the desktop the master of the entire usage.
+The mobile version should be used to make changes on the go and synchronize them fast at home.
+However the synchronization can be done both ways.
+The main control is on the desktop, here you can also set a check for also deleting items which are missing.
+This enforces that the synchronization master will force the synchronization listener to delete all items that the master doesn't contain.
 
-- Core:
-Create archive / import logic  
-Build base synching logic
+### Backup
+Local applications can always fail. Backup is relatively simple by backing up the organizer.sqlite file, which is in the same folder als the executable.
+
+## To Dos
+- Set settings in setup screen
+- Rework responsive layouts for mobile
+- Add proper settings page (better way to delete categories and control settings)
+- Add edit dialog for user, category and topic
+
+## Components
+Those are the most important components, which might not be self explanatory. The examples used are in the same context: "Manage household purchases"  
+
+### Category
+This is a container for multiple items - Just like a folder that contains multiple files.  
+Example: Household
+
+### Topic
+This is an item to which data can be attached - Just like a file that contains data.  
+Example: Purchases (Topic of Category "Household")
+
+### Transaction
+Defines an actual financial transaction and assigns it the currently used user.
