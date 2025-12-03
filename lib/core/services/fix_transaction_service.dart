@@ -101,7 +101,13 @@ class FixTransactionService {
   }
 
   Future<void> _processFixTransaction(FixTransaction fix) async {
-    DateTime last = fix.latestDate ?? fix.start;
+    DateTime last =
+        fix.latestDate ??
+        DateUtil.substractInterval(
+          fix.start,
+          fix.intervalCount,
+          fix.intervalUnit,
+        );
     final DateTime today = DateTime.now();
 
     while (true) {
@@ -135,6 +141,44 @@ class FixTransactionService {
   }
 
   Future<void> _createVarTransaction(FixTransaction fix, DateTime date) async {
+    if (fix.compensations != null) {
+      final newCompensations = <int, CompensationInfo>{};
+      for (final entry in fix.compensations!.entries) {
+        final comp = entry.value;
+        final compId = await varTransactionRepository.addVarTransaction(
+          comp.topicId,
+          date,
+          comp.value,
+          fix.userRefId,
+          DateTime.now(),
+          null,
+          fix.transactionLabelId,
+          fix.description,
+          fix.id,
+          null,
+          null,
+        );
+        newCompensations[compId] = comp;
+      }
+      final varRefId = await varTransactionRepository.addVarTransaction(
+        fix.topicId,
+        date,
+        fix.value,
+        fix.userRefId,
+        DateTime.now(),
+        newCompensations,
+        fix.transactionLabelId,
+        fix.description,
+        fix.id,
+        null,
+        fix.fileRefId,
+      );
+      for (final entry in newCompensations.entries) {
+        await varTransactionRepository.setVarReference(entry.key, varRefId);
+      }
+      return;
+    }
+
     final varRefId = await varTransactionRepository.addVarTransaction(
       fix.topicId,
       date,

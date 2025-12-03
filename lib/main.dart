@@ -65,26 +65,24 @@ Future<void> run() async {
   globals.from = DateUtil.getFromCurrentMonth();
   globals.to = DateUtil.getToCurrentMonth();
 
+  final userProvider = UserProvider(userService: userService);
+  await userProvider.loadAllUsers();
+  final transactionLabelProvider = TransactionLabelProvider(
+    transactionLabelService: transactionLabelService,
+  );
+  await transactionLabelProvider.loadAllTransactionLabels();
+  final categoryProvider = CategoryProvider(categoryService: categoryService);
+  await categoryProvider.loadCategories();
+  final topicProvider = TopicProvider(topicService: topicService);
+  await topicProvider.loadAllTopics();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(
-          create: (_) => TransactionLabelProvider(
-            transactionLabelService: transactionLabelService,
-          )..loadAllTransactionLabels(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) => UserProvider(userService: userService)..loadAllUsers(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) =>
-              CategoryProvider(categoryService: categoryService)
-                ..loadCategories(),
-        ),
-        ChangeNotifierProvider(
-          create: (_) =>
-              TopicProvider(topicService: topicService)..loadAllTopics(),
-        ),
+        ChangeNotifierProvider(create: (_) => transactionLabelProvider),
+        ChangeNotifierProvider(create: (_) => userProvider),
+        ChangeNotifierProvider(create: (_) => categoryProvider),
+        ChangeNotifierProvider(create: (_) => topicProvider),
         ChangeNotifierProvider(
           create: (_) => FixTransactionProvider(
             fixTransactionService: fixTransactionService,
@@ -108,8 +106,8 @@ Future<void> run() async {
         ),
       ],
       child: isDesktop
-          ? DesktopApp(isSetup: (await userService.getAllUsers()).isEmpty)
-          : MobileApp(isSetup: (await userService.getAllUsers()).isEmpty),
+          ? DesktopApp(isSetup: userProvider.users.isEmpty)
+          : MobileApp(isSetup: userProvider.users.isEmpty),
     ),
   );
 }
