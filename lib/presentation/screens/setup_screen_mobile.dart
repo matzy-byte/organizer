@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:organizer/app/routes.dart';
 import 'package:organizer/presentation/widgets/elements/synchronize/synchronize_connect_mobile.dart';
 
 class SetupScreenMobile extends StatelessWidget {
@@ -12,6 +13,12 @@ class SetupScreenMobile extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Setup'),
           automaticallyImplyLeading: false,
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, AppRoutes.setup),
+              child: const Text("Setup master on mobile"),
+            ),
+          ],
         ),
         body: const SynchronizeConnectMobile(),
       ),

@@ -11,12 +11,8 @@ class UserSelection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userProvider = context.watch<UserProvider>();
+    final userProvider = context.read<UserProvider>();
     final setupTheme = Theme.of(context).extension<SetupTheme>()!;
-
-    if (userProvider.users.isEmpty) {
-      userProvider.loadAllUsers();
-    }
 
     return Center(
       child: SingleChildScrollView(

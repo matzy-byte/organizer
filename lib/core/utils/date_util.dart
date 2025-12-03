@@ -27,6 +27,21 @@ class DateUtil {
     }
   }
 
+  static DateTime substractInterval(DateTime base, int count, IntervalUnit unit) {
+    switch (unit) {
+      case IntervalUnit.day:
+        return base.subtract(Duration(days: count));
+      case IntervalUnit.week:
+        return base.subtract(Duration(days: count * 7));
+      case IntervalUnit.month:
+        return DateTime(base.year, base.month - count, base.day);
+      case IntervalUnit.year:
+        return DateTime(base.year - count, base.month, base.day);
+      case IntervalUnit.decade:
+        return DateTime(base.year - count * 10, base.month, base.day);
+    }
+  }
+
   static bool sameDay(DateTime a, DateTime b) =>
       a.year == b.year && a.month == b.month && a.day == b.day;
 }

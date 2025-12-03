@@ -28,6 +28,7 @@ class _ShowCompensationsDialogState extends State<ShowCompensationsDialog> {
   }
 
   Future<void> _loadVarTransactions() async {
+    print(widget.varTransaction);
     if (widget.varTransaction.compensations == null ||
         widget.varTransaction.compensations!.isEmpty) {
       if (!mounted) return;
