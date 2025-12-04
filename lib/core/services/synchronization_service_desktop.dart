@@ -266,6 +266,7 @@ class SynchronizationServiceDesktop {
     // Begin DB transaction to keep integrity
     await db.transaction(() async {
       final Map<int, int> fixTransactionRefTable = {};
+      final Map<int, int> compensationVarRefTable = {};
       for (final entry in _receivedTables.entries) {
         final tableName = entry.key;
         final rows = entry.value;
@@ -665,6 +666,9 @@ class SynchronizationServiceDesktop {
               )..where((t) => t.id.equals(idValue))).getSingleOrNull();
 
               if (existing == null) {
+                if ((row['varRefId'] as int?) != null) {
+                  compensationVarRefTable[idValue] = row['varRefId'] as int;
+                }
                 final companion = VarTransactionsCompanion(
                   id: Value(idValue),
                   topicId: Value(row['topicId'] as int),
@@ -676,7 +680,7 @@ class SynchronizationServiceDesktop {
                   transactionLabelId: Value(row['transactionLabelId'] as int?),
                   description: Value(row['description'] as String?),
                   fixRefId: Value(row['fixRefId'] as int?),
-                  varRefId: Value(row['varRefId'] as int?),
+                  varRefId: Value.absent(),
                   fileRefId: Value(row['fileRefId'] as int?),
                 );
                 await db.into(db.varTransactions).insert(companion);
@@ -705,6 +709,10 @@ class SynchronizationServiceDesktop {
       for (final e in fixTransactionRefTable.entries) {
         await (db.update(db.fixTransactions)..where((f) => f.id.equals(e.key)))
             .write(FixTransactionsCompanion(varRefId: Value(e.value)));
+      }
+      for (final e in compensationVarRefTable.entries) {
+        await (db.update(db.varTransactions)..where((v) => v.id.equals(e.key)))
+            .write(VarTransactionsCompanion(varRefId: Value(e.value)));
       }
     });
 

@@ -153,7 +153,7 @@ class FixTransactionService {
           DateTime.now(),
           null,
           fix.transactionLabelId,
-          fix.description,
+          'Kompensation${fix.description != null ? ': ${fix.description}' : ''}',
           fix.id,
           null,
           null,
@@ -176,6 +176,24 @@ class FixTransactionService {
       for (final entry in newCompensations.entries) {
         await varTransactionRepository.setVarReference(entry.key, varRefId);
       }
+      await repository.updateFixTransaction(
+        fix.id,
+        fix.topicId,
+        fix.status,
+        fix.start,
+        fix.end,
+        fix.intervalCount,
+        fix.intervalUnit,
+        fix.value,
+        fix.userRefId,
+        DateTime.now(),
+        fix.compensations,
+        fix.transactionLabelId,
+        fix.description,
+        date,
+        varRefId,
+        fix.fileRefId,
+      );
       return;
     }
 
